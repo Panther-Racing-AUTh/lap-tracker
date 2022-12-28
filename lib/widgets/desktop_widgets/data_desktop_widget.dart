@@ -27,7 +27,7 @@ class _DataDesktopWidgetState extends State<DataDesktopWidget> {
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (!snapshot.hasData) {
           return Center(
-            child: Text('test'),
+            child: CircularProgressIndicator(),
           );
         } else {
           final List<PlutoRow> fetchedRows = [];

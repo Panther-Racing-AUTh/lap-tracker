@@ -28,7 +28,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       icon: icon,
       selectedIcon: selectedIcon,
       label: Text(
-        text,
+        (MediaQuery.of(context).size.width > 1000) ? text : '',
       ),
     );
   }
@@ -133,19 +133,24 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                         //sign out button
                         child: Container(
                           constraints:
-                              BoxConstraints(minHeight: 50, minWidth: 40),
+                              BoxConstraints(minHeight: 40, minWidth: 40),
                           padding: EdgeInsets.only(bottom: 15),
                           height: 50,
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.exit_to_app_rounded,
                                 size: 27,
                               ),
                               Text(
-                                'Sign Out',
-                                style:
-                                    TextStyle(color: Colors.red, fontSize: 14),
+                                (MediaQuery.of(context).size.width > 1000)
+                                    ? 'Sign Out'
+                                    : '',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 14,
+                                ),
                               ),
                             ],
                           ),
@@ -183,7 +188,12 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
           //depending on the selected block above,
           //a different widget is rendered on the right side of screen
-          Expanded(child: buildPages(height)),
+          Expanded(
+            //flex: ,
+            child: Container(
+              child: buildPages(height),
+            ),
+          ),
         ],
       ),
     );
@@ -195,10 +205,8 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         return DashBoardDesktop(screenHeight: height);
 
       case 1:
-        return new SingleChildScrollView(
-          child: Container(
-            child: ProfileDesktop(),
-          ),
+        return SingleChildScrollView(
+          child: ProfileDesktop(),
         );
       case 2:
         return Container(child: ChatWidget() //, width: width - blockWidth - 1,

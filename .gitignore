@@ -25,3 +25,8 @@ doc/api/
 
 # History
 /.history
+
+# build generated files
+/.flutter-plugins
+windows/flutter/*
+macos/Flutter/GeneratedPluginRegistrant.swift

@@ -22,8 +22,9 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
   @override
   void initState() {
     super.initState();
-    dataFuture =
-        getUserProfile(uuid: Supabase.instance.client.auth.currentUser!.id);
+    if (supabase.auth.currentSession != null)
+      dataFuture =
+          getUserProfile(uuid: Supabase.instance.client.auth.currentUser!.id);
   }
 
   @override
@@ -34,21 +35,15 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
 
     return (Supabase.instance.client.auth.currentUser == null)
         ? Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.1,
+            height: height,
+            child: Center(
+              child: Text(
+                'Sign In to see your profile',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30,
                 ),
-                Text(
-                  'Sign In to see your profile',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 30,
-                  ),
-                ),
-              ],
+              ),
             ),
           )
         : FutureBuilder<Person>(
@@ -57,7 +52,6 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
               if (snapshot.connectionState == ConnectionState.done) {
                 p = snapshot.data;
                 return Container(
-                  //color: Colors.green,
                   constraints: BoxConstraints(
                     minHeight: height,
                     minWidth: (width >= 1175) ? width * 0.6 : width * 0.75,
@@ -67,23 +61,18 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        //color: Colors.orange,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              //color: Colors.yellow,
                               child: buildTop(width, height * 0.15),
                             ),
                             (width < 1175)
                                 ? Container(
-                                    // color: Colors.red,
-                                    //width: 1500,
                                     padding: EdgeInsets.only(left: 20, top: 20),
                                     child: nameAndRole())
                                 : Container(),
                             Container(
-                              //color: Colors.orange,
                               padding: EdgeInsets.fromLTRB(35, 30, 10, 20),
                               child: Text(
                                 p!.about,
@@ -98,18 +87,26 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
                                   (width >= 1175) ? width * 0.6 : width * 0.75,
                               alignment: Alignment.centerLeft,
                             ),
+                            Container(
+                              child: (width < 1175)
+                                  ? Container(
+                                      width: width * 0.8,
+                                      padding:
+                                          EdgeInsets.only(left: 20, top: 20),
+                                      child: showIconsHorizontal(),
+                                    )
+                                  : Container(),
+                            )
                           ],
                         ),
                       ),
                       //social media
                       Container(
-                        //color: Colors.red,
                         child: (width >= 1175)
                             ? Container(
-                                //color: Colors.blue,
                                 width: width * 0.2,
                                 padding: EdgeInsets.only(left: 20, top: 20),
-                                child: showIcons(height * 0.3),
+                                child: showIconsVertical(height * 0.3),
                               )
                             : Container(),
                       )
@@ -117,7 +114,15 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
                   ),
                 );
               } else
-                return Center(child: CircularProgressIndicator());
+                return Container(
+                  constraints: BoxConstraints(
+                    minHeight: height,
+                    minWidth: (width >= 1175) ? width * 0.6 : width * 0.75,
+                  ),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
             },
           );
   }
@@ -140,7 +145,6 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
               buildProfileImage(),
               (width >= 1175)
                   ? Container(
-                      //color: Colors.red,
                       width: width * 0.3,
                       height: height,
                       constraints: BoxConstraints(
@@ -216,7 +220,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
         ),
       );
 
-  Widget showIcons(double height) {
+  Widget showIconsVertical(double height) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,13 +239,67 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
         buildSocialIcon(FontAwesomeIcons.microsoft),
         const SizedBox(height: 9),
         Container(
-          //color: Colors.black,
-          //width: width * 0.2,
           padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(child: SizedBox(height: height)),
+              Text(
+                'Learn more at',
+                style: TextStyle(fontSize: 15),
+              ),
+              TextButton(
+                child: Text(
+                  'pantherauth.gr',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 6, 103, 145),
+                    fontSize: 20,
+                  ),
+                ),
+                onPressed: () async {
+                  final url = Uri(
+                    scheme: 'https',
+                    host: 'pantherauth.gr',
+                  );
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  }
+                },
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget showIconsHorizontal() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          //mainAxisSize: MainAxisSize.max,
+          //crossAxisAlignment: CrossAxisAlignment.start,
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildSocialIcon(FontAwesomeIcons.google),
+            const SizedBox(width: 9),
+            buildSocialIcon(FontAwesomeIcons.github),
+            const SizedBox(width: 9),
+            buildSocialIcon(FontAwesomeIcons.twitter),
+            const SizedBox(width: 9),
+            buildSocialIcon(FontAwesomeIcons.linkedin),
+            const SizedBox(width: 9),
+            buildSocialIcon(FontAwesomeIcons.apple),
+            const SizedBox(width: 9),
+            buildSocialIcon(FontAwesomeIcons.microsoft),
+            const SizedBox(width: 9),
+          ],
+        ),
+        Container(
+          padding: EdgeInsets.all(20),
+          child: Row(
+            children: [
               Text(
                 'Learn more at',
                 style: TextStyle(fontSize: 15),
@@ -319,7 +377,6 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
               textAlign: TextAlign.center,
             ),
           ),
-          //SizedBox(height: 8),
           Container(
             child: Text(
               p!.role,

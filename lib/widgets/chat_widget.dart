@@ -8,10 +8,6 @@ import 'chat_bubble.dart';
 class ChatWidget extends StatefulWidget {
   @override
   State<ChatWidget> createState() => _ChatWidgetState();
-
-  ChatWidget() {
-    print('ChatWidget constructed');
-  }
 }
 
 class _ChatWidgetState extends State<ChatWidget> {
@@ -36,7 +32,6 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   void dispose() {
-    print('chat widget disposed!');
     _msgController.dispose();
     super.dispose();
   }

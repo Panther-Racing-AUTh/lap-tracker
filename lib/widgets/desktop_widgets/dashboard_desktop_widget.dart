@@ -17,7 +17,7 @@ Widget DashBoardDesktop({required screenHeight}) {
             ],
           ),
           SizedBox(
-            height: screenHeight * 0.86,
+            height: screenHeight * 0.866,
           )
         ],
       ),
