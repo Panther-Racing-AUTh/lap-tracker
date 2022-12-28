@@ -9,7 +9,7 @@ A single code base to visualize and manage lap data for racing purposes
 ## Download the project
 Clone the project (and the submodule `configs` if you have the rights)
 ```bash
-git clone --recurse-submodules https://github.com/Panther-Racing-AUTh/lap-tracker.git
+git clone --recurse-submodules git@github.com:Panther-Racing-AUTh/lap-tracker.git
 ```
 
 #
