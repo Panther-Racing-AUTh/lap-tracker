@@ -22,3 +22,6 @@ doc/api/
 
 # is created at build with flutter build appbundle 
 /.flutter-plugins-dependencies
+
+# History
+/.history
