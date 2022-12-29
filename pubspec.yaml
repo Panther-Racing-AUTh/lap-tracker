@@ -33,6 +33,7 @@ dependencies:
   faker: ^2.0.0
   syncfusion_flutter_datagrid: ^20.3.60
   video_player: ^2.4.10
+  keymap: ^0.0.91
 
    
   

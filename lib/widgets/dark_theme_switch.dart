@@ -9,22 +9,21 @@ Row DarkThemeSwitch({required BuildContext context}) {
     children: [
       Icon(
         Icons.light_mode_outlined,
-        color: _themeChanger.getTheme() == ThemeData.dark()
+        color: _themeChanger.getCurrentThemeMode() == ThemeMode.dark
             ? Colors.white
             : Colors.black,
       ),
       Switch(
-        value: _themeChanger.getTheme() == ThemeData.dark(),
-        onChanged: (value) {
-          value
-              ? _themeChanger.setTheme(ThemeData.dark())
-              : _themeChanger.setTheme(ThemeData.light());
+        value: _themeChanger.getCurrentThemeMode() == ThemeMode.dark,
+        onChanged: (_) {
+          _themeChanger.switchTheme();
         },
         inactiveTrackColor: Colors.grey,
+        activeColor: _themeChanger.getLightTheme().primaryColor,
       ),
       Icon(
         Icons.dark_mode_outlined,
-        color: _themeChanger.getTheme() == ThemeData.dark()
+        color: _themeChanger.getCurrentThemeMode() == ThemeMode.dark
             ? Colors.white
             : Colors.black,
       )

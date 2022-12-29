@@ -38,6 +38,7 @@ Widget blockWidget({
                   Icon(
                     icon,
                     size: MediaQuery.of(context).size.height * 0.04,
+                    color: Colors.black,
                   )
                 ],
               ),
@@ -78,6 +79,7 @@ Widget blockWidget({
                   Icon(
                     icon,
                     size: MediaQuery.of(context).size.height * 0.04,
+                    color: Colors.black,
                   )
                 ],
               ),

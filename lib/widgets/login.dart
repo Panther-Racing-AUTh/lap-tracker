@@ -149,16 +149,14 @@ class LoginState extends State<Login> {
                 //button for theme control
                 Align(
                   child: IconButton(
-                    icon: _themeChanger.getTheme() == ThemeData.light()
+                    icon: _themeChanger.getCurrentThemeMode() == ThemeMode.light
                         ? Icon(Icons.light_mode_sharp)
                         : Icon(
                             Icons.dark_mode_sharp,
                             color: Colors.yellow,
                           ),
                     onPressed: (() {
-                      _themeChanger.getTheme() == ThemeData.light()
-                          ? _themeChanger.setTheme(ThemeData.dark())
-                          : _themeChanger.setTheme(ThemeData.light());
+                      _themeChanger.switchTheme();
                     }),
                   ),
                   alignment: Alignment.centerRight,

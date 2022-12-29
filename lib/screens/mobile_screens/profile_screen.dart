@@ -88,24 +88,27 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildEditButton({required double size, required double padding}) {
+    bool signedIn = supabase.auth.currentSession != null;
     return Container(
       padding: EdgeInsets.all(padding),
       child: IconButton(
         icon: Icon(
           Icons.edit,
           size: size,
-          color: Colors.black,
+          color: (signedIn) ? Colors.black : Color.fromARGB(255, 112, 111, 111),
         ),
         onPressed: () {
-          Navigator.pushNamed(
-            context,
-            '/profile/edit',
-          ).then((_) => setState(() {
-                getUserProfile(
-                    uuid: Supabase.instance.client.auth.currentUser!.id);
-                Future.delayed(Duration(seconds: 2));
-                setState(() {});
-              }));
+          if (signedIn) {
+            Navigator.pushNamed(
+              context,
+              '/profile/edit',
+            ).then((_) => setState(() {
+                  getUserProfile(
+                      uuid: Supabase.instance.client.auth.currentUser!.id);
+                  Future.delayed(Duration(seconds: 2));
+                  setState(() {});
+                }));
+          }
         },
       ),
     );
@@ -127,9 +130,9 @@ class ProfileScreenState extends State<ProfileScreen> {
             p!.role,
             style: TextStyle(
               fontSize: 20,
-              color: theme.getTheme() == ThemeData.dark()
+              color: theme.getCurrentThemeMode() == ThemeData.dark()
                   ? Colors.white.withOpacity(0.5)
-                  : Colors.black.withOpacity(0.5),
+                  : Colors.grey.withOpacity(0.7),
             ),
           ),
           const SizedBox(

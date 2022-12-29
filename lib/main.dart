@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return provider.MultiProvider(
       providers: [
         provider.ChangeNotifierProvider<ThemeChanger>(
-          create: (_) => ThemeChanger(ThemeData.light()),
+          create: (_) => ThemeChanger(),
         ),
       ],
       child: MaterialAppWithTheme(),
@@ -51,7 +51,9 @@ class MaterialAppWithTheme extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       onGenerateRoute: RouteGenerator.generateRoute,
-      theme: theme.getTheme(),
+      theme: theme.getLightTheme(),
+      darkTheme: theme.getDarkTheme(),
+      themeMode: (theme.dark) ? ThemeMode.dark : ThemeMode.light,
     );
   }
 }
