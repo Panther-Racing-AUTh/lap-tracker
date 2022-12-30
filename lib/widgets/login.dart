@@ -1,10 +1,8 @@
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/widgets/signIn_alert_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../providers/device.dart';
 import './signInTextField.dart';
 import '../supabase/authentication_functions.dart';
 import 'package:provider/provider.dart' as provider;
@@ -107,11 +105,12 @@ class LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     ThemeChanger _themeChanger = provider.Provider.of<ThemeChanger>(context);
+    DeviceManager device = provider.Provider.of<DeviceManager>(context);
+
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
-    if (defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android) {
+    if (device.isTablet || device.isPhone) {
       //check for tablet -still mobile device but bigger screen
       if (width > 480) {
         width = width * 0.7;
@@ -351,8 +350,8 @@ class LoginState extends State<Login> {
                   color: Colors.orange,
                 ),
               ),
-              onPressed: () =>
-                  Navigator.of(context).pushReplacementNamed('/main'),
+              onPressed: () => Navigator.of(context).pushReplacementNamed(
+                  device.isDesktopMode() ? '/main-desktop' : '/main-mobile'),
             ),
           ),
           Column(

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import './screens/splash_screen.dart';
 import 'screens/desktop_screens/main_screen_desktop.dart';
 import './screens/signin_screen.dart';
@@ -35,6 +34,10 @@ class RouteGenerator {
             builder: (_) => MainScreenDesktop(),
           );
         }
+      case '/main-mobile':
+        return MaterialPageRoute(builder: (_) => MainScreen());
+      case '/main-desktop':
+        return MaterialPageRoute(builder: (_) => MainScreenDesktop());
       case '/profile':
         return MaterialPageRoute(
           builder: (_) => ProfileScreen(),

@@ -12,7 +12,7 @@ class SettingsScreen extends StatelessWidget {
         text: 'Settings',
         context: context,
       ),
-      body: Settings(context),
+      body: Settings(),
     );
   }
 }

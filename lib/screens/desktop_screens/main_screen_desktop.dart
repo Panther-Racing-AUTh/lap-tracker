@@ -18,6 +18,7 @@ class MainScreenDesktop extends StatefulWidget {
 class _MainScreenDesktopState extends State<MainScreenDesktop> {
   int _selected = 0;
   bool showSidebar = true;
+  bool showWeather = true;
   NavigationRailDestination _widget(
     //widget for each tab on the left of the screen, each block has a unique index
     //which can determine which block is selected and show appropriate widget on the right
@@ -44,63 +45,63 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     Widget buildPages(double height) {
       switch (_selected) {
         case 0:
-          return DashBoardDesktop(screenHeight: height);
+          return DashBoardDesktop(showWeather: showWeather);
         case 1:
-          return SingleChildScrollView(
-            child: ProfileDesktop(),
-          );
+          return SingleChildScrollView(child: ProfileDesktop());
         case 2:
           return Container(child: ChatWidget());
         case 3:
-          return DataDesktopWidget(
-            key: UniqueKey(),
-          );
+          return DataDesktopWidget();
         case 4:
           return ChartDesktop();
         case 5:
           return PantherDesktop();
         case 6:
-          return Settings(context);
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  minHeight:
+                      MediaQuery.of(context).size.height - kToolbarHeight),
+              child: IntrinsicHeight(
+                child: Settings(),
+              ),
+            ),
+          );
       }
       return CircularProgressIndicator();
     }
 
     return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(
-          LogicalKeyboardKey.keyM,
-        ): () {
-          setState(() {
-            showSidebar = !showSidebar;
-          });
-        },
-      },
+      bindings: shortcuts(_selected),
       child: Focus(
         autofocus: true,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: (showSidebar)
-                ? Theme.of(context).appBarTheme.backgroundColor
-                : Colors.transparent,
-            elevation: 0,
-            title: (showSidebar) ? Text('Panther Racing AUTh') : Text(''),
+            leading: //button for panel collapse
+                IconButton(
+              icon: Icon((showSidebar)
+                  ? Icons.keyboard_double_arrow_left
+                  : Icons.keyboard_double_arrow_right),
+              onPressed: () => setState(() => showSidebar = !showSidebar),
+            ),
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+            title: Text('Panther Racing AUTh'),
             actions: [
               //dark theme toggle button
-              if (showSidebar)
-                IconButton(
-                  icon: theme.getCurrentThemeMode() == ThemeMode.light
-                      ? Icon(
-                          Icons.light_mode_outlined,
-                          color: Colors.white,
-                        )
-                      : Icon(
-                          Icons.dark_mode_outlined,
-                          color: Colors.white,
-                        ),
-                  onPressed: (() {
-                    theme.switchTheme();
-                  }),
-                )
+              IconButton(
+                icon: theme.getCurrentThemeMode() == ThemeMode.light
+                    ? Icon(
+                        Icons.light_mode_outlined,
+                        color: Colors.white,
+                      )
+                    : Icon(
+                        Icons.dark_mode_outlined,
+                        color: Colors.white,
+                      ),
+                onPressed: (() {
+                  theme.switchTheme();
+                }),
+              )
             ],
           ),
           body: Row(
@@ -200,6 +201,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
               //depending on the selected block above,
               //a different widget is rendered on the right side of screen
+
               Expanded(
                 child: Container(
                   child: buildPages(height),
@@ -210,5 +212,81 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         ),
       ),
     );
+  }
+
+  //shortcuts
+  Map<ShortcutActivator, void Function()> shortcuts(int index) {
+    return {
+      const SingleActivator(
+        LogicalKeyboardKey.keyM,
+      ): () {
+        setState(() {
+          showSidebar = !showSidebar;
+        });
+      },
+      const SingleActivator(
+        LogicalKeyboardKey.digit1,
+      ): () {
+        setState(() {
+          if (_selected == 0) showWeather = !showWeather;
+        });
+      },
+      const SingleActivator(
+        LogicalKeyboardKey.digit1,
+        control: true,
+      ): () {
+        setState(() {
+          _selected = 0;
+        });
+      },
+      const SingleActivator(
+        LogicalKeyboardKey.digit2,
+        control: true,
+      ): () {
+        setState(() {
+          _selected = 1;
+        });
+      },
+      const SingleActivator(
+        LogicalKeyboardKey.digit3,
+        control: true,
+      ): () {
+        setState(() {
+          _selected = 2;
+        });
+      },
+      const SingleActivator(
+        LogicalKeyboardKey.digit4,
+        control: true,
+      ): () {
+        setState(() {
+          _selected = 3;
+        });
+      },
+      const SingleActivator(
+        LogicalKeyboardKey.digit5,
+        control: true,
+      ): () {
+        setState(() {
+          _selected = 4;
+        });
+      },
+      const SingleActivator(
+        LogicalKeyboardKey.digit6,
+        control: true,
+      ): () {
+        setState(() {
+          _selected = 5;
+        });
+      },
+      const SingleActivator(
+        LogicalKeyboardKey.digit7,
+        control: true,
+      ): () {
+        setState(() {
+          _selected = 6;
+        });
+      },
+    };
   }
 }

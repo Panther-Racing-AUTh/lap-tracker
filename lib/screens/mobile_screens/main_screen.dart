@@ -3,7 +3,7 @@ import '../../widgets/block_widget.dart';
 import '../../widgets/main_appbar.dart';
 
 class MainScreen extends StatelessWidget {
-  //static const String routeName = '/';
+  //static const String routeName = '/main-mobile';
 
   static const bool color = true;
   @override

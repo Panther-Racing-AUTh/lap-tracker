@@ -333,7 +333,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                     ),
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 6,
                   ),
                   Container(
                     child: Text(

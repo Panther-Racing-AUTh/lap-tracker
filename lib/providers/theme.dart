@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ThemeChanger with ChangeNotifier {
   bool dark = false;
+  int colorIndex = 0;
 
   ThemeData _lightTheme = lightTheme(Colors.indigo);
   ThemeData _darkTheme = darkTheme(Colors.indigo);
@@ -18,6 +19,10 @@ class ThemeChanger with ChangeNotifier {
     notifyListeners();
   }
 
+  setIndex(int id) {
+    colorIndex = id;
+  }
+
   setLightTheme(Color c) {
     _lightTheme = lightTheme(c as MaterialColor);
     notifyListeners();
@@ -28,9 +33,10 @@ class ThemeChanger with ChangeNotifier {
     notifyListeners();
   }
 
-  setThemeColor(Color c) {
+  setThemeColor(Color c, int id) {
     setLightTheme(c);
     setDarkTheme(c);
+    setIndex(id);
     notifyListeners();
   }
 }
@@ -53,6 +59,7 @@ ThemeData darkTheme(MaterialColor c) => ThemeData(
       cardColor: c,
       primaryColor: c,
       iconTheme: IconThemeData(color: Colors.white),
+      selectedRowColor: Colors.white,
     );
 
 ThemeData lightTheme(MaterialColor c) => ThemeData(
@@ -64,4 +71,5 @@ ThemeData lightTheme(MaterialColor c) => ThemeData(
       ),
       iconTheme: IconThemeData(color: c),
       primaryIconTheme: IconThemeData(color: c),
+      selectedRowColor: Colors.black,
     );

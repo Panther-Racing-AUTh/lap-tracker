@@ -7,8 +7,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final supabase = Supabase.instance.client;
 
 class DataDesktopWidget extends StatefulWidget {
-  const DataDesktopWidget({Key? key}) : super(key: key);
-
   @override
   State<DataDesktopWidget> createState() => _DataDesktopWidgetState();
 }
