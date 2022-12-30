@@ -13,6 +13,13 @@ git clone --recurse-submodules git@github.com:Panther-Racing-AUTh/lap-tracker.gi
 ```
 
 #
+## Ignore files that have been tracked
+This is for files that maybe will be added to `.gitignore` but are already tracked by git.
+```bash
+git rm -r --cached . && git add . && git commit -am "Remove ignored files"
+```
+
+#
 ## Run the project
 If you have the rights clone our private repository `configs` that has all the keys and credentials inside, then you are good to go, just run
 ```bash
