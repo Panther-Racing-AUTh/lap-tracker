@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/dummy_data/columns.dart';
-import 'package:flutter_complete_guide/dummy_data/column_groups.dart';
+import 'package:flutter_complete_guide/dummy_data/telemetry_columns.dart';
+import 'package:flutter_complete_guide/dummy_data/telemetry_column_groups.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -53,8 +53,8 @@ class _DataDesktopWidgetState extends State<DataDesktopWidget> {
               });
 
           var plutogrid = PlutoGrid(
-            columns: columns,
-            columnGroups: columnGroups,
+            columns: telemetry_columns,
+            columnGroups: telemetry_columnGroups,
             rows: [],
             onLoaded: (PlutoGridOnLoadedEvent event) {
               //stateManager = event.stateManager;

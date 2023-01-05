@@ -1,6 +1,6 @@
 import 'package:pluto_grid/pluto_grid.dart';
 
-final List<PlutoColumnGroup> columnGroups = [
+final List<PlutoColumnGroup> telemetry_columnGroups = [
   PlutoColumnGroup(title: 'Date', fields: ['date'], expandedColumn: true),
   PlutoColumnGroup(
       title: 'Racing Time', fields: ['racing_time'], expandedColumn: true),

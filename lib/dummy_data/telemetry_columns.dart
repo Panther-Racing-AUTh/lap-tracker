@@ -1,6 +1,6 @@
 import 'package:pluto_grid/pluto_grid.dart';
 
-final List<PlutoColumn> columns = <PlutoColumn>[
+final List<PlutoColumn> telemetry_columns = <PlutoColumn>[
   PlutoColumn(
     title: 'Date',
     field: 'date',
