@@ -19,6 +19,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
   int _selected = 0;
   bool showSidebar = true;
   bool showWeather = true;
+  bool showDriverBoard = true;
   NavigationRailDestination _widget(
     //widget for each tab on the left of the screen, each block has a unique index
     //which can determine which block is selected and show appropriate widget on the right
@@ -36,16 +37,33 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     );
   }
 
+  double _calculateAvailableWidthOfScreen(double deviceScreenWidth) {
+    if (showSidebar) {
+      if (deviceScreenWidth > 1000) {
+        return deviceScreenWidth - 114;
+      }
+      return deviceScreenWidth - 73;
+    }
+    return deviceScreenWidth;
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeChanger theme = Provider.of<ThemeChanger>(context);
 
     var height = MediaQuery.of(context).size.height;
+    var width =
+        _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
 
     Widget buildPages(double height) {
       switch (_selected) {
         case 0:
-          return DashBoardDesktop(showWeather: showWeather);
+          return DashBoardDesktop(
+            showWeather: showWeather,
+            showDriverBoard: showDriverBoard,
+            screenHeight: height,
+            screenWidth: width,
+          );
         case 1:
           return SingleChildScrollView(child: ProfileDesktop());
         case 2:
@@ -229,6 +247,13 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       ): () {
         setState(() {
           if (_selected == 0) showWeather = !showWeather;
+        });
+      },
+      const SingleActivator(
+        LogicalKeyboardKey.digit2,
+      ): () {
+        setState(() {
+          if (_selected == 0) showDriverBoard = !showDriverBoard;
         });
       },
       const SingleActivator(

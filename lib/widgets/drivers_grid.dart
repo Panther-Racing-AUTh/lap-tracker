@@ -27,7 +27,7 @@ class _DriversDataWidgetState extends State<DriversDataWidget> {
         } else {
           final List<PlutoRow> drivers_fetchedRows = [];
 
-          snapshot.data?.forEach((data) => {print('Fetched: ${data}')});
+          //snapshot.data?.forEach((data) => {print('Fetched: ${data}')});
 
           snapshot.data?.forEach((data) => {
                 drivers_fetchedRows.add(

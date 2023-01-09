@@ -10,7 +10,7 @@ class WeatherWidget extends StatefulWidget {
 }
 
 var cardHeight = 300.0; //height of the widget
-var cardWidth = 300.0; //width of the widget
+var cardWidth = 200.0; //width of the widget
 var edgeRadius = 30.0; //radius for the rounded corners look
 //all values initally are set to zero or null as information is not yet fetched
 var cityName = ''; //name of the location that weather info is fetched for
@@ -165,11 +165,12 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     getData();
   }
 
+  bool expanded = false;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: (MediaQuery.of(context).size.width <
-              1300) //check for screen size and show compact or detailed version of weather widget
+      child: (MediaQuery.of(context).size.width < 1300 ||
+              !expanded) //check for screen size and show compact or detailed version of weather widget
           ? Container(
               padding: EdgeInsets.all(20),
               height: cardHeight,
@@ -393,7 +394,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                         ),
                       ),
                       SizedBox(
-                        width: cardWidth * 1.4,
+                        width: cardWidth * 1.2,
                       ),
                       Container(
                         child: Column(
