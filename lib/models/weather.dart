@@ -1,5 +1,6 @@
 class Weather {
   String? cityName;
+  String? cityCountry;
   double? currenttemp;
   double? currentWindSpeed;
   double? maxWind;
@@ -22,6 +23,7 @@ class Weather {
 
   Weather({
     this.cityName,
+    this.cityCountry,
     this.currenttemp,
     this.currentWindSpeed,
     this.maxWind,
@@ -42,8 +44,10 @@ class Weather {
     this.hourlyWeatherCodes,
   });
   //decode json map and put values in variables
-  Weather.fromJson(Map<String, dynamic> json, String? cityName) {
+  Weather.fromJson(
+      Map<String, dynamic> json, String? cityName, String? cityCountry) {
     this.cityName = cityName;
+    this.cityCountry = cityCountry;
     currenttemp = json['current_weather']['temperature'];
     code = json['current_weather']['weathercode'];
     if (code == 0) description = 'Clear sky';

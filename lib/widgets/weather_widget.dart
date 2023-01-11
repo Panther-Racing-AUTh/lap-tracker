@@ -9,11 +9,12 @@ class WeatherWidget extends StatefulWidget {
   State<WeatherWidget> createState() => _WeatherWidgetState();
 }
 
-var cardHeight = 300.0; //height of the widget
+var cardHeight = 10.0; //height of the widget
 var cardWidth = 200.0; //width of the widget
 var edgeRadius = 30.0; //radius for the rounded corners look
 //all values initally are set to zero or null as information is not yet fetched
 var cityName = ''; //name of the location that weather info is fetched for
+var cityCountry = '';
 var currentHumidity = 0; //current humidity in %
 var currentTemperature = 0; //current temperature in celsius
 var currentWindSpeed = 0; //current wind speed in km/h
@@ -41,406 +42,242 @@ var hourlyPrecipitation =
     []; //list of the hourly mm of precipitation of the day
 var hourlyWeatherCodes = []; //list of the hourly weather codes
 
-//list for the colors of the widget according to weather
-List<List<Color>> weatherGradients = [
-  [
-    //normal colors for weather widget
-    Color.fromARGB(255, 10, 66, 94),
-    Color.fromARGB(255, 123, 187, 238),
-  ],
-  [
-    //colors for cloudy weather
-    Color.fromARGB(255, 47, 47, 48),
-    Color.fromARGB(255, 124, 128, 131),
-  ],
-  [
-    //colors for night
-    Color.fromARGB(255, 6, 16, 98),
-    Color.fromARGB(255, 86, 73, 35),
-  ],
-  [
-    //colors for sunset
-    Color.fromARGB(255, 32, 44, 96),
-    Color.fromARGB(255, 118, 93, 19),
-  ],
-  [
-    //colors for night
-    Color.fromARGB(255, 4, 26, 67),
-    Color.fromARGB(255, 46, 88, 136),
-  ]
-];
-var weatherColorIndex =
-    0; // index to point to specific color for the widget in the above list
-
 WeatherApiClient client =
     WeatherApiClient(); //api declaration for weather data fetching
 Weather data = Weather(); // weather class declaration where data is stored
 
 class _WeatherWidgetState extends State<WeatherWidget> {
-  Future<void> getData() async {
-    data = await client
-        .getCurrentWeather('Thessaloniki')!; //search the weather for a city
-    Future.delayed(Duration(seconds: 1), () {});
-    //all values are checked for null and are stored locally for depiction on the widget
-    setState(() {
-      cityName = (data.currenttemp == null) ? '' : data.cityName!;
-      currentTemperature =
-          (data.currenttemp == null) ? 0 : data.currenttemp!.round();
-      currentHumidity =
-          (data.currenthumidity == null) ? 0 : data.currenthumidity!.round();
-      currentWindSpeed =
-          (data.currentWindSpeed == null) ? 0 : data.currentWindSpeed!.round();
-      dailyHighTemperature =
-          (data.temp_max == null) ? 0 : data.temp_max!.round();
-      dailyLowTemperature =
-          (data.temp_min == null) ? 0 : data.temp_min!.round();
-      dailyMaxWindSpeed = (data.maxWind == null) ? 0 : data.maxWind!.round();
+  TextEditingController cityNameController = TextEditingController();
 
-      currentWindDirection = (data.currentWindDirection == null)
-          ? 0
-          : data.currentWindDirection!.round();
-      mainWindDirection = (data.mainWindDirection == null)
-          ? 0
-          : data.mainWindDirection!.round();
-      dailyTotalPrecipitation = (data.totalPrecipitation == null)
-          ? 0
-          : data.totalPrecipitation!.round();
-      description = (data.description == null) ? '' : data.description!;
-      sunrise = (data.sunrise == null) ? '' : data.sunrise!;
-      sunset = (data.sunset == null) ? '' : data.sunset!;
+  Future<void> getData(String city) async {
+    data =
+        await client.getCurrentWeather(city)!; //search the weather for a city
 
-      hourlyTemperatures = (data.hourlyTemps == null) ? [] : data.hourlyTemps!;
-      hourlyWindDirections =
-          (data.hourlyWindDirections == null) ? [] : data.hourlyWindDirections!;
-      hourlyWindSpeeds =
-          (data.hourlyWindSpeeds == null) ? [] : data.hourlyWindSpeeds!;
-      hourlyHumidity =
-          (data.hourlyHumidity == null) ? [] : data.hourlyHumidity!;
-      hourlyPrecipitation =
-          (data.hourlyPrecipitation == null) ? [] : data.hourlyPrecipitation!;
-      hourlyWeatherCodes =
-          (data.hourlyWeatherCodes == null) ? [] : data.hourlyWeatherCodes!;
-      //determining which color and icon to use according to data codes and hour of the day
-      if (sunset.contains(
-        DateTime.now().day.toString() +
-            'T' +
-            (DateTime.now().hour - 1).toString(),
-      )) {
-        weatherIcon = Icons.star_half;
-        weatherColorIndex = 3;
-      } else if (data.code == 2 || data.code == 3) {
-        weatherIcon = Icons.cloud;
-        weatherColorIndex = 1;
-      } else if (data.code == 0 || data.code == 1) {
-        if (DateTime.now().hour > DateTime.parse(sunset).hour ||
-            DateTime.now().hour < DateTime.parse(sunrise).hour) {
-          weatherIcon = Icons.dark_mode;
-          weatherColorIndex = 4;
-        } else {
-          weatherIcon = Icons.sunny;
-          weatherColorIndex = 0;
+    if (data.cityName != 'notACity') {
+      //check for invalid city name
+
+      Future.delayed(Duration(seconds: 1), () {});
+      //all values are stored locally for depiction on the widget
+      setState(() {
+        cityName = data.cityName!;
+        cityNameController.text =
+            cityName; //set controller value to the name of the city
+        cityCountry = data.cityCountry!;
+        currentTemperature = data.currenttemp!.round();
+        currentHumidity = data.currenthumidity!.round();
+        currentWindSpeed = data.currentWindSpeed!.round();
+        dailyHighTemperature = data.temp_max!.round();
+        dailyLowTemperature = data.temp_min!.round();
+        dailyMaxWindSpeed = data.maxWind!.round();
+        currentWindDirection = data.currentWindDirection!.round();
+        mainWindDirection = data.mainWindDirection!.round();
+        dailyTotalPrecipitation = data.totalPrecipitation!.round();
+        description = data.description!;
+        sunrise = data.sunrise!;
+        sunset = data.sunset!;
+
+        hourlyTemperatures = data.hourlyTemps!;
+        hourlyWindDirections = data.hourlyWindDirections!;
+        hourlyWindSpeeds = data.hourlyWindSpeeds!;
+        hourlyHumidity = data.hourlyHumidity!;
+        hourlyPrecipitation = data.hourlyPrecipitation!;
+        hourlyWeatherCodes = data.hourlyWeatherCodes!;
+        //determining which icon to use according to data codes and hour of the day
+        if (sunset.contains(
+          DateTime.now().day.toString() +
+              'T' +
+              (DateTime.now().hour - 1).toString(),
+        )) {
+          weatherIcon = Icons.star_half;
+        } else if (data.code == 2 || data.code == 3) {
+          weatherIcon = Icons.cloud;
+        } else if (data.code == 0 || data.code == 1) {
+          if (DateTime.now().hour > DateTime.parse(sunset).hour ||
+              DateTime.now().hour < DateTime.parse(sunrise).hour) {
+            weatherIcon = Icons.dark_mode;
+          } else {
+            weatherIcon = Icons.sunny;
+          }
+        } else if (data.code == 45 || data.code == 48) {
+          weatherIcon = Icons.foggy;
+        } else if (data.code == 51 ||
+            data.code == 53 ||
+            data.code == 55 ||
+            data.code == 61 ||
+            data.code == 63 ||
+            data.code == 65) {
+          weatherIcon = Icons.water_drop_sharp;
+        } else if (data.code == 56 ||
+            data.code == 57 ||
+            data.code == 66 ||
+            data.code == 67) {
+          weatherIcon = Icons.snowing;
         }
-      } else if (data.code == 45 || data.code == 48) {
-        weatherIcon = Icons.foggy;
-        weatherColorIndex = 1;
-      } else if (data.code == 51 ||
-          data.code == 53 ||
-          data.code == 55 ||
-          data.code == 61 ||
-          data.code == 63 ||
-          data.code == 65) {
-        weatherIcon = Icons.water_drop_sharp;
-      } else if (data.code == 56 ||
-          data.code == 57 ||
-          data.code == 66 ||
-          data.code == 67) {
-        weatherIcon = Icons.snowing;
-      }
-    });
+      });
+    } else {
+      //show alert dialog if city does not exist
+      cityNameController.text = cityName;
+      showDialog(
+        context: context,
+        builder: ((ctx) => AlertDialog(
+              title: Text('Not a city!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            )),
+      );
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    getData();
+    cityName = 'Thessaloniki';
+    getData(cityName);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    cityNameController.dispose();
   }
 
   bool expanded = false;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: (MediaQuery.of(context).size.width < 1300 ||
-              !expanded) //check for screen size and show compact or detailed version of weather widget
-          ? Container(
-              padding: EdgeInsets.all(20),
-              height: cardHeight,
-              width: cardWidth,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: weatherGradients[weatherColorIndex],
-                ),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(edgeRadius),
-                  topRight: Radius.circular(edgeRadius),
-                  bottomLeft: Radius.circular(edgeRadius),
-                  bottomRight: Radius.circular(edgeRadius),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    child: Text(
-                      cityName,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Container(
-                    //color: Colors.yellow,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          '$currentTemperature˚',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 60,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                        SizedBox(
-                          width: cardWidth * 0.2,
-                        ),
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.air,
-                                  size: 22,
-                                  color: Colors.white,
-                                ),
-                                Text(
-                                  ' $currentWindSpeed km/h',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.compare_arrows,
-                                  size: 22,
-                                  color: Colors.white,
-                                ),
-                                Text(
-                                  ' $currentWindDirection ˚',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Humidity: $currentHumidity%',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: cardHeight * 0.15,
-                  ),
-                  Container(
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.air,
-                          color: Colors.white,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          '$dailyMaxWindSpeed km/h',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                        SizedBox(
-                          width: cardWidth * 0.2,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.compare_arrows,
-                              color: Colors.white,
-                            ),
-                            Text(
-                              '$mainWindDirection˚',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Container(
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.water_drop,
-                          color: Colors.white,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          '$dailyTotalPrecipitation mm',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 6,
-                  ),
-                  Container(
-                    child: Text(
-                      '$description \nH:$dailyHighTemperature˚ L:$dailyLowTemperature˚',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          //show detailed version
-          : Container(
-              padding: EdgeInsets.all(20),
-              height: cardHeight * 1.2,
-              width: cardWidth * 2.5,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: weatherGradients[weatherColorIndex],
-                ),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(edgeRadius),
-                  topRight: Radius.circular(edgeRadius),
-                  bottomLeft: Radius.circular(edgeRadius),
-                  bottomRight: Radius.circular(edgeRadius),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Row(
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).selectedRowColor,
+          ),
+        ),
+        padding: EdgeInsets.all(10),
+        width: cardWidth * 2.5,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              cityName,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 27,
-                              ),
-                            ),
-                            Text(
-                              '$currentTemperature˚',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 55,
-                              ),
-                              textAlign: TextAlign.start,
-                            ),
-                          ],
+                      Text(
+                        cityName + ' (' + cityCountry + ')',
+                        style: TextStyle(
+                          color: Theme.of(context).selectedRowColor,
+                          fontSize: 27,
                         ),
                       ),
-                      SizedBox(
-                        width: cardWidth * 1.2,
-                      ),
-                      Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Icon(
-                              weatherIcon,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                            Text(
-                              description,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                              ),
-                            ),
-                            Text(
-                              'H:$dailyHighTemperature˚ L:$dailyLowTemperature˚',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                              ),
-                            )
-                          ],
+                      Text(
+                        '$currentTemperature˚',
+                        style: TextStyle(
+                          color: Theme.of(context).selectedRowColor,
+                          fontSize: 55,
                         ),
+                        textAlign: TextAlign.start,
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  Container(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children:
-                            _hourlyWeather(), //generate dynamically the list of hourly weather details in another function
+                ),
+                SizedBox(
+                  width: 30,
+                ),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Icon(
+                        weatherIcon,
+                        color: Theme.of(context).selectedRowColor,
+                        size: 30,
                       ),
-                    ),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          color: Theme.of(context).selectedRowColor,
+                          fontSize: 20,
+                        ),
+                      ),
+                      Text(
+                        'H:$dailyHighTemperature˚ L:$dailyLowTemperature˚',
+                        style: TextStyle(
+                          color: Theme.of(context).selectedRowColor,
+                          fontSize: 20,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Container(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children:
+                      _hourlyWeather(), //generate dynamically the list of hourly weather details in another function
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+      onTap: (() => setState(
+            () {
+              expanded = !expanded;
+            },
+          )), //the widget refreshed when tapped
+      onDoubleTap: () {
+        showDialog(
+          context: context,
+          builder: ((ctx) => AlertDialog(
+                title: Text('Enter city name:'),
+                actions: [
+                  Column(
+                    children: [
+                      TextField(
+                        controller: cityNameController,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          TextButton(
+                              onPressed: () {
+                                cityNameController.text = cityName;
+                                Navigator.of(ctx).pop();
+                              },
+                              child: Text('Cancel')),
+                          TextButton(
+                            onPressed: () {
+                              getData(cityNameController.text);
+
+                              Navigator.of(ctx).pop();
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      ),
+                    ],
                   )
                 ],
-              ),
-            ),
-      onTap: (() => setState(() {})), //the widget refreshed when tapped
+              )),
+        );
+      },
     );
   }
 
@@ -526,7 +363,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               Text(
                 hour.toString().padLeft(2, '0'),
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Theme.of(context).selectedRowColor,
                   fontSize: 23,
                 ),
               ),
@@ -539,75 +376,75 @@ class _WeatherWidgetState extends State<WeatherWidget> {
             children: [
               Icon(
                 icon,
-                color: Colors.white,
+                color: Theme.of(context).selectedRowColor,
                 size: 35,
               ),
               Text(
                 '$temperature˚',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Theme.of(context).selectedRowColor,
                   fontSize: 23,
                 ),
               ),
             ],
           ),
-          Row(
-            children: [
-              Icon(
-                Icons.water_drop,
-                color: Colors.white,
-                size: 24,
-              ),
-              Text(
-                '$precipitation mm',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 23,
+          if (expanded)
+            Row(
+              children: [
+                Icon(
+                  Icons.water_drop,
+                  color: Theme.of(context).selectedRowColor,
+                  size: 24,
                 ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.air,
-                color: Colors.white,
-                size: 24,
-              ),
-              Text(
-                '$windSpeed km/h',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 23,
+                Text(
+                  '$precipitation mm',
+                  style: TextStyle(
+                    color: Theme.of(context).selectedRowColor,
+                    fontSize: 23,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.compare_arrows,
-                color: Colors.white,
-                size: 24,
-              ),
-              Text(
-                '$windDirection˚',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 23,
+              ],
+            ),
+          if (expanded)
+            Row(
+              children: [
+                Icon(
+                  Icons.air,
+                  color: Theme.of(context).selectedRowColor,
+                  size: 24,
                 ),
-              ),
-            ],
-          ),
+                Text(
+                  '$windSpeed km/h',
+                  style: TextStyle(
+                    color: Theme.of(context).selectedRowColor,
+                    fontSize: 23,
+                  ),
+                ),
+              ],
+            ),
+          if (expanded)
+            Row(
+              children: [
+                Icon(
+                  Icons.compare_arrows,
+                  color: Theme.of(context).selectedRowColor,
+                  size: 24,
+                ),
+                Text(
+                  '$windDirection˚',
+                  style: TextStyle(
+                    color: Theme.of(context).selectedRowColor,
+                    fontSize: 23,
+                  ),
+                ),
+              ],
+            ),
           Text(
             'Humidity: $humidity%',
             style: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).selectedRowColor,
               fontSize: 18,
             ),
-          ),
-          SizedBox(
-            height: cardHeight * 0.02,
           ),
         ],
       );

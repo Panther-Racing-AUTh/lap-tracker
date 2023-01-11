@@ -54,7 +54,7 @@ class _MyDelegate extends MultiChildLayoutDelegate {
       firstSize = layoutChild(
         1,
         BoxConstraints(
-          minHeight: 300,
+          minHeight: 100,
           minWidth: 300,
         ),
       );
