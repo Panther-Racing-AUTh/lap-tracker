@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+2
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -35,6 +35,7 @@ dependencies:
   video_player: ^2.4.10
   keymap: ^0.0.91
   flutter_device_type:
+  fl_chart: ^0.55.2
 
    
   
