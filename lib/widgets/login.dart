@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
 import 'package:flutter_complete_guide/widgets/signIn_alert_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -147,17 +148,8 @@ class LoginState extends State<Login> {
                 ),
                 //button for theme control
                 Align(
-                  child: IconButton(
-                    icon: _themeChanger.getCurrentThemeMode() == ThemeMode.light
-                        ? Icon(Icons.light_mode_sharp)
-                        : Icon(
-                            Icons.dark_mode_sharp,
-                            color: Colors.yellow,
-                          ),
-                    onPressed: (() {
-                      _themeChanger.switchTheme();
-                    }),
-                  ),
+                  child: DarkThemeButton(
+                      context: context, darkThemeColor: Colors.yellow),
                   alignment: Alignment.centerRight,
                 ),
               ],

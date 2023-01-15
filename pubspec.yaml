@@ -36,6 +36,8 @@ dependencies:
   keymap: ^0.0.91
   flutter_device_type:
   fl_chart: ^0.55.2
+  country_flags: ^1.0.0
+  flutter_svg: ^1.1.6
 
    
   

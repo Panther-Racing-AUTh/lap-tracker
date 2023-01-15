@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/widgets/chat_widget.dart';
+import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/dashboard_desktop_widget.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/data_desktop_widget.dart';
+import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
 import 'package:provider/provider.dart';
 import '../../providers/theme.dart';
@@ -49,8 +51,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeChanger theme = Provider.of<ThemeChanger>(context);
-
     var height = MediaQuery.of(context).size.height;
     var width =
         _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
@@ -95,6 +95,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         autofocus: true,
         child: Scaffold(
           appBar: AppBar(
+            centerTitle: true,
             leading: //button for panel collapse
                 IconButton(
               icon: Icon((showSidebar)
@@ -105,21 +106,11 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             title: Text('Panther Racing AUTh'),
             actions: [
+              RaceTrackSelector(),
+              SizedBox(width: 10),
               //dark theme toggle button
-              IconButton(
-                icon: theme.getCurrentThemeMode() == ThemeMode.light
-                    ? Icon(
-                        Icons.light_mode_outlined,
-                        color: Colors.white,
-                      )
-                    : Icon(
-                        Icons.dark_mode_outlined,
-                        color: Colors.white,
-                      ),
-                onPressed: (() {
-                  theme.switchTheme();
-                }),
-              )
+              DarkThemeButton(context: context, lightThemeColor: Colors.white),
+              SizedBox(width: 5),
             ],
           ),
           body: Row(

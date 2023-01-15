@@ -3,7 +3,7 @@ import 'package:flutter_complete_guide/providers/device.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme.dart';
 import '../supabase/authentication_functions.dart';
-import 'dark_theme_switch.dart';
+import 'dark_theme_icons.dart';
 
 class Settings extends StatefulWidget {
   @override
