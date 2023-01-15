@@ -51,21 +51,21 @@ class _MyDelegate extends MultiChildLayoutDelegate {
       );
     }
 
-    //if (hasChild(1)) {
-    //  firstSize = layoutChild(
-    //    1,
-    //    BoxConstraints(
-    //      minHeight: 100,
-    //      minWidth: 300,
-    //    ),
-    //  );
-//
-    //  positionChild(
-    //    1,
-    //    Offset(
-    //        screenWidth - thirdSize.width - firstSize.width, secondSize.height),
-    //  );
-    //}
+    if (hasChild(1)) {
+      firstSize = layoutChild(
+        1,
+        BoxConstraints(
+          minHeight: 100,
+          minWidth: 300,
+        ),
+      );
+
+      positionChild(
+        1,
+        Offset(
+            screenWidth - thirdSize.width - firstSize.width, secondSize.height),
+      );
+    }
   }
 
   @override
@@ -87,10 +87,10 @@ Widget DashBoardDesktop({
         screenHeight: screenHeight,
         screenWidth: screenWidth),
     children: [
-      //LayoutId(
-      //  id: 1,
-      //  child: WeatherWidget(),
-      //),
+      LayoutId(
+        id: 1,
+        child: WeatherWidget(),
+      ),
       LayoutId(
         id: 2,
         child: DriversDataWidget(),
