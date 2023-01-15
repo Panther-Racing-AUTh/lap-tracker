@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/widgets/drivers_grid.dart';
 import 'package:flutter_complete_guide/widgets/weather_widget.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class _MyDelegate extends MultiChildLayoutDelegate {
   _MyDelegate(
@@ -37,10 +38,10 @@ class _MyDelegate extends MultiChildLayoutDelegate {
       thirdSize = layoutChild(
         3,
         BoxConstraints(
-          minHeight: screenHeight - secondSize.height - 61,
-          //minWidth: screenWidth - secondSize.width - 50,
-          maxHeight: screenHeight - secondSize.height - 60,
-          maxWidth: screenWidth - secondSize.width,
+          minHeight: screenHeight - secondSize.height - 50,
+          minWidth: screenWidth - secondSize.width,
+          maxHeight: screenHeight - secondSize.height - 1,
+          //maxWidth: screenWidth - secondSize.width,
         ),
       );
 
@@ -50,21 +51,21 @@ class _MyDelegate extends MultiChildLayoutDelegate {
       );
     }
 
-    if (hasChild(1)) {
-      firstSize = layoutChild(
-        1,
-        BoxConstraints(
-          minHeight: 100,
-          minWidth: 300,
-        ),
-      );
-
-      positionChild(
-        1,
-        Offset(
-            screenWidth - thirdSize.width - firstSize.width, secondSize.height),
-      );
-    }
+    //if (hasChild(1)) {
+    //  firstSize = layoutChild(
+    //    1,
+    //    BoxConstraints(
+    //      minHeight: 100,
+    //      minWidth: 300,
+    //    ),
+    //  );
+//
+    //  positionChild(
+    //    1,
+    //    Offset(
+    //        screenWidth - thirdSize.width - firstSize.width, secondSize.height),
+    //  );
+    //}
   }
 
   @override
@@ -74,6 +75,7 @@ class _MyDelegate extends MultiChildLayoutDelegate {
 }
 
 Widget DashBoardDesktop({
+  required String raceTrackUrl,
   required bool showWeather,
   required bool showDriverBoard,
   required double screenHeight,
@@ -85,19 +87,19 @@ Widget DashBoardDesktop({
         screenHeight: screenHeight,
         screenWidth: screenWidth),
     children: [
-      LayoutId(
-        id: 1,
-        child: WeatherWidget(),
-      ),
+      //LayoutId(
+      //  id: 1,
+      //  child: WeatherWidget(),
+      //),
       LayoutId(
         id: 2,
         child: DriversDataWidget(),
       ),
       LayoutId(
         id: 3,
-        child: Image.network(
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Motorland_Arag%C3%B3n_FIA.svg/1200px-Motorland_Arag%C3%B3n_FIA.svg.png',
-          fit: BoxFit.cover,
+        child: SvgPicture.network(
+          raceTrackUrl,
+          cacheColorFilter: false,
         ),
       ),
     ],

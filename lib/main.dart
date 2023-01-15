@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/providers/device.dart';
+import 'package:flutter_complete_guide/providers/race_setup.dart';
 import 'package:flutter_complete_guide/routes.dart';
 import 'package:provider/provider.dart' as provider;
 import 'providers/theme.dart';
@@ -32,6 +33,9 @@ class MyApp extends StatelessWidget {
         ),
         provider.ChangeNotifierProvider<DeviceManager>(
           create: (_) => DeviceManager(),
+        ),
+        provider.ChangeNotifierProvider<RaceSetup>(
+          create: (_) => RaceSetup(),
         ),
       ],
       child: MaterialAppWithTheme(),

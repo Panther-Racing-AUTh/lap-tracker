@@ -7,7 +7,7 @@ import 'package:flutter_complete_guide/widgets/desktop_widgets/data_desktop_widg
 import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
 import 'package:provider/provider.dart';
-import '../../providers/theme.dart';
+import '../../providers/race_setup.dart';
 import '../../widgets/desktop_widgets/charts_desktop_widget.dart';
 import '../../widgets/desktop_widgets/panther_desktop_widget.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
@@ -51,6 +51,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
   @override
   Widget build(BuildContext context) {
+    RaceSetup setup = Provider.of<RaceSetup>(context);
     var height = MediaQuery.of(context).size.height;
     var width =
         _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
@@ -59,6 +60,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       switch (_selected) {
         case 0:
           return DashBoardDesktop(
+            raceTrackUrl: setup.currentRaceTrackUrl,
             showWeather: showWeather,
             showDriverBoard: showDriverBoard,
             screenHeight: height,

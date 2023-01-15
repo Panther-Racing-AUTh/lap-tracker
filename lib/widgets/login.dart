@@ -7,7 +7,6 @@ import '../providers/device.dart';
 import './signInTextField.dart';
 import '../supabase/authentication_functions.dart';
 import 'package:provider/provider.dart' as provider;
-import '../providers/theme.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -105,7 +104,6 @@ class LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeChanger _themeChanger = provider.Provider.of<ThemeChanger>(context);
     DeviceManager device = provider.Provider.of<DeviceManager>(context);
 
     var height = MediaQuery.of(context).size.height;
