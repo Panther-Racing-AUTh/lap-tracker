@@ -18,7 +18,7 @@ class WeatherApiClient {
     if (coordsBody['results'] != null) {
       latitude = coordsBody['results'][0]['latitude'];
 
-      var locationCountry = coordsBody['results'][0]['country'];
+      var locationCountry = coordsBody['results'][0]['country_code'];
       location = coordsBody['results'][0]['name'];
       longitude = coordsBody['results'][0]['longitude'];
 

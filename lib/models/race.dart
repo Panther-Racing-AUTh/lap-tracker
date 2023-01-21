@@ -103,7 +103,7 @@ List<Race> races2023 = [
 
 List<String> raceTrackUrls = [
   'https://photos.motogp.com/2019/track/ara.svg?1568716192?version=1568716192',
-  'https://photos.motogp.com/2023/track/por.svg?1673426389?version=1673426389',
+  'https://photos.motogp.com/2022/events/circuits/tracks/POR-track.svg',
   'https://photos.motogp.com/2023/track/arg.svg?1673426389?version=1673426389',
   'https://photos.motogp.com/2023/track/ame.svg?1673426389?version=1673426389',
   'https://photos.motogp.com/2022/events/circuits/tracks/JER-track.svg',

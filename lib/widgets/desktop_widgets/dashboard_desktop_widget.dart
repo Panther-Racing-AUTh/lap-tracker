@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/widgets/drivers_grid.dart';
-import 'package:flutter_complete_guide/widgets/weather_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class _MyDelegate extends MultiChildLayoutDelegate {
@@ -19,9 +18,9 @@ class _MyDelegate extends MultiChildLayoutDelegate {
     late Size secondSize;
     late Size thirdSize;
 
-    if (hasChild(2)) {
+    if (hasChild(1)) {
       secondSize = layoutChild(
-        2,
+        1,
         BoxConstraints(
           maxHeight: 400,
           maxWidth: 800,
@@ -29,14 +28,14 @@ class _MyDelegate extends MultiChildLayoutDelegate {
       );
 
       positionChild(
-        2,
+        1,
         Offset(screenWidth - secondSize.width, 0),
       );
     }
 
-    if (hasChild(3)) {
+    if (hasChild(2)) {
       thirdSize = layoutChild(
-        3,
+        2,
         BoxConstraints(
           minHeight: screenHeight - secondSize.height - 50,
           minWidth: screenWidth - secondSize.width,
@@ -46,24 +45,8 @@ class _MyDelegate extends MultiChildLayoutDelegate {
       );
 
       positionChild(
-        3,
+        2,
         Offset(screenWidth - thirdSize.width, secondSize.height),
-      );
-    }
-
-    if (hasChild(1)) {
-      firstSize = layoutChild(
-        1,
-        BoxConstraints(
-          minHeight: 100,
-          minWidth: 300,
-        ),
-      );
-
-      positionChild(
-        1,
-        Offset(
-            screenWidth - thirdSize.width - firstSize.width, secondSize.height),
       );
     }
   }
@@ -89,14 +72,10 @@ Widget DashBoardDesktop({
     children: [
       LayoutId(
         id: 1,
-        child: WeatherWidget(),
-      ),
-      LayoutId(
-        id: 2,
         child: DriversDataWidget(),
       ),
       LayoutId(
-        id: 3,
+        id: 2,
         child: SvgPicture.network(
           raceTrackUrl,
           cacheColorFilter: false,

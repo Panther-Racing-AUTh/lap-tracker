@@ -3,8 +3,8 @@ import 'package:flutter_complete_guide/services/weather_api_client.dart';
 import '../models/weather.dart';
 
 class WeatherWidget extends StatefulWidget {
-  const WeatherWidget({Key? key}) : super(key: key);
-
+  const WeatherWidget({bool this.appbar = false});
+  final bool appbar;
   @override
   State<WeatherWidget> createState() => _WeatherWidgetState();
 }
@@ -41,6 +41,9 @@ var hourlyHumidity = []; //list of hourly humidity percentage of the day
 var hourlyPrecipitation =
     []; //list of the hourly mm of precipitation of the day
 var hourlyWeatherCodes = []; //list of the hourly weather codes
+var dailyHighTemperatures = [];
+var dailyLowTemperatures = [];
+var dailyPrecipitation = [];
 
 WeatherApiClient client =
     WeatherApiClient(); //api declaration for weather data fetching
@@ -82,6 +85,9 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         hourlyHumidity = data.hourlyHumidity!;
         hourlyPrecipitation = data.hourlyPrecipitation!;
         hourlyWeatherCodes = data.hourlyWeatherCodes!;
+        dailyHighTemperatures = data.dailyTempsHigh!;
+        dailyLowTemperatures = data.dailyTempsLow!;
+        dailyPrecipitation = data.dailyPrecipitation!;
         //determining which icon to use according to data codes and hour of the day
         if (sunset.contains(
           DateTime.now().day.toString() +
@@ -147,142 +153,169 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     cityNameController.dispose();
   }
 
-  bool expanded = false;
-
+  bool expanded = true;
+  bool hourly = true;
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Theme.of(context).selectedRowColor,
-          ),
-        ),
-        padding: EdgeInsets.all(10),
-        width: cardWidth * 2.5,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
+    return widget.appbar
+        ? Container(
+            child: Row(
               children: [
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        cityName + ' (' + cityCountry + ')',
-                        style: TextStyle(
-                          color: Theme.of(context).selectedRowColor,
-                          fontSize: 27,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text('D ',
+                            style: TextStyle(
+                                color: Theme.of(context).selectedRowColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(
+                          width: 40,
+                          height: 20,
+                          child: Switch(
+                              value: hourly,
+                              onChanged: (_) => setState(() {
+                                    hourly = !hourly;
+                                  }),
+                              activeColor: Theme.of(context).selectedRowColor),
                         ),
-                      ),
-                      Text(
-                        '$currentTemperature˚',
-                        style: TextStyle(
-                          color: Theme.of(context).selectedRowColor,
-                          fontSize: 55,
-                        ),
-                        textAlign: TextAlign.start,
-                      ),
-                    ],
-                  ),
+                        Text(' H',
+                            style: TextStyle(
+                                color: Theme.of(context).selectedRowColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    GestureDetector(
+                      child: Text(cityName + ' (' + cityCountry + ')',
+                          style: TextStyle(
+                              color: Theme.of(context).selectedRowColor,
+                              fontSize: 20)),
+                      onTap: _changeLocation,
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  width: 30,
-                ),
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Icon(
-                        weatherIcon,
-                        color: Theme.of(context).selectedRowColor,
-                        size: 30,
-                      ),
-                      Text(
-                        description,
-                        style: TextStyle(
-                          color: Theme.of(context).selectedRowColor,
-                          fontSize: 20,
-                        ),
-                      ),
-                      Text(
-                        'H:$dailyHighTemperature˚ L:$dailyLowTemperature˚',
-                        style: TextStyle(
-                          color: Theme.of(context).selectedRowColor,
-                          fontSize: 20,
-                        ),
-                      )
-                    ],
+                SizedBox(width: 10),
+                GestureDetector(
+                  child: Container(
+                    width: 300,
+                    child: hourly
+                        ? SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: _hourlyWeather(appbar: true),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: nextThreeDays()),
                   ),
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) =>
+                        AlertDialog(actions: [WeatherWidget()]),
+                  ),
+                  onDoubleTap: () => _changeLocation(),
                 ),
               ],
             ),
-            SizedBox(
-              height: 5,
-            ),
-            Container(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children:
-                      _hourlyWeather(), //generate dynamically the list of hourly weather details in another function
+          )
+        : GestureDetector(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Theme.of(context).selectedRowColor,
                 ),
               ),
-            )
-          ],
-        ),
-      ),
-      onTap: (() => setState(
-            () {
-              expanded = !expanded;
-            },
-          )), //the widget refreshed when tapped
-      onDoubleTap: () {
-        showDialog(
-          context: context,
-          builder: ((ctx) => AlertDialog(
-                title: Text('Enter city name:'),
-                actions: [
-                  Column(
+              padding: EdgeInsets.all(10),
+              width: cardWidth * 2.5,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      TextField(
-                        controller: cityNameController,
+                      Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              cityName + ' (' + cityCountry + ')',
+                              style: TextStyle(
+                                color: Theme.of(context).selectedRowColor,
+                                fontSize: 27,
+                              ),
+                            ),
+                            Text(
+                              '$currentTemperature˚',
+                              style: TextStyle(
+                                color: Theme.of(context).selectedRowColor,
+                                fontSize: 55,
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(
-                        height: 10,
+                        width: 30,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          TextButton(
-                              onPressed: () {
-                                cityNameController.text = cityName;
-                                Navigator.of(ctx).pop();
-                              },
-                              child: Text('Cancel')),
-                          TextButton(
-                            onPressed: () {
-                              getData(cityNameController.text);
-
-                              Navigator.of(ctx).pop();
-                            },
-                            child: Text('OK'),
-                          ),
-                        ],
+                      Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Icon(
+                              weatherIcon,
+                              color: Theme.of(context).selectedRowColor,
+                              size: 30,
+                            ),
+                            Text(
+                              description,
+                              style: TextStyle(
+                                color: Theme.of(context).selectedRowColor,
+                                fontSize: 20,
+                              ),
+                            ),
+                            Text(
+                              'H:$dailyHighTemperature˚ L:$dailyLowTemperature˚',
+                              style: TextStyle(
+                                color: Theme.of(context).selectedRowColor,
+                                fontSize: 20,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ],
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Container(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children:
+                            _hourlyWeather(), //generate dynamically the list of hourly weather details in another function
+                      ),
+                    ),
                   )
                 ],
-              )),
-        );
-      },
-    );
+              ),
+            ),
+            onTap: (() => setState(
+                  () {
+                    expanded = !expanded;
+                  },
+                )), //the widget refreshed when tapped
+          );
   }
 
   //logic for the generation of the hourly weather information for one day ahead according to current time
-  List<Widget> _hourlyWeather() {
+  List<Widget> _hourlyWeather({bool appbar = false}) {
     List<Widget> list = [];
     if (hourlyTemperatures.isEmpty) return list;
     DateTime now = DateTime.now();
@@ -298,6 +331,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
       } else
         list.add(
           weatherColumn(
+            appbar: appbar,
             hour: (i == 0)
                 ? 'Now'
                 : ((i ~/ 2) + nowIndex > 23)
@@ -351,6 +385,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     required String hour,
     required IconData icon,
     required dynamic temperature,
+    bool appbar = false,
     dynamic windSpeed = 0,
     dynamic windDirection = 0,
     dynamic precipitation = 0,
@@ -364,7 +399,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 hour.toString().padLeft(2, '0'),
                 style: TextStyle(
                   color: Theme.of(context).selectedRowColor,
-                  fontSize: 23,
+                  fontSize: appbar ? 15 : 23,
                 ),
               ),
             ],
@@ -377,18 +412,18 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               Icon(
                 icon,
                 color: Theme.of(context).selectedRowColor,
-                size: 35,
+                size: appbar ? 20 : 35,
               ),
               Text(
                 '$temperature˚',
                 style: TextStyle(
                   color: Theme.of(context).selectedRowColor,
-                  fontSize: 23,
+                  fontSize: appbar ? 20 : 23,
                 ),
               ),
             ],
           ),
-          if (expanded)
+          if (expanded && !appbar)
             Row(
               children: [
                 Icon(
@@ -405,7 +440,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 ),
               ],
             ),
-          if (expanded)
+          if (expanded && !appbar)
             Row(
               children: [
                 Icon(
@@ -422,7 +457,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 ),
               ],
             ),
-          if (expanded)
+          if (expanded && !appbar)
             Row(
               children: [
                 Icon(
@@ -443,9 +478,115 @@ class _WeatherWidgetState extends State<WeatherWidget> {
             'Humidity: $humidity%',
             style: TextStyle(
               color: Theme.of(context).selectedRowColor,
-              fontSize: 18,
+              fontSize: appbar ? 12 : 18,
             ),
           ),
         ],
       );
+  List<Widget> nextThreeDays() {
+    List<Widget> list = [];
+    for (int i = 0; i < 3; i++) {
+      String day = '';
+      switch (DateTime.now().weekday + i) {
+        case 1:
+          day = 'M';
+          break;
+        case 2:
+          day = 'T';
+          break;
+        case 3:
+          day = 'W';
+          break;
+        case 4:
+          day = 'T';
+          break;
+        case 5:
+          day = 'F';
+          break;
+        case 6:
+          day = 'S';
+          break;
+        case 7:
+          day = 'S';
+          break;
+        case 8:
+          day = 'M';
+          break;
+        case 9:
+          day = 'T';
+          break;
+      }
+      list.add(
+        Column(
+          children: [
+            Text(day,
+                style: TextStyle(
+                    color: Theme.of(context).selectedRowColor, fontSize: 18)),
+            SizedBox(height: 1),
+            Text(
+              'H' +
+                  dailyHighTemperatures[i].round().toString() +
+                  '˚' +
+                  '  L:' +
+                  dailyLowTemperatures[i].round().toString() +
+                  '˚',
+              style: TextStyle(
+                  color: Theme.of(context).selectedRowColor, fontSize: 16),
+            ),
+            Row(
+              children: [
+                Icon(Icons.water_drop_rounded,
+                    size: 17, color: Theme.of(context).selectedRowColor),
+                SizedBox(width: 3),
+                Text(dailyPrecipitation[i].toString() + 'mm',
+                    style: TextStyle(
+                        color: Theme.of(context).selectedRowColor,
+                        fontSize: 14))
+              ],
+            )
+          ],
+        ),
+      );
+    }
+    return list;
+  }
+
+  void _changeLocation() {
+    showDialog(
+        context: context,
+        builder: ((ctx) => AlertDialog(
+              title: Text('Enter city name:'),
+              actions: [
+                Column(
+                  children: [
+                    TextField(
+                      controller: cityNameController,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              cityNameController.text = cityName;
+                              Navigator.of(ctx).pop();
+                            },
+                            child: Text('Cancel')),
+                        TextButton(
+                          onPressed: () {
+                            getData(cityNameController.text);
+
+                            Navigator.of(ctx).pop();
+                          },
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              ],
+            )));
+  }
 }

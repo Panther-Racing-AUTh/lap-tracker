@@ -20,6 +20,9 @@ class Weather {
   List<dynamic>? hourlyHumidity;
   List<dynamic>? hourlyPrecipitation;
   List<dynamic>? hourlyWeatherCodes;
+  List<dynamic>? dailyTempsHigh;
+  List<dynamic>? dailyTempsLow;
+  List<dynamic>? dailyPrecipitation;
 
   Weather({
     this.cityName,
@@ -42,6 +45,9 @@ class Weather {
     this.hourlyWindSpeeds,
     this.hourlyHumidity,
     this.hourlyWeatherCodes,
+    this.dailyPrecipitation,
+    this.dailyTempsHigh,
+    this.dailyTempsLow,
   });
   //decode json map and put values in variables
   Weather.fromJson(
@@ -75,6 +81,10 @@ class Weather {
     totalPrecipitation = json['daily']['precipitation_sum'][0];
     maxWind = json['daily']['windspeed_10m_max'][0];
     mainWindDirection = json['daily']['winddirection_10m_dominant'][0];
+
+    dailyTempsHigh = json['daily']['temperature_2m_max'];
+    dailyTempsLow = json['daily']['temperature_2m_min'];
+    dailyPrecipitation = json['daily']['precipitation_sum'];
 
     DateTime now = DateTime.now();
     int nowIndex = now.hour;

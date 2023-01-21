@@ -6,6 +6,7 @@ import 'package:flutter_complete_guide/widgets/desktop_widgets/dashboard_desktop
 import 'package:flutter_complete_guide/widgets/desktop_widgets/data_desktop_widget.dart';
 import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
+import 'package:flutter_complete_guide/widgets/weather_widget.dart';
 import 'package:provider/provider.dart';
 import '../../providers/race_setup.dart';
 import '../../widgets/desktop_widgets/charts_desktop_widget.dart';
@@ -97,16 +98,27 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         autofocus: true,
         child: Scaffold(
           appBar: AppBar(
-            centerTitle: true,
-            leading: //button for panel collapse
+            title: //button for panel collapse
+                Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
                 IconButton(
-              icon: Icon((showSidebar)
-                  ? Icons.keyboard_double_arrow_left
-                  : Icons.keyboard_double_arrow_right),
-              onPressed: () => setState(() => showSidebar = !showSidebar),
+                  icon: Icon((showSidebar)
+                      ? Icons.keyboard_double_arrow_left
+                      : Icons.keyboard_double_arrow_right),
+                  onPressed: () => setState(() => showSidebar = !showSidebar),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                WeatherWidget(
+                  appbar: true,
+                )
+              ],
             ),
             backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-            title: Text('Panther Racing AUTh'),
+            //title: Text('Panther Racing AUTh'),
             actions: [
               RaceTrackSelector(),
               SizedBox(width: 10),
@@ -228,9 +240,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
   //shortcuts
   Map<ShortcutActivator, void Function()> shortcuts(int index) {
     return {
-      const SingleActivator(
-        LogicalKeyboardKey.keyM,
-      ): () {
+      const SingleActivator(LogicalKeyboardKey.keyM, control: true): () {
         setState(() {
           showSidebar = !showSidebar;
         });
