@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/race.dart';
+import 'package:flutter_complete_guide/supabase/select_race_track_functions.dart';
 import 'package:flutter_complete_guide/widgets/drivers_grid.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class _MyDelegate extends MultiChildLayoutDelegate {
   _MyDelegate(
@@ -14,7 +15,6 @@ class _MyDelegate extends MultiChildLayoutDelegate {
 
   @override
   void performLayout(Size size) {
-    late Size firstSize;
     late Size secondSize;
     late Size thirdSize;
 
@@ -46,7 +46,7 @@ class _MyDelegate extends MultiChildLayoutDelegate {
 
       positionChild(
         2,
-        Offset(screenWidth - thirdSize.width, secondSize.height),
+        Offset(0, screenHeight / 2 - 100),
       );
     }
   }
@@ -58,30 +58,35 @@ class _MyDelegate extends MultiChildLayoutDelegate {
 }
 
 Widget DashBoardDesktop({
-  required String raceTrackUrl,
+  required Race race,
   required bool showWeather,
   required bool showDriverBoard,
   required double screenHeight,
   required double screenWidth,
 }) {
-  return CustomMultiChildLayout(
-    delegate: _MyDelegate(
-        position: Offset.zero,
-        screenHeight: screenHeight,
-        screenWidth: screenWidth),
-    children: [
-      LayoutId(
-        id: 1,
-        child: DriversDataWidget(),
-      ),
-      LayoutId(
-        id: 2,
-        child: SvgPicture.network(
-          raceTrackUrl,
-          cacheColorFilter: false,
-        ),
-      ),
-    ],
+  return FutureBuilder<String>(
+    future: getRaceTrack(race: race),
+    builder: (context, snapshot) {
+      return CustomMultiChildLayout(
+        delegate: _MyDelegate(
+            position: Offset.zero,
+            screenHeight: screenHeight,
+            screenWidth: screenWidth),
+        children: [
+          LayoutId(
+            id: 1,
+            child: DriversDataWidget(),
+          ),
+          LayoutId(
+            id: 2,
+            child: Image.network(
+              snapshot.data!,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ],
+      );
+    },
   );
 
   // return Center(child: DriversDataWidget());

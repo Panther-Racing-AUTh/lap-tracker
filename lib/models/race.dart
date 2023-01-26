@@ -1,112 +1,100 @@
 class Race {
   String gpName;
   String country;
-  String date;
 
   Race({
     required this.gpName,
     required this.country,
-    this.date = '1/1/2023',
   });
 }
 
 List<Race> races2023 = [
   Race(
-    gpName: 'Gran Premio Animoca Brands de Aragón',
+    gpName: 'MotorLand Aragon',
     country: 'es',
   ),
   Race(
-    gpName: 'Grande Prémio de Portugal',
+    gpName: 'Autodromo Internacional do Algarve',
     country: 'pt',
   ),
   Race(
-    gpName: 'Gran Premio Michelin® de la República Argentina',
+    gpName: 'Termas de Rio Hondo',
     country: 'ar',
   ),
   Race(
-    gpName: 'Red Bull Grand Prix of The Americas',
+    gpName: 'Circuit Of The Americas',
     country: 'us',
   ),
   Race(
-    gpName: 'Gran Premio de España',
+    gpName: 'Circuito de Jerez',
     country: 'es',
   ),
   Race(
-    gpName: 'SHARK Grand Prix de France',
+    gpName: 'Le Mans',
     country: 'fr',
   ),
   Race(
-    gpName: 'Gran Premio d’Italia Oakley',
+    gpName: 'Autodromo Internazionale del Mugello',
     country: 'it',
   ),
   Race(
-    gpName: 'Liqui Moly Motorrad Grand Prix Deutschland',
+    gpName: 'Sachsenring',
     country: 'de',
   ),
   Race(
-    gpName: 'Motul TT Assen',
+    gpName: 'TT Circuit Assen',
     country: 'nl',
   ),
   Race(
-    gpName: 'Grand Prix of Kazakhstan',
+    gpName: 'Sokol International Circuit',
     country: 'kz',
   ),
   Race(
-    gpName: 'Monster Energy British Grand Prix',
+    gpName: 'Silverstone Circuit',
     country: 'gb',
   ),
   Race(
-    gpName: 'CryptoDATA Motorrad Grand Prix von Österreich',
+    gpName: 'Red Bull Ring',
     country: 'at',
   ),
   Race(
-    gpName: 'Gran Premi Monster Energy de Catalunya',
+    gpName: 'Circuit de Barcelona-Catalunya',
     country: 'es',
   ),
   Race(
-    gpName: 'Gran Premio di San Marino e della Riviera di Rimini',
-    country: 'it',
+    gpName: 'Misano World Circuit Marco Simoncelli',
+    country: 'sm',
   ),
   Race(
-    gpName: 'Grand Prix of India',
+    gpName: 'Buddh International Circuit',
     country: 'in',
   ),
   Race(
-    gpName: 'Motul Grand Prix of Japan',
+    gpName: 'Twin Ring Motegi',
     country: 'jp',
   ),
   Race(
-    gpName: 'Pertamina Grand Prix of Indonesia',
+    gpName: 'Mandalika International Street Circuit',
     country: 'id',
   ),
   Race(
-    gpName: 'Animoca Brands Australian Motorcycle Grand Prix',
+    gpName: 'Phillip Island',
     country: 'au',
   ),
   Race(
-    gpName: 'OR Thailand Grand Prix',
+    gpName: 'Chang International Circuit',
     country: 'th',
   ),
   Race(
-    gpName: 'PETRONAS Grand Prix of Malaysia',
+    gpName: 'Sepang International Circuit',
     country: 'my',
   ),
   Race(
-    gpName: 'Grand Prix of Qatar',
+    gpName: 'Lusail International Circuit',
     country: 'qa',
   ),
   Race(
-    gpName: 'Gran Premio Motul de la Comunitat Valenciana',
+    gpName: 'Circuit Ricardo Tormo',
     country: 'es',
   ),
-];
-
-List<String> raceTrackUrls = [
-  'https://photos.motogp.com/2019/track/ara.svg?1568716192?version=1568716192',
-  'https://photos.motogp.com/2022/events/circuits/tracks/POR-track.svg',
-  'https://photos.motogp.com/2023/track/arg.svg?1673426389?version=1673426389',
-  'https://photos.motogp.com/2023/track/ame.svg?1673426389?version=1673426389',
-  'https://photos.motogp.com/2022/events/circuits/tracks/JER-track.svg',
-  'https://photos.motogp.com/2022/events/circuits/tracks/FRA-track.svg',
-  'https://photos.motogp.com/2022/events/circuits/tracks/ITA-track.svg',
 ];

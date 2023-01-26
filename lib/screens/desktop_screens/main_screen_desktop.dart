@@ -61,7 +61,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       switch (_selected) {
         case 0:
           return DashBoardDesktop(
-            raceTrackUrl: setup.currentRaceTrackUrl,
+            race: setup.currentRace,
             showWeather: showWeather,
             showDriverBoard: showDriverBoard,
             screenHeight: height,
