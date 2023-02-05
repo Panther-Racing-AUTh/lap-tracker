@@ -38,6 +38,8 @@ dependencies:
   fl_chart: ^0.55.2
   country_flags: ^1.0.0
   flutter_svg: ^1.1.6
+  quiver: ^3.2.1
+  graphic: ^1.0.1
 
    
   

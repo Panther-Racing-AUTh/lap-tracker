@@ -1,0 +1,16 @@
+const lineMarkerData = [
+  {'day': 'Mon', 'value': 10, 'group': 'Highest'},
+  {'day': 'Tue', 'value': 11, 'group': 'Highest'},
+  {'day': 'Wed', 'value': 13, 'group': 'Highest'},
+  {'day': 'Thu', 'value': 11, 'group': 'Highest'},
+  {'day': 'Fri', 'value': 12, 'group': 'Highest'},
+  {'day': 'Sat', 'value': 12, 'group': 'Highest'},
+  {'day': 'Sun', 'value': 9, 'group': 'Highest'},
+  {'day': 'Mon', 'value': 1, 'group': 'Lowest'},
+  {'day': 'Tue', 'value': -2, 'group': 'Lowest'},
+  {'day': 'Wed', 'value': 2, 'group': 'Lowest'},
+  {'day': 'Thu', 'value': 5, 'group': 'Lowest'},
+  {'day': 'Fri', 'value': 3, 'group': 'Lowest'},
+  {'day': 'Sat', 'value': 2, 'group': 'Lowest'},
+  {'day': 'Sun', 'value': 0, 'group': 'Lowest'},
+];

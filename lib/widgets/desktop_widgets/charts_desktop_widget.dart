@@ -6,6 +6,6 @@ class ChartDesktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: LineChartSample1());
+    return Center(child: EchartsPage());
   }
 }
