@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
-import 'package:quiver/iterables.dart';
 
 import './echarts_data.dart';
 
@@ -29,8 +28,8 @@ class EchartsPage extends StatelessWidget {
                 child: Chart(
                   data: lineMarkerData,
                   variables: {
-                    'day': Variable(
-                      accessor: (Map datum) => datum['day'] as String,
+                    'racing_time': Variable(
+                      accessor: (Map datum) => datum['racing_time'] as String,
                       scale: OrdinalScale(inflate: true),
                     ),
                     'value': Variable(
@@ -48,8 +47,9 @@ class EchartsPage extends StatelessWidget {
                   },
                   elements: [
                     LineElement(
-                      position:
-                          Varset('day') * Varset('value') / Varset('group'),
+                      position: Varset('racing_time') *
+                          Varset('value') /
+                          Varset('group'),
                       color: ColorAttr(
                         variable: 'group',
                         values: [
@@ -68,14 +68,14 @@ class EchartsPage extends StatelessWidget {
                       GestureType.hover,
                     }, devices: {
                       PointerDeviceKind.mouse
-                    }, variable: 'day', dim: Dim.x),
+                    }, variable: 'racing_time', dim: Dim.x),
                     'tooltipTouch': PointSelection(on: {
                       GestureType.scaleUpdate,
                       GestureType.tapDown,
                       GestureType.longPressMoveUpdate
                     }, devices: {
                       PointerDeviceKind.touch
-                    }, variable: 'day', dim: Dim.x),
+                    }, variable: 'racing_time', dim: Dim.x),
                   },
                   tooltip: TooltipGuide(
                     followPointer: [true, true],
@@ -102,66 +102,66 @@ class EchartsPage extends StatelessWidget {
                         dash: [2],
                       ),
                     ),
-                    MarkAnnotation(
-                      relativePath:
-                          Paths.circle(center: Offset.zero, radius: 5),
-                      style: Paint()..color = const Color(0xff5470c6),
-                      values: ['Wed', 13],
-                    ),
-                    MarkAnnotation(
-                      relativePath:
-                          Paths.circle(center: Offset.zero, radius: 5),
-                      style: Paint()..color = const Color(0xff5470c6),
-                      values: ['Sun', 9],
-                    ),
-                    MarkAnnotation(
-                      relativePath:
-                          Paths.circle(center: Offset.zero, radius: 5),
-                      style: Paint()..color = const Color(0xff91cc75),
-                      values: ['Tue', -2],
-                    ),
-                    MarkAnnotation(
-                      relativePath:
-                          Paths.circle(center: Offset.zero, radius: 5),
-                      style: Paint()..color = const Color(0xff91cc75),
-                      values: ['Thu', 5],
-                    ),
-                    TagAnnotation(
-                      label: Label(
-                          '13',
-                          LabelStyle(
-                            style: Defaults.textStyle,
-                            offset: const Offset(0, -10),
-                          )),
-                      values: ['Wed', 13],
-                    ),
-                    TagAnnotation(
-                      label: Label(
-                          '9',
-                          LabelStyle(
-                            style: Defaults.textStyle,
-                            offset: const Offset(0, -10),
-                          )),
-                      values: ['Sun', 9],
-                    ),
-                    TagAnnotation(
-                      label: Label(
-                          '-2',
-                          LabelStyle(
-                            style: Defaults.textStyle,
-                            offset: const Offset(0, -10),
-                          )),
-                      values: ['Tue', -2],
-                    ),
-                    TagAnnotation(
-                      label: Label(
-                          '5',
-                          LabelStyle(
-                            style: Defaults.textStyle,
-                            offset: const Offset(0, -10),
-                          )),
-                      values: ['Thu', 5],
-                    ),
+                    // MarkAnnotation(
+                    //   relativePath:
+                    //       Paths.circle(center: Offset.zero, radius: 5),
+                    //   style: Paint()..color = const Color(0xff5470c6),
+                    //   values: ['Wed', 13],
+                    // ),
+                    // MarkAnnotation(
+                    //   relativePath:
+                    //       Paths.circle(center: Offset.zero, radius: 5),
+                    //   style: Paint()..color = const Color(0xff5470c6),
+                    //   values: ['Sun', 9],
+                    // ),
+                    // MarkAnnotation(
+                    //   relativePath:
+                    //       Paths.circle(center: Offset.zero, radius: 5),
+                    //   style: Paint()..color = const Color(0xff91cc75),
+                    //   values: ['Tue', -2],
+                    // ),
+                    // MarkAnnotation(
+                    //   relativePath:
+                    //       Paths.circle(center: Offset.zero, radius: 5),
+                    //   style: Paint()..color = const Color(0xff91cc75),
+                    //   values: ['Thu', 5],
+                    // ),
+                    // TagAnnotation(
+                    //   label: Label(
+                    //       '13',
+                    //       LabelStyle(
+                    //         style: Defaults.textStyle,
+                    //         offset: const Offset(0, -10),
+                    //       )),
+                    //   values: ['Wed', 13],
+                    // ),
+                    // TagAnnotation(
+                    //   label: Label(
+                    //       '9',
+                    //       LabelStyle(
+                    //         style: Defaults.textStyle,
+                    //         offset: const Offset(0, -10),
+                    //       )),
+                    //   values: ['Sun', 9],
+                    // ),
+                    // TagAnnotation(
+                    //   label: Label(
+                    //       '-2',
+                    //       LabelStyle(
+                    //         style: Defaults.textStyle,
+                    //         offset: const Offset(0, -10),
+                    //       )),
+                    //   values: ['Tue', -2],
+                    // ),
+                    // TagAnnotation(
+                    //   label: Label(
+                    //       '5',
+                    //       LabelStyle(
+                    //         style: Defaults.textStyle,
+                    //         offset: const Offset(0, -10),
+                    //       )),
+                    //   values: ['Thu', 5],
+                    // ),
                   ],
                 ),
               ),
