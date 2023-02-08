@@ -21,10 +21,7 @@ class _MyDelegate extends MultiChildLayoutDelegate {
     if (hasChild(1)) {
       secondSize = layoutChild(
         1,
-        BoxConstraints(
-          maxHeight: 400,
-          maxWidth: 800,
-        ),
+        BoxConstraints(),
       );
 
       positionChild(
@@ -36,17 +33,12 @@ class _MyDelegate extends MultiChildLayoutDelegate {
     if (hasChild(2)) {
       thirdSize = layoutChild(
         2,
-        BoxConstraints(
-          minHeight: screenHeight - secondSize.height - 50,
-          minWidth: screenWidth - secondSize.width,
-          maxHeight: screenHeight - secondSize.height - 1,
-          //maxWidth: screenWidth - secondSize.width,
-        ),
+        BoxConstraints(),
       );
 
       positionChild(
         2,
-        Offset(0, screenHeight / 2 - 100),
+        Offset(0, screenHeight * 0.6 - 58),
       );
     }
   }
@@ -75,14 +67,25 @@ Widget DashBoardDesktop({
         children: [
           LayoutId(
             id: 1,
-            child: DriversDataWidget(),
+            child: Container(
+              height: screenHeight * 0.5,
+              width: screenWidth * 0.8,
+              child: DriversDataWidget(),
+            ),
           ),
           LayoutId(
             id: 2,
-            child: Image.network(
-              snapshot.data!,
-              fit: BoxFit.contain,
-            ),
+            child: (snapshot.data == null)
+                ? CircularProgressIndicator()
+                : Container(
+                    //color: Colors.red,
+                    height: screenHeight * 0.4,
+                    width: screenWidth * 0.35,
+                    child: Image.network(
+                      snapshot.data!,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
           ),
         ],
       );

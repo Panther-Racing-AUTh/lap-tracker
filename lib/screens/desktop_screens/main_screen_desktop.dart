@@ -12,6 +12,8 @@ import '../../providers/race_setup.dart';
 import '../../widgets/desktop_widgets/charts_desktop_widget.dart';
 import '../../widgets/desktop_widgets/panther_desktop_widget.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
+import '../../widgets/diagram_comparison_button.dart';
+import '../../widgets/motorcycle_setup.dart';
 
 class MainScreenDesktop extends StatefulWidget {
   @override
@@ -114,12 +116,22 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                 ),
                 WeatherWidget(
                   appbar: true,
+                  screenWidth: MediaQuery.of(context).size.width,
                 )
               ],
             ),
             backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             //title: Text('Panther Racing AUTh'),
             actions: [
+              DiagramComparison(),
+              SizedBox(width: 10),
+              MotorcycleSetup(),
+              SizedBox(width: 10),
+              IconButton(
+                icon: Icon(Icons.download),
+                onPressed: () {},
+              ),
+              SizedBox(width: 10),
               RaceTrackSelector(),
               SizedBox(width: 10),
               //dark theme toggle button

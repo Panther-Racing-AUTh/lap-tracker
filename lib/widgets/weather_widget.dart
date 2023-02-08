@@ -3,8 +3,9 @@ import 'package:flutter_complete_guide/services/weather_api_client.dart';
 import '../models/weather.dart';
 
 class WeatherWidget extends StatefulWidget {
-  const WeatherWidget({bool this.appbar = false});
+  WeatherWidget({bool this.appbar = false, required this.screenWidth});
   final bool appbar;
+  double screenWidth;
   @override
   State<WeatherWidget> createState() => _WeatherWidgetState();
 }
@@ -161,62 +162,68 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         ? Container(
             child: Row(
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text('D ',
+                if (widget.screenWidth > 800)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text('D ',
+                              style: TextStyle(
+                                  color: Theme.of(context).selectedRowColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            width: 40,
+                            height: 20,
+                            child: Switch(
+                                value: hourly,
+                                onChanged: (_) => setState(() {
+                                      hourly = !hourly;
+                                    }),
+                                activeColor:
+                                    Theme.of(context).selectedRowColor),
+                          ),
+                          Text(' H',
+                              style: TextStyle(
+                                  color: Theme.of(context).selectedRowColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      GestureDetector(
+                        child: Text(cityName + ' (' + cityCountry + ')',
                             style: TextStyle(
                                 color: Theme.of(context).selectedRowColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(
-                          width: 40,
-                          height: 20,
-                          child: Switch(
-                              value: hourly,
-                              onChanged: (_) => setState(() {
-                                    hourly = !hourly;
-                                  }),
-                              activeColor: Theme.of(context).selectedRowColor),
-                        ),
-                        Text(' H',
-                            style: TextStyle(
-                                color: Theme.of(context).selectedRowColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    GestureDetector(
-                      child: Text(cityName + ' (' + cityCountry + ')',
-                          style: TextStyle(
-                              color: Theme.of(context).selectedRowColor,
-                              fontSize: 20)),
-                      onTap: _changeLocation,
-                    ),
-                  ],
-                ),
+                                fontSize: 20)),
+                        onTap: _changeLocation,
+                      ),
+                    ],
+                  ),
                 SizedBox(width: 10),
                 GestureDetector(
                   child: Container(
-                    width: 300,
-                    child: hourly
-                        ? SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: _hourlyWeather(appbar: true),
-                            ),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: nextThreeDays()),
+                    width: (widget.screenWidth > 800) ? 300 : 100,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: hourly
+                            ? MainAxisAlignment.start
+                            : MainAxisAlignment.spaceBetween,
+                        children: hourly
+                            ? _hourlyWeather(appbar: true)
+                            : nextThreeDays(),
+                      ),
+                    ),
                   ),
                   onTap: () => showDialog(
                     context: context,
-                    builder: (context) =>
-                        AlertDialog(actions: [WeatherWidget()]),
+                    builder: (context) => AlertDialog(actions: [
+                      WeatherWidget(
+                        screenWidth: widget.screenWidth,
+                      )
+                    ]),
                   ),
                   onDoubleTap: () => _changeLocation(),
                 ),
@@ -517,34 +524,39 @@ class _WeatherWidgetState extends State<WeatherWidget> {
           break;
       }
       list.add(
-        Column(
-          children: [
-            Text(day,
+        Container(
+          width: 100,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(day,
+                  style: TextStyle(
+                      color: Theme.of(context).selectedRowColor, fontSize: 18)),
+              SizedBox(height: 1),
+              Text(
+                'H:' +
+                    dailyHighTemperatures[i].round().toString() +
+                    '˚' +
+                    '  L:' +
+                    dailyLowTemperatures[i].round().toString() +
+                    '˚',
                 style: TextStyle(
-                    color: Theme.of(context).selectedRowColor, fontSize: 18)),
-            SizedBox(height: 1),
-            Text(
-              'H' +
-                  dailyHighTemperatures[i].round().toString() +
-                  '˚' +
-                  '  L:' +
-                  dailyLowTemperatures[i].round().toString() +
-                  '˚',
-              style: TextStyle(
-                  color: Theme.of(context).selectedRowColor, fontSize: 16),
-            ),
-            Row(
-              children: [
-                Icon(Icons.water_drop_rounded,
-                    size: 17, color: Theme.of(context).selectedRowColor),
-                SizedBox(width: 3),
-                Text(dailyPrecipitation[i].toString() + 'mm',
-                    style: TextStyle(
-                        color: Theme.of(context).selectedRowColor,
-                        fontSize: 14))
-              ],
-            )
-          ],
+                    color: Theme.of(context).selectedRowColor, fontSize: 16),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.water_drop_rounded,
+                      size: 17, color: Theme.of(context).selectedRowColor),
+                  SizedBox(width: 3),
+                  Text(dailyPrecipitation[i].toString() + 'mm',
+                      style: TextStyle(
+                          color: Theme.of(context).selectedRowColor,
+                          fontSize: 14))
+                ],
+              )
+            ],
+          ),
         ),
       );
     }
@@ -552,6 +564,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   }
 
   void _changeLocation() {
+    print(widget.screenWidth);
     showDialog(
         context: context,
         builder: ((ctx) => AlertDialog(
