@@ -123,7 +123,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             //title: Text('Panther Racing AUTh'),
             actions: [
-              DiagramComparison(),
+              DiagramComparison(context),
               SizedBox(width: 10),
               MotorcycleSetup(),
               SizedBox(width: 10),
