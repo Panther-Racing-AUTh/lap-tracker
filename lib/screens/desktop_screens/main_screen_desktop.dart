@@ -125,7 +125,12 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             actions: [
               DiagramComparison(context),
               SizedBox(width: 10),
-              MotorcycleSetup(),
+              IconButton(
+                onPressed: () => motorcycleSetup(context: context),
+                icon: Icon(
+                  Icons.motorcycle,
+                ),
+              ),
               SizedBox(width: 10),
               IconButton(
                 icon: Icon(Icons.download),
