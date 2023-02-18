@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/person.dart';
+import 'package:flutter_complete_guide/names.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -38,7 +39,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
             height: height,
             child: Center(
               child: Text(
-                'Sign In to see your profile',
+                sign_in_to_see_profile,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 30,
@@ -245,27 +246,10 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
             children: [
               Container(child: SizedBox(height: height)),
               Text(
-                'Learn more at',
+                learn_more_at,
                 style: TextStyle(fontSize: 15),
               ),
-              TextButton(
-                child: Text(
-                  'pantherauth.gr',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 6, 103, 145),
-                    fontSize: 20,
-                  ),
-                ),
-                onPressed: () async {
-                  final url = Uri(
-                    scheme: 'https',
-                    host: 'pantherauth.gr',
-                  );
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url);
-                  }
-                },
-              ),
+              CustomWebsiteButton(),
             ],
           ),
         )
@@ -301,67 +285,16 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
           child: Row(
             children: [
               Text(
-                'Learn more at',
+                learn_more_at,
                 style: TextStyle(fontSize: 15),
               ),
-              TextButton(
-                child: Text(
-                  'pantherauth.gr',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 6, 103, 145),
-                    fontSize: 20,
-                  ),
-                ),
-                onPressed: () async {
-                  final url = Uri(
-                    scheme: 'https',
-                    host: 'pantherauth.gr',
-                  );
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url);
-                  }
-                },
-              ),
+              CustomWebsiteButton()
             ],
           ),
         )
       ],
     );
   }
-
-  Widget siteButton(
-    double width,
-  ) =>
-      Container(
-        //color: Colors.black,
-        width: width * 0.2,
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            //SizedBox(
-            //  height: MediaQuery.of(context).size.height * 0.8,
-            //),
-
-            Text(
-              'Learn more at',
-              style: TextStyle(fontSize: 15),
-            ),
-            TextButton(
-              child: Text(
-                'pantherauth.gr',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 6, 103, 145),
-                  fontSize: 20,
-                ),
-              ),
-              onPressed: () => launchUrl(
-                Uri.parse('pantherauth.gr'),
-              ),
-            ),
-          ],
-        ),
-      );
 
   Widget nameAndRole() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,4 +321,32 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
           ),
         ],
       );
+}
+
+class CustomWebsiteButton extends StatelessWidget {
+  const CustomWebsiteButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      child: Text(
+        'pantherauth.gr',
+        style: TextStyle(
+          color: Color.fromARGB(255, 6, 103, 145),
+          fontSize: 20,
+        ),
+      ),
+      onPressed: () async {
+        final url = Uri(
+          scheme: 'https',
+          host: 'pantherauth.gr',
+        );
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url);
+        }
+      },
+    );
+  }
 }

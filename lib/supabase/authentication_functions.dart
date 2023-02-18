@@ -1,3 +1,4 @@
+import 'package:flutter_complete_guide/names.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../widgets/signIn_alert_dialog.dart';
@@ -67,8 +68,7 @@ Future<void> userLogin({
     }
   } on AuthException catch (error) {
     if (!userExists && signedUp) {
-      showSignInAlertDialog(
-          context: context, errorMessage: 'This user does not exist!');
+      showSignInAlertDialog(context: context, errorMessage: user_not_found);
     } else if (signedUp) {
       showSignInAlertDialog(context: context, errorMessage: error.message);
     } else {
@@ -77,13 +77,13 @@ Future<void> userLogin({
         context: context,
         builder: (ctx) {
           return AlertDialog(
-            title: Text('Confirm your email first!'),
+            title: Text(confirm_email),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
                 },
-                child: Text('Cancel'),
+                child: Text(cancel),
               ),
               TextButton(
                 onPressed: () {
@@ -131,11 +131,10 @@ Future<void> userSignUp({
         email: email,
       );
     } else {
-      showSignInAlertDialog(
-          context: context, errorMessage: 'User already exists!');
+      showSignInAlertDialog(context: context, errorMessage: user_exists);
     }
   } on AuthException catch (error) {
-    if (error.message != 'Email not confirmed') {
+    if (error.message != unconfirmed_email) {
       showSignInAlertDialog(context: context, errorMessage: error.message);
     }
   }

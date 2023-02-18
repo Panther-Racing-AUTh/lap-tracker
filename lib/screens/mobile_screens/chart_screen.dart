@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/names.dart';
 import '../../widgets/main_appbar.dart';
 
 class ChartScreen extends StatelessWidget {
@@ -7,7 +8,7 @@ class ChartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(
-        text: 'Chart',
+        text: chart,
         context: context,
       ),
       body: Center(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/data_desktop_widget.dart';
 import '../../widgets/main_appbar.dart';
 
@@ -13,7 +14,7 @@ class _DataScreenState extends State<DataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: MainAppBar(
-          text: 'Data',
+          text: data,
           context: context,
         ),
         body: DataDesktopWidget());

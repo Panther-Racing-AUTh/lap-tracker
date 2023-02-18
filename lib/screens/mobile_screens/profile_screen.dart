@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/supabase/profile_functions.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/person.dart';
+import '../../names.dart';
 import '../../providers/theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,7 +28,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Profile',
+          profile,
         ),
         actions: [
           _buildEditButton(size: 24, padding: 10),
@@ -45,7 +46,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                     height: MediaQuery.of(context).size.height * 0.3,
                   ),
                   Text(
-                    'Sign In to see your profile',
+                    sign_in_to_see_profile,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 30,
@@ -61,7 +62,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                 if (snapshot.connectionState == ConnectionState.done) {
                   p = snapshot.data;
 
-                  return profile();
+                  return Profile();
                 } else {
                   return Center(child: CircularProgressIndicator());
                 }
@@ -70,7 +71,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget profile() {
+  Widget Profile() {
     ThemeChanger theme = provider.Provider.of<ThemeChanger>(context);
     return Stack(
       alignment: Alignment.bottomRight,
@@ -232,7 +233,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'About',
+              about,
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/names.dart';
 import '../../widgets/block_widget.dart';
 import '../../widgets/main_appbar.dart';
 
@@ -14,7 +15,7 @@ class MainScreen extends StatelessWidget {
       builder: (context, Constraints) {
         return Scaffold(
           appBar: MainAppBar(
-            text: 'Panther Racing AUTh',
+            text: panther,
             context: context,
           ),
           // The main menu icons
@@ -34,7 +35,7 @@ class MainScreen extends StatelessWidget {
                       child:
                           //Widget created
                           blockWidget(
-                        title: 'Profile',
+                        title: profile,
                         context: context,
                         color: Color.fromARGB(255, 18, 64, 102),
                         page: '/profile',
@@ -43,7 +44,7 @@ class MainScreen extends StatelessWidget {
                     ),
                     Container(
                       child: blockWidget(
-                        title: 'Chat',
+                        title: chat,
                         context: context,
                         color: Color.fromARGB(255, 38, 67, 161),
                         page: '/chat',
@@ -53,7 +54,7 @@ class MainScreen extends StatelessWidget {
                     if (landscape)
                       Container(
                         child: blockWidget(
-                          title: 'Data',
+                          title: data,
                           context: context,
                           color: Color.fromARGB(255, 235, 227, 215),
                           page: '/data',
@@ -68,7 +69,7 @@ class MainScreen extends StatelessWidget {
                     if (!landscape)
                       Container(
                         child: blockWidget(
-                          title: 'Data',
+                          title: 'data',
                           context: context,
                           color: Color.fromARGB(255, 235, 227, 215),
                           page: '/data',
@@ -77,7 +78,7 @@ class MainScreen extends StatelessWidget {
                       ),
                     Container(
                       child: blockWidget(
-                        title: 'Settings',
+                        title: settings,
                         context: context,
                         color: Color.fromARGB(255, 169, 228, 200),
                         page: '/settings',
@@ -89,7 +90,7 @@ class MainScreen extends StatelessWidget {
                         child:
                             //Widget created
                             blockWidget(
-                          title: 'Panther',
+                          title: panther,
                           context: context,
                           color: Color.fromARGB(255, 7, 34, 56),
                           page: '/panther',
@@ -99,7 +100,7 @@ class MainScreen extends StatelessWidget {
                     if (landscape)
                       Container(
                         child: blockWidget(
-                          title: 'Charts',
+                          title: chart,
                           context: context,
                           color: Color.fromARGB(255, 85, 139, 190),
                           page: '/chart',
@@ -116,7 +117,7 @@ class MainScreen extends StatelessWidget {
                       Container(
                         //Widget created
                         child: blockWidget(
-                          title: 'Panther',
+                          title: panther,
                           context: context,
                           color: Color.fromARGB(255, 7, 34, 56),
                           page: '/panther',
@@ -126,7 +127,7 @@ class MainScreen extends StatelessWidget {
                       // Chart BlockWidget Ignore for now the root
                       Container(
                         child: blockWidget(
-                          title: 'Charts',
+                          title: chart,
                           context: context,
                           color: Color.fromARGB(255, 85, 139, 190),
                           page: '/chart',

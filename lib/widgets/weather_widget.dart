@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/names.dart' as names;
 import 'package:flutter_complete_guide/services/weather_api_client.dart';
 import '../models/weather.dart';
 
@@ -127,7 +128,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
       showDialog(
         context: context,
         builder: ((ctx) => AlertDialog(
-              title: Text('Not a city!'),
+              title: Text(names.not_city),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -482,7 +483,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               ],
             ),
           Text(
-            'Humidity: $humidity%',
+            names.humidity + ': $humidity%',
             style: TextStyle(
               color: Theme.of(context).selectedRowColor,
               fontSize: appbar ? 12 : 18,
@@ -568,7 +569,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     showDialog(
         context: context,
         builder: ((ctx) => AlertDialog(
-              title: Text('Enter city name:'),
+              title: Text(names.enter_city),
               actions: [
                 Column(
                   children: [
@@ -586,7 +587,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                               cityNameController.text = cityName;
                               Navigator.of(ctx).pop();
                             },
-                            child: Text('Cancel')),
+                            child: Text(names.cancel)),
                         TextButton(
                           onPressed: () {
                             getData(cityNameController.text);

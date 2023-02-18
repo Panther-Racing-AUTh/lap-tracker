@@ -3,6 +3,7 @@ import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
 import 'package:flutter_complete_guide/widgets/signIn_alert_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../names.dart';
 import '../providers/device.dart';
 import './signInTextField.dart';
 import '../supabase/authentication_functions.dart';
@@ -12,6 +13,9 @@ class Login extends StatefulWidget {
   @override
   State<Login> createState() => LoginState();
 }
+
+var minimumWidth = 280.0;
+var minimumButtonHeight = 40.0;
 
 class LoginState extends State<Login> {
   bool signedUp =
@@ -33,17 +37,15 @@ class LoginState extends State<Login> {
 
     if (emailController.text.isEmpty) {
       //check if email textfield is empty
-      showSignInAlertDialog(
-          context: context, errorMessage: 'Insert an email address!');
+      showSignInAlertDialog(context: context, errorMessage: insert_email);
     } else if (passwordController.text.isEmpty) {
       //checks if password textfield is empty
-      showSignInAlertDialog(
-          context: context, errorMessage: 'Insert a password!');
+      showSignInAlertDialog(context: context, errorMessage: insert_password);
     } else if (!signedUp &&
         passwordController.text != confirmPasswordController.text) {
       //checks if password and confirm password textfields have matching values
       showSignInAlertDialog(
-          context: context, errorMessage: 'The two passwords do not match!');
+          context: context, errorMessage: passwords_not_matching);
     } else {
       userExists = await userExistsinDb(
           email: emailController
@@ -119,8 +121,6 @@ class LoginState extends State<Login> {
     } else {
       width = width * 0.35;
     }
-    var minimumWidth = 280.0;
-    var minimumButtonHeight = 40.0;
 
     return SingleChildScrollView(
       child: Column(
@@ -140,7 +140,7 @@ class LoginState extends State<Login> {
               children: [
                 //page title
                 Text(
-                  signedUp ? 'Sign In' : 'Sign Up',
+                  signedUp ? sign_in : sign_up,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 25),
                 ),
@@ -167,7 +167,7 @@ class LoginState extends State<Login> {
             padding: EdgeInsets.fromLTRB(width * 0.01, 0, width * 0.01, 0),
             child: signInTextField(
               controller: emailController,
-              labelText: 'Email',
+              labelText: email,
               emailKeyboard: true,
             ),
           ),
@@ -182,7 +182,7 @@ class LoginState extends State<Login> {
             padding: EdgeInsets.fromLTRB(width * 0.01, 0, width * 0.01, 0),
             child: signInTextField(
               controller: passwordController,
-              labelText: 'Password',
+              labelText: password,
               iconButton: _hidePasswordButton(),
               obscured: obscure,
             ),
@@ -199,7 +199,7 @@ class LoginState extends State<Login> {
                       EdgeInsets.fromLTRB(width * 0.01, 0, width * 0.01, 0),
                   child: signInTextField(
                     controller: confirmPasswordController,
-                    labelText: 'Confirm Password',
+                    labelText: confirm_password,
                     iconButton: _hidePasswordButton(),
                     obscured: obscure,
                   ),
@@ -219,8 +219,8 @@ class LoginState extends State<Login> {
                       onPressed: () {
                         //forgot password screen
                       },
-                      child: const Text(
-                        'Forgot Password',
+                      child: Text(
+                        forgot_password,
                       ),
                     ),
                   ),
@@ -239,7 +239,7 @@ class LoginState extends State<Login> {
                   ? CircularProgressIndicator(
                       color: Colors.white,
                     )
-                  : Text('Login'),
+                  : Text(login),
               onPressed: (() {
                 if (!isLoading) {
                   _loginPressed(context);
@@ -250,14 +250,12 @@ class LoginState extends State<Login> {
           Row(
             children: <Widget>[
               //button to change from login to sign up and vice versa
-              Text(signedUp
-                  ? 'Don\'t have an account?'
-                  : 'Already have an account?'),
+              Text(signedUp ? no_account : have_account),
               IgnorePointer(
                 ignoring: isLoading,
                 child: TextButton(
                   child: Text(
-                    signedUp ? 'Sign Up' : 'Sign In',
+                    signedUp ? sign_up : sign_in,
                     style: TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
@@ -279,56 +277,20 @@ class LoginState extends State<Login> {
           SizedBox(
             height: height * 0.022,
           ),
-          Container(
-            //sign in with google button
-            constraints: BoxConstraints(
-              minHeight: minimumButtonHeight,
-              minWidth: minimumWidth,
-            ),
-            height: height * 0.052,
-            width: width * 0.95,
-            padding: EdgeInsets.fromLTRB(width * 0.025, 0, width * 0.025, 0),
-            child: IgnorePointer(
-              ignoring: isLoading,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  minimumSize: Size(double.infinity, 50),
-                ),
-                icon: Icon(FontAwesomeIcons.google),
-                label: Text('Sign in with Google'),
-                onPressed: () => signInWithOAuth(
-                  context,
-                  provider: Provider.google,
-                ),
-              ),
-            ),
+          ThirdPartySignInButton(
+            height: height,
+            width: width,
+            isLoading: isLoading,
+            auth: 'Google',
           ),
           SizedBox(
             height: height * 0.01,
           ),
-          Container(
-            //sign in with facebook button
-            constraints: BoxConstraints(
-              minHeight: minimumButtonHeight,
-              minWidth: minimumWidth,
-            ),
-            height: height * 0.052,
-            width: width * 0.95,
-            padding: EdgeInsets.fromLTRB(width * 0.025, 0, width * 0.025, 0),
-            child: IgnorePointer(
-              ignoring: isLoading,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  minimumSize: Size(double.infinity, 50),
-                ),
-                icon: Icon(FontAwesomeIcons.facebook),
-                label: Text('Sign in with Facebook'),
-                onPressed: () =>
-                    signInWithOAuth(context, provider: Provider.facebook),
-              ),
-            ),
+          ThirdPartySignInButton(
+            height: height,
+            width: width,
+            isLoading: isLoading,
+            auth: 'Facebook',
           ),
           Container(
             padding: EdgeInsets.fromLTRB(0, height * 0.03, 0, 0),
@@ -356,9 +318,9 @@ class LoginState extends State<Login> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Powered by  '),
+                    Text(powered),
                     Text(
-                      'Panther Racing AUTh™',
+                      panther_tm,
                       style: TextStyle(
                           color: Color.fromARGB(255, 6, 103, 145),
                           fontSize: 20,
@@ -370,6 +332,63 @@ class LoginState extends State<Login> {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ThirdPartySignInButton extends StatelessWidget {
+  const ThirdPartySignInButton({
+    Key? key,
+    required this.height,
+    required this.width,
+    required this.isLoading,
+    required this.auth,
+  }) : super(key: key);
+
+  final double height;
+  final double width;
+  final bool isLoading;
+  final String auth;
+
+  Icon i() {
+    if (auth == 'Facebook') return Icon(FontAwesomeIcons.facebook);
+    if (auth == 'Google') return Icon(FontAwesomeIcons.google);
+    return Icon(FontAwesomeIcons.a);
+  }
+
+  String s() {
+    if (auth == 'Facebook') return sign_in_facebook;
+    if (auth == 'Google') return sign_in_google;
+    return '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      //sign in with third party button
+      constraints: BoxConstraints(
+        minHeight: minimumButtonHeight,
+        minWidth: minimumWidth,
+      ),
+      height: height * 0.052,
+      width: width * 0.95,
+      padding: EdgeInsets.fromLTRB(width * 0.025, 0, width * 0.025, 0),
+      child: IgnorePointer(
+        ignoring: isLoading,
+        child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              minimumSize: Size(double.infinity, 50),
+            ),
+            icon: i(),
+            label: Text(s()),
+            onPressed: () {
+              if (auth == 'Facebook')
+                signInWithOAuth(context, provider: Provider.facebook);
+              if (auth == 'Google')
+                signInWithOAuth(context, provider: Provider.google);
+            }),
       ),
     );
   }

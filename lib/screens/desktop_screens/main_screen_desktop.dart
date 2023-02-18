@@ -8,6 +8,7 @@ import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
 import 'package:flutter_complete_guide/widgets/weather_widget.dart';
 import 'package:provider/provider.dart';
+import '../../names.dart' as names;
 import '../../providers/race_setup.dart';
 import '../../widgets/desktop_widgets/charts_desktop_widget.dart';
 import '../../widgets/desktop_widgets/panther_desktop_widget.dart';
@@ -169,43 +170,43 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                           _widget(
                             0,
                             icon: Icon(Icons.dashboard_outlined),
-                            text: 'Dashboard',
+                            text: names.dashboard,
                             selectedIcon: Icon(Icons.dashboard),
                           ),
                           _widget(
                             1,
                             icon: Icon(Icons.person_outlined),
-                            text: 'Profile',
+                            text: names.profile,
                             selectedIcon: Icon(Icons.person),
                           ),
                           _widget(
                             2,
                             icon: Icon(Icons.chat_outlined),
-                            text: 'Chat',
+                            text: names.chat,
                             selectedIcon: Icon(Icons.chat),
                           ),
                           _widget(
                             3,
                             icon: Icon(Icons.data_object_outlined),
-                            text: 'Data',
+                            text: names.data,
                             selectedIcon: Icon(Icons.data_object),
                           ),
                           _widget(
                             4,
                             icon: Icon(Icons.bar_chart_outlined),
-                            text: 'Charts',
+                            text: names.chart,
                             selectedIcon: Icon(Icons.bar_chart),
                           ),
                           _widget(
                             5,
                             icon: Icon(Icons.star_border),
-                            text: 'Panther',
+                            text: names.panther,
                             selectedIcon: Icon(Icons.star),
                           ),
                           _widget(
                             6,
                             icon: Icon(Icons.settings_outlined),
-                            text: 'Settings',
+                            text: names.settings,
                             selectedIcon: Icon(Icons.settings),
                           ),
                         ],

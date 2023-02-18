@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/message.dart';
+import '../names.dart';
 import '../supabase/chat_service.dart';
 import 'chat_bubble.dart';
 
@@ -162,7 +163,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                       height: MediaQuery.of(context).size.height * 0.3,
                     ),
                     Text(
-                      'Sign In to see the Chat',
+                      sign_in_to_see_chat,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 30,

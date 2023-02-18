@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
 import '../../widgets/main_appbar.dart';
 
@@ -9,7 +10,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(
-        text: 'Settings',
+        text: settings,
         context: context,
       ),
       body: Settings(),

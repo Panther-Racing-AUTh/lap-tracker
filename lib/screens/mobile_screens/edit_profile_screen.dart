@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/person.dart';
+import '../../names.dart';
 import '../../supabase/profile_functions.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -21,15 +22,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         getUserProfile(uuid: Supabase.instance.client.auth.currentUser!.id);
   }
 
-  static const List<String> items = [
-    'Engineering - Electronics Dept',
-    'Engineering - Aerodynamics Dept',
-    'Engineering - Suspension Dept',
-    'Engineering - Intake & Exhaust Analysis Dept',
-    'Engineering - Frame & Subframe Construction Dept',
-    'Marketing - Social Media Manager',
-    'Marketing - Public Relations',
-    'No Department selected',
+  static List<String> items = [
+    dept_electronics,
+    dept_aerodynamics,
+    dept_suspension,
+    dept_intake_exhaust,
+    dept_frame_subframe,
+    dept_social_media,
+    dept_public_relations,
+    no_dept,
   ];
 
   @override
@@ -38,7 +39,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Profile"),
+        title: Text(edit_profile),
         actions: [
           IconButton(
             onPressed: _saveForm,
@@ -62,10 +63,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       SizedBox(height: 20),
-                      _title('Name'),
+                      _title(name),
                       _nameForm(currentProfile!),
                       SizedBox(height: 40),
-                      _title('Department'),
+                      _title(department),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: DropdownButton(
@@ -103,10 +104,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             })),
                       ),
                       SizedBox(height: 40),
-                      _title('Role'),
+                      _title(role),
                       _roleForm(currentProfile!),
                       SizedBox(height: 40),
-                      _title('About'),
+                      _title(about),
                       _aboutForm(currentProfile!),
                       SizedBox(height: 60),
                       _saveButton(),
@@ -142,7 +143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       alignment: Alignment.bottomCenter,
       child: OutlinedButton(
         child: Text(
-          "Save Changes",
+          save_changes,
           style: TextStyle(
             color: Colors.blue,
           ),
@@ -168,9 +169,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         initialValue: currentProfile.about,
         validator: (value) {
           if (value!.isEmpty)
-            return 'About section cannot be empty';
+            return about_cannot_empty;
           else if (value.length < 40) {
-            return 'About section must be at least 40 characters long';
+            return about_not_long;
           } else
             return null;
         },
@@ -186,7 +187,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         initialValue: currentProfile.role,
         validator: (value) {
           if (value!.isEmpty) {
-            return 'Role cannot be empty';
+            return role_cannot_empty;
           } else
             return null;
         },
@@ -202,7 +203,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         initialValue: currentProfile.name,
         validator: (value) {
           if (value!.isEmpty) {
-            return 'Name cannot be empty';
+            return name_cannot_empty;
           } else
             return null;
         },
@@ -218,7 +219,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Saved Changes'),
+          content: Text(saved_changes),
           duration: Duration(seconds: 1),
         ),
       );

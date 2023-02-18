@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/providers/device.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme.dart';
@@ -58,7 +59,7 @@ class _SettingsState extends State<Settings> {
           ),
           OutlinedButton(
             child: Text(
-              "Sign out",
+              sign_out,
               style: TextStyle(
                 color: Colors.red,
               ),
@@ -167,7 +168,7 @@ class _SettingsState extends State<Settings> {
               ),
               if (!device.isDesktopMode() && !device.isPhone)
                 TextButton(
-                  child: Text('Switch to desktop mode'),
+                  child: Text(switch_desktop),
                   onPressed: () {
                     device.setToDesktopMode();
                     Navigator.of(context).popUntil((route) => route.isFirst);
@@ -176,7 +177,7 @@ class _SettingsState extends State<Settings> {
                 ),
               if (device.isDesktopMode())
                 TextButton(
-                  child: Text('Switch to mobile mode'),
+                  child: Text(switch_mobile),
                   onPressed: () {
                     device.setToMobileMode();
                     Navigator.of(context).popUntil((route) => route.isFirst);

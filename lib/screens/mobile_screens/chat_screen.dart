@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/widgets/chat_widget.dart';
 import '../../widgets/main_appbar.dart';
 
@@ -8,7 +9,7 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(
-        text: 'Chat',
+        text: chat,
         context: context,
       ),
       body: ChatWidget(),
