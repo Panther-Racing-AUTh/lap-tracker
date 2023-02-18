@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
+import 'package:flutter_complete_guide/names.dart';
 
 import './echarts_data.dart';
 
@@ -14,7 +15,7 @@ class EchartsPage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Echarts Examples'),
+        title: Text(chart_widget_motor_charts),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -38,7 +39,7 @@ class EchartsPage extends StatelessWidget {
                         max: 15,
                         min: -3,
                         tickCount: 7,
-                        formatter: (v) => '${v.toInt()} ℃',
+                        formatter: (v) => '${v.toInt()}',
                       ),
                     ),
                     'group': Variable(
@@ -102,6 +103,7 @@ class EchartsPage extends StatelessWidget {
                         dash: [2],
                       ),
                     ),
+
                     // MarkAnnotation(
                     //   relativePath:
                     //       Paths.circle(center: Offset.zero, radius: 5),

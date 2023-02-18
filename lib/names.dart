@@ -55,3 +55,25 @@ var dept_social_media = 'Marketing - Social Media Manager';
 var dept_public_relations = 'Marketing - Public Relations';
 var no_dept = 'No Department selected';
 var dashboard = 'Dashboard';
+
+//Elena's Texts
+var telemetry_columns_date = 'Date';
+var telemetry_columns_racing_time = 'Racing Time';
+var telemetry_columns_id = 'Id';
+var telemetry_columns_rpm = 'RPM';
+var telemetry_columns_oil_pressure = 'Oil Pressure';
+var telemetry_columns_air_intake_pressure = 'Air Intake Pressure';
+var telemetry_columns_air_intake_temperature = 'Air Intake Temperature';
+var telemetry_columns_throttle_position = 'Throttle Position';
+var telemetry_columns_fuel_temperature = 'Fuel Temperature';
+var panther_screen_appbar = 'Panther Racing Auth Team';
+var panther_screen_body = 'Panther Racing Auth Screen';
+var chart_widget_motor_charts = 'Motorcycle Charts';
+var drivers_grid_columns_position = 'Position';
+var drivers_grid_columns_team_number = 'Team Number';
+var drivers_grid_columns_rider_name = 'Rider Name';
+var drivers_grid_columns_team = 'Team';
+var drivers_grid_columns_best_lap = 'Best Lap';
+var drivers_grid_columns_last_lap = 'Last Lap';
+var routes_error = 'Error';
+var routes_error_screen = 'Error Screen';

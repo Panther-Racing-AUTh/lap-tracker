@@ -1,33 +1,34 @@
+import 'package:flutter_complete_guide/names.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 final List<PlutoColumn> driver_columns = [
   PlutoColumn(
-    title: 'Position',
+    title: drivers_grid_columns_position,
     field: 'position',
     type: PlutoColumnType.number(),
   ),
   PlutoColumn(
-    title: 'Team Number',
+    title: drivers_grid_columns_team_number,
     field: 'id',
     type: PlutoColumnType.number(),
   ),
   PlutoColumn(
-    title: 'Rider Name',
+    title: drivers_grid_columns_rider_name,
     field: 'name',
     type: PlutoColumnType.text(),
   ),
   PlutoColumn(
-    title: 'Team',
+    title: drivers_grid_columns_team,
     field: 'team',
     type: PlutoColumnType.text(),
   ),
   PlutoColumn(
-    title: 'Best Lap',
+    title: drivers_grid_columns_best_lap,
     field: 'best_lap',
     type: PlutoColumnType.time(),
   ),
   PlutoColumn(
-    title: 'Last Lap',
+    title: drivers_grid_columns_last_lap,
     field: 'last_lap',
     type: PlutoColumnType.time(),
   ),
@@ -35,13 +36,26 @@ final List<PlutoColumn> driver_columns = [
 
 final List<PlutoColumnGroup> driver_columnGroups = [
   PlutoColumnGroup(
-      title: 'Position', fields: ['position'], expandedColumn: true),
-  PlutoColumnGroup(title: 'Team Number', fields: ['id'], expandedColumn: true),
-  PlutoColumnGroup(title: 'Rider Name', fields: ['name'], expandedColumn: true),
-  PlutoColumnGroup(title: 'Team', fields: ['team'], expandedColumn: true),
+      title: drivers_grid_columns_position,
+      fields: ['position'],
+      expandedColumn: true),
   PlutoColumnGroup(
-      title: 'Best Lap', fields: ['best_lap'], expandedColumn: true),
+      title: drivers_grid_columns_team_number,
+      fields: ['id'],
+      expandedColumn: true),
   PlutoColumnGroup(
-      title: 'Last Lap', fields: ['last_lap'], expandedColumn: true),
+      title: drivers_grid_columns_rider_name,
+      fields: ['name'],
+      expandedColumn: true),
+  PlutoColumnGroup(
+      title: drivers_grid_columns_team, fields: ['team'], expandedColumn: true),
+  PlutoColumnGroup(
+      title: drivers_grid_columns_best_lap,
+      fields: ['best_lap'],
+      expandedColumn: true),
+  PlutoColumnGroup(
+      title: drivers_grid_columns_last_lap,
+      fields: ['last_lap'],
+      expandedColumn: true),
 ];
 late final PlutoGridStateManager stateManager;

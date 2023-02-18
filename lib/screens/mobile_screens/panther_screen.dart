@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/main_appbar.dart';
+import 'package:flutter_complete_guide/names.dart';
 
 class PantherScreen extends StatelessWidget {
   //static const String routeName = '/panther';
@@ -7,11 +8,11 @@ class PantherScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(
-        text: 'Panther Racing Auth Team',
+        text: panther_screen_appbar,
         context: context,
       ),
       body: Center(
-        child: Text('Panther Racing Auth Screen'),
+        child: Text(panther_screen_body),
       ),
     );
   }

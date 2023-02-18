@@ -38,7 +38,7 @@ class _DataDesktopWidgetState extends State<DataDesktopWidget> {
                     'id': PlutoCell(value: data['id']),
                     'racing_time': PlutoCell(value: data['racing_time']),
                     'date': PlutoCell(value: data['date']),
-                    'average_rpm': PlutoCell(value: data['average_rpm']),
+                    'rpm': PlutoCell(value: data['rpm']),
                     'oil_pressure': PlutoCell(value: data['oil_pressure']),
                     'air_intake_pressure':
                         PlutoCell(value: data['air_intake_pressure']),

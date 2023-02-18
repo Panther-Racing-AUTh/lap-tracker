@@ -1,27 +1,33 @@
+import 'package:flutter_complete_guide/names.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 final List<PlutoColumnGroup> telemetry_columnGroups = [
-  PlutoColumnGroup(title: 'Date', fields: ['date'], expandedColumn: true),
   PlutoColumnGroup(
-      title: 'Racing Time', fields: ['racing_time'], expandedColumn: true),
+      title: telemetry_columns_date, fields: ['date'], expandedColumn: true),
   PlutoColumnGroup(
-      title: 'Average RPM', fields: ['average_rpm'], expandedColumn: true),
+      title: telemetry_columns_racing_time,
+      fields: ['racing_time'],
+      expandedColumn: true),
   PlutoColumnGroup(
-      title: 'Oil Pressure', fields: ['oil_pressure'], expandedColumn: true),
+      title: telemetry_columns_rpm, fields: ['rpm'], expandedColumn: true),
   PlutoColumnGroup(
-      title: 'Air Intake Pressure',
+      title: telemetry_columns_oil_pressure,
+      fields: ['oil_pressure'],
+      expandedColumn: true),
+  PlutoColumnGroup(
+      title: telemetry_columns_air_intake_pressure,
       fields: ['air_intake_pressure'],
       expandedColumn: true),
   PlutoColumnGroup(
-      title: 'Air Intake Temperature',
+      title: telemetry_columns_air_intake_temperature,
       fields: ['air_intake_temperature'],
       expandedColumn: true),
   PlutoColumnGroup(
-      title: 'Throttle Position',
+      title: telemetry_columns_throttle_position,
       fields: ['throttle_position'],
       expandedColumn: true),
   PlutoColumnGroup(
-      title: 'Fuel Temperature',
+      title: telemetry_columns_fuel_temperature,
       fields: ['fuel_temperature'],
       expandedColumn: true),
   // PlutoColumnGroup(

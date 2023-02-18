@@ -11,6 +11,7 @@ import 'screens/mobile_screens/settings_screen.dart';
 import 'screens/mobile_screens/chart_screen.dart';
 import 'screens/mobile_screens/panther_screen.dart';
 import 'screens/mobile_screens/edit_profile_screen.dart';
+import 'package:flutter_complete_guide/names.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -79,10 +80,10 @@ class ErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Error'),
+        title: Text(routes_error),
       ),
       body: Center(
-        child: Text('Error Screen'),
+        child: Text(routes_error_screen),
       ),
     );
   }
