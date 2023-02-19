@@ -17,7 +17,7 @@ class Person {
 
   static Map toMap(Person person) {
     return {
-      'name': person.name,
+      'full_name': person.name,
       'role': person.role,
       'about': person.about,
       'department': person.department,

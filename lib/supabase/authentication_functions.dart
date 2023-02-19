@@ -31,7 +31,7 @@ Future<void> insertUser({
       'provider': provider,
     });
 
-    await supabase.from('profiles').insert({
+    await supabase.from('users').insert({
       'id': supabase.auth.currentUser!.id,
     });
   }

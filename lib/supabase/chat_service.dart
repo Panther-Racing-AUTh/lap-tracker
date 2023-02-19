@@ -14,8 +14,9 @@ Stream<List<Message>> getMessages() {
       .map(
         (maps) => maps.map((item) {
           final senderImage = supabase.storage
-              .from('profiles')
+              .from('users')
               .getPublicUrl(item['user_from'] + '.jpeg');
+
           return Message.fromJson(
             item,
             getCurrentUserId(),
@@ -28,8 +29,8 @@ Stream<List<Message>> getMessages() {
 //TODO: fix handling of image upload
 Future<void> saveImage(XFile image) async {
   final sender = await supabase
-      .from('profiles')
-      .select('name')
+      .from('users')
+      .select('full_name')
       .eq('id', getCurrentUserId())
       .single();
 
@@ -41,21 +42,21 @@ Future<void> saveImage(XFile image) async {
   final message = Message.createImage(
       content: '${getCurrentUserId()}/${image.name}',
       userFrom: getCurrentUserId(),
-      userFromName: sender['name']);
+      userFromName: sender['full_name']);
   await supabase.from('messages').insert({message.toMap()});
 }
 
 Future<void> saveMessage(String content) async {
   final sender = await supabase
-      .from('profiles')
-      .select('name')
+      .from('users')
+      .select('full_name')
       .eq('id', getCurrentUserId())
       .single();
 
   final message = Message.createText(
     content: content,
     userFrom: getCurrentUserId(),
-    userFromName: sender['name'],
+    userFromName: sender['full_name'],
   );
   await supabase.from('messages').insert(message.toMap());
 }
@@ -63,16 +64,16 @@ Future<void> saveMessage(String content) async {
 Future<void> updateMessages() async {
   final messages =
       await supabase.from('messages').select('user_from, user_from_name');
-  final profiles = await supabase.from('profiles').select('id, name');
+  final profiles = await supabase.from('users').select('id, name');
 
   for (int i = 0; i < messages.length; i++) {
     //final currentMessage = messages[i];
     for (int j = 0; j < profiles.length; j++) {
       //final currentProfile = profiles[j];
       if (messages[i]['user_from'] == profiles[j]['id']) {
-        if (messages[i]['user_from_name'] != profiles[j]['name']) {
+        if (messages[i]['user_from_name'] != profiles[j]['full_name']) {
           supabase.from('messages').update({
-            'user_from_name': profiles[j]['name'],
+            'user_from_name': profiles[j]['full_name'],
           }).match({
             'user_from': profiles[j]['id'],
           }).execute();
@@ -95,15 +96,15 @@ String getCurrentUserId() =>
 
 Future<void> sendChart() async {
   final sender = await supabase
-      .from('profiles')
-      .select('name')
+      .from('users')
+      .select('full_name')
       .eq('id', getCurrentUserId())
       .single();
 
   final message = Message.createChart(
     content: ' ',
     userFrom: getCurrentUserId(),
-    userFromName: sender['name'],
+    userFromName: sender['full_name'],
   );
   await supabase.from('messages').insert(message.toMap());
 }
