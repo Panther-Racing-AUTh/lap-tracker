@@ -25,6 +25,7 @@ Stream<List<Message>> getMessages() {
       );
 }
 
+//TODO: fix handling of image upload
 Future<void> saveImage(XFile image) async {
   final sender = await supabase
       .from('profiles')
