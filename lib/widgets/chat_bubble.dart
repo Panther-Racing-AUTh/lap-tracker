@@ -1,5 +1,6 @@
 //import 'package:chat_app/mark_as_read.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/widgets/chart_widget.dart';
 import '../models/message.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -35,14 +36,59 @@ class ChatBubble extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 12),
                       decoration: BoxDecoration(
-                        color: message.isMine ? Colors.blue : Colors.grey,
+                        color: (message.type == 'text')
+                            ? message.isMine
+                                ? Theme.of(context).primaryColor
+                                : Colors.grey
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        message.content,
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 16.0),
-                      ),
+                      child: (message.type == 'text')
+                          ? Text(
+                              message.content,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 16.0),
+                            )
+                          : GestureDetector(
+                              child: Stack(
+                                children: [
+                                  EchartsPage(),
+                                  Container(
+                                    color: Colors.transparent,
+                                    width: 600,
+                                    height: 310,
+                                  ),
+                                ],
+                              ),
+                              onTap: () => showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                        actions: [
+                                          Card(
+                                            child: ListTile(
+                                                title:
+                                                    Text('View in Fullscreen'),
+                                                onTap: () {
+                                                  Navigator.of(context).pop();
+                                                  showDialog(
+                                                      context: ctx,
+                                                      builder: (c) {
+                                                        return AlertDialog(
+                                                            actions: [
+                                                              EchartsPage()
+                                                            ]);
+                                                      });
+                                                }),
+                                          ),
+                                          Card(
+                                            child: ListTile(
+                                              title: Text(
+                                                  'Open in \'Chart\' page'),
+                                            ),
+                                          )
+                                        ],
+                                      )),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 10),

@@ -8,7 +8,7 @@ class ChartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(
-        text: chart,
+        text: chart_widget_motor_charts,
         context: context,
       ),
       body: Center(

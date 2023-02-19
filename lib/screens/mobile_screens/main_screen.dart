@@ -69,7 +69,7 @@ class MainScreen extends StatelessWidget {
                     if (!landscape)
                       Container(
                         child: blockWidget(
-                          title: 'data',
+                          title: data,
                           context: context,
                           color: Color.fromARGB(255, 235, 227, 215),
                           page: '/data',

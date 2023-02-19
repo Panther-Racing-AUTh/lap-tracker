@@ -1,5 +1,5 @@
-// ignore_for_file: deprecated_member_use
-
+import 'package:universal_io/io.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/message.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -25,6 +25,25 @@ Stream<List<Message>> getMessages() {
       );
 }
 
+Future<void> saveImage(XFile image) async {
+  final sender = await supabase
+      .from('profiles')
+      .select('name')
+      .eq('id', getCurrentUserId())
+      .single();
+
+  supabase.storage.from('message-images').uploadBinary(
+      '${getCurrentUserId()}/${image.name}',
+      await File(image.path).readAsBytes(),
+      fileOptions: FileOptions(contentType: image.mimeType));
+
+  final message = Message.createImage(
+      content: '${getCurrentUserId()}/${image.name}',
+      userFrom: getCurrentUserId(),
+      userFromName: sender['name']);
+  await supabase.from('messages').insert({message.toMap()});
+}
+
 Future<void> saveMessage(String content) async {
   final sender = await supabase
       .from('profiles')
@@ -32,7 +51,7 @@ Future<void> saveMessage(String content) async {
       .eq('id', getCurrentUserId())
       .single();
 
-  final message = Message.create(
+  final message = Message.createText(
     content: content,
     userFrom: getCurrentUserId(),
     userFromName: sender['name'],
@@ -72,3 +91,18 @@ bool isAuthentificated() => supabase.auth.currentUser != null;
 
 String getCurrentUserId() =>
     isAuthentificated() ? supabase.auth.currentUser!.id : '';
+
+Future<void> sendChart() async {
+  final sender = await supabase
+      .from('profiles')
+      .select('name')
+      .eq('id', getCurrentUserId())
+      .single();
+
+  final message = Message.createChart(
+    content: ' ',
+    userFrom: getCurrentUserId(),
+    userFromName: sender['name'],
+  );
+  await supabase.from('messages').insert(message.toMap());
+}

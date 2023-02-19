@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/message.dart';
@@ -15,6 +16,42 @@ class ChatWidget extends StatefulWidget {
 class _ChatWidgetState extends State<ChatWidget> {
   final _formKey = GlobalKey<FormState>();
   final _msgController = TextEditingController();
+
+  Future<void> pickChart(BuildContext c) async {
+    showDialog(
+      context: c,
+      builder: (ctx) => AlertDialog(
+        actions: [
+          GestureDetector(
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: Card(
+                  child: ListTile(
+                leading: Text('Chart 1'),
+              )),
+            ),
+            onTap: () {
+              sendChart();
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Future pickImage({required bool isCamera}) async {
+    try {
+      final image = await ImagePicker().pickImage(
+          source: isCamera ? ImageSource.camera : ImageSource.gallery);
+      if (image == null) return;
+
+      saveImage(image);
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
+    }
+  }
 
   Future<void> _submit() async {
     final text = _msgController.text;
@@ -124,29 +161,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                         },
                       ),
                     ),
-                    SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Form(
-                          key: _formKey,
-                          child: TextFormField(
-                            controller: _msgController,
-                            onFieldSubmitted: (value) {
-                              _submit();
-                            },
-                            decoration: InputDecoration(
-                                labelText: 'Message',
-                                suffixIcon: IconButton(
-                                  onPressed: () => _submit(),
-                                  icon: const Icon(
-                                    Icons.send_rounded,
-                                    color: Colors.grey,
-                                  ),
-                                )),
-                          ),
-                        ),
-                      ),
-                    ),
+                    ActionBar(),
                     const SizedBox(height: 20.0)
                   ],
                 ),
@@ -182,4 +197,51 @@ class _ChatWidgetState extends State<ChatWidget> {
       ),
     );
   }
+
+  Widget ActionBar() => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(
+            key: _formKey,
+            child: TextFormField(
+              controller: _msgController,
+              onFieldSubmitted: (value) {
+                _submit();
+              },
+              decoration: InputDecoration(
+                  labelText: 'Message',
+                  suffixIcon: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          pickChart(context);
+                        },
+                        icon: Icon(Icons.bar_chart),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          pickImage(isCamera: true);
+                        },
+                        icon: Icon(Icons.camera_alt_outlined),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          pickImage(isCamera: false);
+                        },
+                        icon: Icon(Icons.image_outlined),
+                      ),
+                      IconButton(
+                        onPressed: () => _submit(),
+                        icon: const Icon(
+                          Icons.send_rounded,
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+          ),
+        ),
+      );
 }
