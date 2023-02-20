@@ -54,8 +54,8 @@ class _EchartsPageState extends State<EchartsPage> {
                   children: <Widget>[
                     Container(
                       margin: const EdgeInsets.only(top: 10),
-                      width: 500,
-                      height: 300,
+                      width: MediaQuery.of(context).size.width * 0.90,
+                      height: MediaQuery.of(context).size.height * 0.9,
                       child: Chart(
                         data: lineMarkerData,
                         variables: {
@@ -67,8 +67,6 @@ class _EchartsPageState extends State<EchartsPage> {
                           'value': Variable(
                             accessor: (Map datum) => datum['value'] as num,
                             scale: LinearScale(
-                              max: 170,
-                              min: 0,
                               tickCount: 7,
                               formatter: (v) => '${v.toInt()}',
                             ),
