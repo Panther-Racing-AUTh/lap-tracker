@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/names.dart';
+import 'package:flutter_complete_guide/widgets/chart_widget.dart';
 import '../../widgets/main_appbar.dart';
 
 class ChartScreen extends StatelessWidget {
@@ -12,7 +13,7 @@ class ChartScreen extends StatelessWidget {
         context: context,
       ),
       body: Center(
-        child: Text('Chart Screen'),
+        child: EchartsPage(),
       ),
     );
   }

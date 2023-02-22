@@ -1,6 +1,7 @@
 //import 'package:chat_app/mark_as_read.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/widgets/chart_widget.dart';
+import 'package:flutter_complete_guide/widgets/echarts_widget.dart';
 import '../models/message.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -54,7 +55,7 @@ class ChatBubble extends StatelessWidget {
                           : GestureDetector(
                               child: Stack(
                                 children: [
-                                  EchartsPage(),
+                                  EchartsWidget(),
                                   Container(
                                     color: Colors.transparent,
                                     width: 600,
