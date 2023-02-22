@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:quiver/iterables.dart';
+import 'package:quiver/strings.dart';
 import './checked_boxes_widget.dart';
 import 'echarts_widget.dart';
 
@@ -23,18 +24,21 @@ class _EchartsPageState extends State<EchartsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      children: [
-        Container(
-          height: 500,
-          width: 250,
-          child: CheckedBoxWidget(
-            setFinalList: refresh,
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 500,
+            width: 250,
+            child: CheckedBoxWidget(
+              setFinalList: refresh,
+            ),
           ),
-        ),
-        if (finalList.length != 0) EchartsWidget(),
-      ],
+          if (finalList.length != 0) EchartsWidget(),
+        ],
+      ),
     );
   }
 }

@@ -3,6 +3,8 @@ import 'package:flutter_complete_guide/models/race.dart';
 import 'package:flutter_complete_guide/supabase/select_race_track_functions.dart';
 import 'package:flutter_complete_guide/widgets/drivers_grid.dart';
 
+import '../overview.dart';
+
 class _MyDelegate extends MultiChildLayoutDelegate {
   _MyDelegate(
       {required this.position,
@@ -15,23 +17,24 @@ class _MyDelegate extends MultiChildLayoutDelegate {
 
   @override
   void performLayout(Size size) {
+    late Size firstSize;
     late Size secondSize;
     late Size thirdSize;
 
     if (hasChild(1)) {
-      secondSize = layoutChild(
+      firstSize = layoutChild(
         1,
         BoxConstraints(),
       );
 
       positionChild(
         1,
-        Offset(screenWidth - secondSize.width, 0),
+        Offset(screenWidth - firstSize.width, 0),
       );
     }
 
     if (hasChild(2)) {
-      thirdSize = layoutChild(
+      secondSize = layoutChild(
         2,
         BoxConstraints(),
       );
@@ -39,6 +42,18 @@ class _MyDelegate extends MultiChildLayoutDelegate {
       positionChild(
         2,
         Offset(0, screenHeight * 0.6 - 58),
+      );
+    }
+
+    if (hasChild(3)) {
+      thirdSize = layoutChild(
+        3,
+        BoxConstraints(),
+      );
+
+      positionChild(
+        3,
+        Offset(screenWidth * 0.5, screenHeight * 0.6 - 58),
       );
     }
   }
@@ -86,6 +101,14 @@ Widget DashBoardDesktop({
                       fit: BoxFit.contain,
                     ),
                   ),
+          ),
+          LayoutId(
+            id: 3,
+            child: Container(
+              height: 300,
+              width: 450,
+              child: Overview(),
+            ),
           ),
         ],
       );
