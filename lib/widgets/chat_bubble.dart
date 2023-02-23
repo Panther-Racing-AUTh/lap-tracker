@@ -55,7 +55,10 @@ class ChatBubble extends StatelessWidget {
                           : GestureDetector(
                               child: Stack(
                                 children: [
-                                  EchartsWidget(),
+                                  //Edw tha paixtei mpalitsa na kses
+                                  EchartsWidget(
+                                    finalList: ['rpm'],
+                                  ),
                                   Container(
                                     color: Colors.transparent,
                                     width: 600,

@@ -12,15 +12,20 @@ class CheckedBoxWidget extends StatefulWidget {
 }
 
 class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
-  final allChecked = CheckBoxClass(title: 'Select All');
+  final allChecked =
+      CheckBoxClass(title: 'Select All', supabaseTitle: 'select_all');
 
   final checkboxList = [
-    CheckBoxClass(title: 'RPM'),
-    CheckBoxClass(title: 'Oil Pressure'),
-    CheckBoxClass(title: 'Air Intake Pressure'),
-    CheckBoxClass(title: 'Air Intake Temperature'),
-    CheckBoxClass(title: 'Throttle Position'),
-    CheckBoxClass(title: 'Fuel Temperature'),
+    CheckBoxClass(title: 'RPM', supabaseTitle: 'rpm'),
+    CheckBoxClass(title: 'Oil Pressure', supabaseTitle: 'oil_pressure'),
+    CheckBoxClass(
+        title: 'Air Intake Pressure', supabaseTitle: 'air_intake_pressure'),
+    CheckBoxClass(
+        title: 'Air Intake Temperature',
+        supabaseTitle: 'air_intake_temperature'),
+    CheckBoxClass(
+        title: 'Throttle position', supabaseTitle: 'throttle_position'),
+    CheckBoxClass(title: 'Fuel Temperature', supabaseTitle: 'fuel_temperature'),
   ];
 
   onAllClicked(CheckBoxClass ckbItem) {
@@ -33,12 +38,12 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
             element.value = newValue;
             if (newValue) {
               widget.finalSelectedList = [
-                'RPM',
-                'Oil Pressure',
-                'Air Intake Pressure',
-                'Air Intake Temperature',
-                'Throttle Position',
-                'Fuel Temperature'
+                'rpm',
+                'oil_pressure',
+                'air_intake_pressure',
+                'air_intake_temperature',
+                'throttle_position',
+                'fuel_temperature'
               ];
             } else {
               widget.finalSelectedList = [];
@@ -69,7 +74,7 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
       }
       checkboxList.forEach((item) {
         if (item.value) {
-          selectedList.add(item.title);
+          selectedList.add(item.supabaseTitle);
           widget.finalSelectedList = selectedList;
         }
       });
@@ -109,7 +114,9 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
 
 class CheckBoxClass {
   String title;
+  String supabaseTitle;
   bool value;
 
-  CheckBoxClass({required this.title, this.value = false});
+  CheckBoxClass(
+      {required this.title, required this.supabaseTitle, this.value = false});
 }

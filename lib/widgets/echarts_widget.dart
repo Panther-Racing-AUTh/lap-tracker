@@ -6,7 +6,9 @@ import 'package:graphic/graphic.dart';
 final supabase = Supabase.instance.client;
 
 class EchartsWidget extends StatefulWidget {
-  const EchartsWidget({super.key});
+  final List<dynamic> finalList;
+
+  const EchartsWidget({super.key, required this.finalList});
 
   @override
   State<EchartsWidget> createState() => _EchartsWidgetState();
@@ -19,6 +21,7 @@ class _EchartsWidgetState extends State<EchartsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.finalList);
     return StreamBuilder(
       stream: _stream,
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
@@ -30,38 +33,21 @@ class _EchartsWidgetState extends State<EchartsWidget> {
           final List<Map<String, dynamic>> lineMarkerData = [];
 
           snapshot.data?.forEach((data) {
-            lineMarkerData.add(
-              {
-                'racing_time': data['racing_time'],
-                'value': data['rpm'],
-                'group': 'rpm'
-              },
-            );
-            lineMarkerData.add(
-              {
-                'racing_time': data['racing_time'],
-                'value': data['oil_pressure'],
-                'group': 'oil_pressure'
-              },
-            );
-            lineMarkerData.add(
-              {
-                'racing_time': data['racing_time'],
-                'value': data['air_intake_pressure'],
-                'group': 'air_intake_pressure'
-              },
-            );
-            lineMarkerData.add(
-              {
-                'racing_time': data['racing_time'],
-                'value': data['air_intake_pressure'],
-                'group': 'air_intake_pressure'
-              },
-            );
+            widget.finalList.forEach((item) {
+              print(item);
+              lineMarkerData.add(
+                {
+                  'racing_time': data['racing_time'],
+                  'value': data[item],
+                  'group': item
+                },
+              );
+              print('The data is : ${lineMarkerData}');
+              print(data[item]);
+            });
 
-            // print(lineMarkerData);
-            // {'racing_time': '1.05', 'value': 10, 'group': 'rpm'}
-            // {'racing_time': '1.05', 'value': 1, 'group': 'oil_pressure'}
+            //   // {'racing_time': '1.05', 'value': 10, 'group': 'rpm'}
+            //   // {'racing_time': '1.05', 'value': 1, 'group': 'oil_pressure'}
           });
 
           var echartWidget = SingleChildScrollView(
