@@ -66,7 +66,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              child: buildTop(width, height * 0.15),
+                              child: buildTop(width, height * 0.2),
                             ),
                             (width < 1175)
                                 ? Container(
@@ -142,14 +142,15 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
           top: top,
           left: 35,
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildProfileImage(),
               (width >= 1175)
                   ? Container(
                       width: width * 0.3,
-                      height: height,
+                      height: height * 0.9,
                       constraints: BoxConstraints(
-                        minHeight: 100,
+                        minHeight: 130,
                       ),
                       padding: EdgeInsets.only(left: 10, top: 40),
                       child: nameAndRole(),

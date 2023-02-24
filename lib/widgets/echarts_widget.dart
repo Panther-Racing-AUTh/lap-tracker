@@ -5,7 +5,7 @@ import 'package:graphic/graphic.dart';
 
 final supabase = Supabase.instance.client;
 
-class EchartsWidget extends StatefulWidget {
+/*class EchartsWidget extends StatefulWidget {
   final List<dynamic> finalList;
 
   const EchartsWidget({super.key, required this.finalList});
@@ -21,7 +21,8 @@ class _EchartsWidgetState extends State<EchartsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.finalList);
+    //print(widget.finalList);
+
     return StreamBuilder(
       stream: _stream,
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
@@ -34,7 +35,8 @@ class _EchartsWidgetState extends State<EchartsWidget> {
 
           snapshot.data?.forEach((data) {
             widget.finalList.forEach((item) {
-              print(item);
+              print(widget.finalList);
+              //print(item);
               lineMarkerData.add(
                 {
                   'racing_time': data['racing_time'],
@@ -42,22 +44,75 @@ class _EchartsWidgetState extends State<EchartsWidget> {
                   'group': item
                 },
               );
-              print('The data is : ${lineMarkerData}');
-              print(data[item]);
+              //print('The data is : ${lineMarkerData}');
+              //print(data[item]);
             });
 
             //   // {'racing_time': '1.05', 'value': 10, 'group': 'rpm'}
             //   // {'racing_time': '1.05', 'value': 1, 'group': 'oil_pressure'}
           });
+          //print('The data is : ${lineMarkerData}');
+          print(lineMarkerData);
+          //widget.function(widget.finalList);
 
-          var echartWidget = SingleChildScrollView(
+          return echartWidget(context, lineMarkerData);
+        }
+      },
+    );
+  }
+}
+*/
+
+class EchartsWidget extends StatelessWidget {
+  EchartsWidget({super.key, required this.finalList});
+  final List<dynamic> finalList;
+
+  final _stream = supabase
+      .from('telemetry_system_data')
+      .stream(primaryKey: ['id']).order('racing_time', ascending: true);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: _stream,
+      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          final List<Map<String, dynamic>> lineMarkerData = [];
+
+          snapshot.data?.forEach((data) {
+            finalList.forEach((item) {
+              //print(finalList);
+              //print(item);
+              lineMarkerData.add(
+                {
+                  'racing_time': data['racing_time'],
+                  'value': data[item],
+                  'group': item
+                },
+              );
+              //print('The data is : ${lineMarkerData}');
+              //print(data[item]);
+            });
+
+            //   // {'racing_time': '1.05', 'value': 10, 'group': 'rpm'}
+            //   // {'racing_time': '1.05', 'value': 1, 'group': 'oil_pressure'}
+          });
+          //print('The data is : ${lineMarkerData}');
+          //print(lineMarkerData);
+          //widget.function(widget.finalList);
+
+          return SingleChildScrollView(
             child: Center(
               child: Column(
                 children: <Widget>[
                   Container(
                     margin: const EdgeInsets.only(top: 10),
-                    width: MediaQuery.of(context).size.width * 0.75,
-                    height: MediaQuery.of(context).size.height * 0.85,
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    height: MediaQuery.of(context).size.height * 0.6,
                     child: Chart(
                       data: lineMarkerData,
                       variables: {
@@ -160,8 +215,7 @@ class _EchartsWidgetState extends State<EchartsWidget> {
               ),
             ),
           );
-
-          return echartWidget;
+          ;
         }
       },
     );

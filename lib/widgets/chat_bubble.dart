@@ -1,8 +1,9 @@
 //import 'package:chat_app/mark_as_read.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/widgets/chart_widget.dart';
 import 'package:flutter_complete_guide/widgets/echarts_widget.dart';
+import 'package:provider/provider.dart';
 import '../models/message.dart';
+import '../providers/app_setup.dart';
 
 class ChatBubble extends StatelessWidget {
   final Message message;
@@ -12,6 +13,7 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppSetup setup = Provider.of<AppSetup>(context);
     var chatContents = [
       const SizedBox(width: 12.0),
       Column(
@@ -57,7 +59,12 @@ class ChatBubble extends StatelessWidget {
                                 children: [
                                   //Edw tha paixtei mpalitsa na kses
                                   EchartsWidget(
-                                    finalList: ['rpm'],
+                                    finalList: message.content
+                                        .replaceFirst('[', '')
+                                        .replaceFirst(']', '')
+                                        .replaceAll(' ', '')
+                                        .split(',')
+                                        .toList(),
                                   ),
                                   Container(
                                     color: Colors.transparent,
@@ -66,7 +73,7 @@ class ChatBubble extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              onTap: () => showDialog(
+                              onLongPress: () => showDialog(
                                   context: context,
                                   builder: (ctx) => AlertDialog(
                                         actions: [
@@ -81,7 +88,18 @@ class ChatBubble extends StatelessWidget {
                                                       builder: (c) {
                                                         return AlertDialog(
                                                             actions: [
-                                                              EchartsPage()
+                                                              EchartsWidget(
+                                                                finalList: message
+                                                                    .content
+                                                                    .replaceFirst(
+                                                                        '[', '')
+                                                                    .replaceFirst(
+                                                                        ']', '')
+                                                                    .replaceAll(
+                                                                        ' ', '')
+                                                                    .split(',')
+                                                                    .toList(),
+                                                              )
                                                             ]);
                                                       });
                                                 }),
@@ -90,6 +108,16 @@ class ChatBubble extends StatelessWidget {
                                             child: ListTile(
                                               title: Text(
                                                   'Open in \'Chart\' page'),
+                                              onTap: () {
+                                                setup.setIndex(4);
+                                                setup.setList(message.content
+                                                    .replaceFirst('[', '')
+                                                    .replaceFirst(']', '')
+                                                    .replaceAll(' ', '')
+                                                    .split(',')
+                                                    .toList());
+                                                Navigator.of(context).pop();
+                                              },
                                             ),
                                           )
                                         ],

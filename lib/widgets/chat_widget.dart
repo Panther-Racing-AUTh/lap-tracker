@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_complete_guide/widgets/checked_boxes_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -13,6 +14,12 @@ class ChatWidget extends StatefulWidget {
   State<ChatWidget> createState() => _ChatWidgetState();
 }
 
+List<dynamic> ChartList = [];
+
+void passList(List l) {
+  ChartList = l;
+}
+
 class _ChatWidgetState extends State<ChatWidget> {
   final _formKey = GlobalKey<FormState>();
   final _msgController = TextEditingController();
@@ -22,20 +29,27 @@ class _ChatWidgetState extends State<ChatWidget> {
       context: c,
       builder: (ctx) => AlertDialog(
         actions: [
-          GestureDetector(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width * 0.6,
-              child: Card(
-                  child: ListTile(
-                leading: Text('Chart 1'),
-              )),
-            ),
-            onTap: () {
-              sendChart();
-              Navigator.of(ctx).pop();
-            },
-          )
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: Card(
+                    child: CheckedBoxWidget(
+                  setFinalList: passList,
+                  noChartAttached: true,
+                )),
+              ),
+              IconButton(
+                onPressed: () {
+                  sendChart(ChartList);
+                  Navigator.of(ctx).pop();
+                },
+                icon: Icon(Icons.send),
+              )
+            ],
+          ),
         ],
       ),
     );

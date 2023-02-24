@@ -64,7 +64,7 @@ Future<void> saveMessage(String content) async {
 Future<void> updateMessages() async {
   final messages =
       await supabase.from('messages').select('user_from, user_from_name');
-  final profiles = await supabase.from('users').select('id, name');
+  final profiles = await supabase.from('users').select('id, full_name');
 
   for (int i = 0; i < messages.length; i++) {
     //final currentMessage = messages[i];
@@ -94,7 +94,7 @@ bool isAuthentificated() => supabase.auth.currentUser != null;
 String getCurrentUserId() =>
     isAuthentificated() ? supabase.auth.currentUser!.id : '';
 
-Future<void> sendChart() async {
+Future<void> sendChart(List<dynamic> l) async {
   final sender = await supabase
       .from('users')
       .select('full_name')
@@ -102,7 +102,7 @@ Future<void> sendChart() async {
       .single();
 
   final message = Message.createChart(
-    content: ' ',
+    content: l.toString(),
     userFrom: getCurrentUserId(),
     userFromName: sender['full_name'],
   );

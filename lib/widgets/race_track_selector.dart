@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/race.dart';
 import 'package:country_flags/country_flags.dart';
-import 'package:flutter_complete_guide/providers/race_setup.dart';
+import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:provider/provider.dart';
 
 class RaceTrackSelector extends StatefulWidget {
@@ -17,7 +17,7 @@ class _RaceTrackSelectorState extends State<RaceTrackSelector> {
   @override
   Widget build(BuildContext ctx) {
     List<Race> races = races2023;
-    RaceSetup setup = Provider.of<RaceSetup>(context);
+    AppSetup setup = Provider.of<AppSetup>(context);
 
     CountryFlags getIcon(int index) {
       return CountryFlags.flag(races[index].country);

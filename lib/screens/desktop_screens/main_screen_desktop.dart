@@ -9,7 +9,7 @@ import 'package:flutter_complete_guide/widgets/settings.dart';
 import 'package:flutter_complete_guide/widgets/weather_widget.dart';
 import 'package:provider/provider.dart';
 import '../../names.dart' as names;
-import '../../providers/race_setup.dart';
+import '../../providers/app_setup.dart';
 import '../../widgets/desktop_widgets/charts_desktop_widget.dart';
 import '../../widgets/desktop_widgets/panther_desktop_widget.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
@@ -22,7 +22,6 @@ class MainScreenDesktop extends StatefulWidget {
 }
 
 class _MainScreenDesktopState extends State<MainScreenDesktop> {
-  int _selected = 0;
   bool showSidebar = true;
   bool showWeather = true;
   bool showDriverBoard = true;
@@ -55,13 +54,80 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    RaceSetup setup = Provider.of<RaceSetup>(context);
+    AppSetup setup = Provider.of<AppSetup>(context);
     var height = MediaQuery.of(context).size.height;
     var width =
         _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
 
+    //shortcuts
+    Map<ShortcutActivator, void Function()> shortcuts() {
+      return {
+        const SingleActivator(LogicalKeyboardKey.keyM, control: true): () {
+          setState(() {
+            showSidebar = !showSidebar;
+          });
+        },
+        const SingleActivator(
+          LogicalKeyboardKey.digit1,
+          control: true,
+        ): () {
+          setState(() {
+            setup.setIndex(0);
+          });
+        },
+        const SingleActivator(
+          LogicalKeyboardKey.digit2,
+          control: true,
+        ): () {
+          setState(() {
+            setup.setIndex(1);
+          });
+        },
+        const SingleActivator(
+          LogicalKeyboardKey.digit3,
+          control: true,
+        ): () {
+          setState(() {
+            setup.setIndex(2);
+          });
+        },
+        const SingleActivator(
+          LogicalKeyboardKey.digit4,
+          control: true,
+        ): () {
+          setState(() {
+            setup.setIndex(3);
+          });
+        },
+        const SingleActivator(
+          LogicalKeyboardKey.digit5,
+          control: true,
+        ): () {
+          setState(() {
+            setup.setIndex(4);
+          });
+        },
+        const SingleActivator(
+          LogicalKeyboardKey.digit6,
+          control: true,
+        ): () {
+          setState(() {
+            setup.setIndex(5);
+          });
+        },
+        const SingleActivator(
+          LogicalKeyboardKey.digit7,
+          control: true,
+        ): () {
+          setState(() {
+            setup.setIndex(6);
+          });
+        },
+      };
+    }
+
     Widget buildPages(double height) {
-      switch (_selected) {
+      switch (setup.mainScreenDesktopIndex) {
         case 0:
           return DashBoardDesktop(
             race: setup.currentRace,
@@ -96,7 +162,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     }
 
     return CallbackShortcuts(
-      bindings: shortcuts(_selected),
+      bindings: shortcuts(),
       child: Focus(
         autofocus: true,
         child: Scaffold(
@@ -158,11 +224,11 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                             kToolbarHeight),
                     child: IntrinsicHeight(
                       child: NavigationRail(
-                        selectedIndex: _selected,
+                        selectedIndex: setup.mainScreenDesktopInd,
                         groupAlignment: -1,
                         onDestinationSelected: (value) {
                           setState(() {
-                            _selected = value;
+                            setup.setIndex(value);
                           });
                         },
                         labelType: NavigationRailLabelType.all,
@@ -253,86 +319,5 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         ),
       ),
     );
-  }
-
-  //shortcuts
-  Map<ShortcutActivator, void Function()> shortcuts(int index) {
-    return {
-      const SingleActivator(LogicalKeyboardKey.keyM, control: true): () {
-        setState(() {
-          showSidebar = !showSidebar;
-        });
-      },
-      const SingleActivator(
-        LogicalKeyboardKey.digit1,
-      ): () {
-        setState(() {
-          if (_selected == 0) showWeather = !showWeather;
-        });
-      },
-      const SingleActivator(
-        LogicalKeyboardKey.digit2,
-      ): () {
-        setState(() {
-          if (_selected == 0) showDriverBoard = !showDriverBoard;
-        });
-      },
-      const SingleActivator(
-        LogicalKeyboardKey.digit1,
-        control: true,
-      ): () {
-        setState(() {
-          _selected = 0;
-        });
-      },
-      const SingleActivator(
-        LogicalKeyboardKey.digit2,
-        control: true,
-      ): () {
-        setState(() {
-          _selected = 1;
-        });
-      },
-      const SingleActivator(
-        LogicalKeyboardKey.digit3,
-        control: true,
-      ): () {
-        setState(() {
-          _selected = 2;
-        });
-      },
-      const SingleActivator(
-        LogicalKeyboardKey.digit4,
-        control: true,
-      ): () {
-        setState(() {
-          _selected = 3;
-        });
-      },
-      const SingleActivator(
-        LogicalKeyboardKey.digit5,
-        control: true,
-      ): () {
-        setState(() {
-          _selected = 4;
-        });
-      },
-      const SingleActivator(
-        LogicalKeyboardKey.digit6,
-        control: true,
-      ): () {
-        setState(() {
-          _selected = 5;
-        });
-      },
-      const SingleActivator(
-        LogicalKeyboardKey.digit7,
-        control: true,
-      ): () {
-        setState(() {
-          _selected = 6;
-        });
-      },
-    };
   }
 }
