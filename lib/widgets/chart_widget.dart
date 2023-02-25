@@ -41,7 +41,7 @@ class _EchartsPageState extends State<EchartsPage> {
                   setFinalList: refresh,
                 ),
               ),
-              if (finalList.length != 0)
+              if (finalList.length > 2)
                 TextButton(
                     onPressed: () => sendChart(finalList),
                     child: Text(
@@ -50,9 +50,9 @@ class _EchartsPageState extends State<EchartsPage> {
                     )),
             ],
           ),
-          if (finalList.length != 0)
+          if (finalList.length > 2)
             EchartsWidget(
-              finalList: finalList,
+              finalList: a.chartList,
             ),
         ],
       ),

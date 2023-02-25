@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../providers/app_setup.dart';
+import 'package:intl/intl.dart';
 
 class CheckedBoxWidget extends StatefulWidget {
   final setFinalList;
 
-  CheckedBoxWidget(
-      {Key? key, required this.setFinalList, bool noChartAttached = false})
-      : super(key: key);
+  CheckedBoxWidget({Key? key, required this.setFinalList}) : super(key: key);
 
   var finalSelectedList = [];
-  bool noChartAttached = false;
+
   @override
   State<CheckedBoxWidget> createState() => _CheckedBoxWidgetState();
 }
@@ -86,6 +85,7 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
         a.removeItemFromlist(ckbItem.supabaseTitle);
       } else
         a.addItemTolist(ckbItem.supabaseTitle);
+      widget.setFinalList(widget.finalSelectedList);
     }
 
     /*
@@ -114,6 +114,11 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
     });
     */
 
+    sliderChange(SfRangeValues newRange) {
+      a.setTimeConstraints(newRange.start, newRange.end);
+      widget.setFinalList(widget.finalSelectedList);
+    }
+
     return ListView(
       children: [
         ListTile(
@@ -136,7 +141,16 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
                 title: Text(item.title),
               ),
             )
-            .toList()
+            .toList(),
+        SfRangeSlider(
+          min: DateTime(2023, 1, 1, 1, 0, 0, 0),
+          max: DateTime(2023, 1, 1, 1, 6, 0, 0),
+          enableTooltip: true,
+          dateFormat: DateFormat.ms(),
+          dateIntervalType: DateIntervalType.seconds,
+          values: SfRangeValues(a.chartList[0], a.chartList[1]),
+          onChanged: (SfRangeValues newRange) => sliderChange(newRange),
+        )
       ],
     );
   }

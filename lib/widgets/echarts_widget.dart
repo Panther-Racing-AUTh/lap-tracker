@@ -66,7 +66,16 @@ class _EchartsWidgetState extends State<EchartsWidget> {
 class EchartsWidget extends StatelessWidget {
   EchartsWidget({super.key, required this.finalList});
   final List<dynamic> finalList;
-
+  late final start = finalList[0].minute.toString().padLeft(2, '0') +
+      ':' +
+      finalList[0].second.toString().padLeft(2, '0') +
+      ':' +
+      finalList[0].millisecond.toString().padLeft(3, '0');
+  late final end = finalList[1].minute.toString().padLeft(2, '0') +
+      ':' +
+      finalList[1].second.toString().padLeft(2, '0') +
+      ':' +
+      finalList[1].millisecond.toString().padLeft(3, '0');
   final _stream = supabase
       .from('telemetry_system_data')
       .stream(primaryKey: ['id']).order('racing_time', ascending: true);
@@ -84,23 +93,23 @@ class EchartsWidget extends StatelessWidget {
           final List<Map<String, dynamic>> lineMarkerData = [];
 
           snapshot.data?.forEach((data) {
-            finalList.forEach((item) {
-              //print(finalList);
-              //print(item);
-              lineMarkerData.add(
-                {
-                  'racing_time': data['racing_time'],
-                  'value': data[item],
-                  'group': item
-                },
-              );
-              //print('The data is : ${lineMarkerData}');
-              //print(data[item]);
+            finalList.skip(2).forEach((item) {
+              if (start.compareTo(data['racing_time']) < 0 &&
+                  data['racing_time'].compareTo(end) < 0) {
+                lineMarkerData.add(
+                  {
+                    'racing_time': data['racing_time'],
+                    'value': data[item],
+                    'group': item,
+                  },
+                );
+              }
             });
 
             //   // {'racing_time': '1.05', 'value': 10, 'group': 'rpm'}
             //   // {'racing_time': '1.05', 'value': 1, 'group': 'oil_pressure'}
           });
+
           //print('The data is : ${lineMarkerData}');
           //print(lineMarkerData);
           //widget.function(widget.finalList);
@@ -215,7 +224,6 @@ class EchartsWidget extends StatelessWidget {
               ),
             ),
           );
-          ;
         }
       },
     );

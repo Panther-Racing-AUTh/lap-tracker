@@ -35,13 +35,13 @@ dependencies:
   video_player: ^2.4.10
   keymap: ^0.0.91
   flutter_device_type:
-  fl_chart: ^0.55.2
   country_flags: ^1.0.0
   flutter_svg: ^1.1.6
   quiver: ^3.2.1
   graphic: ^1.0.1
   image_picker: ^0.8.6+2
   http: 
+  syncfusion_flutter_sliders:
    
   
     

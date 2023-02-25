@@ -18,6 +18,7 @@ List<dynamic> ChartList = [];
 
 void passList(List l) {
   ChartList = l;
+  print(ChartList);
 }
 
 class _ChatWidgetState extends State<ChatWidget> {
@@ -33,16 +34,16 @@ class _ChatWidgetState extends State<ChatWidget> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.4,
+                height: MediaQuery.of(context).size.height * 0.6,
                 width: MediaQuery.of(context).size.width * 0.6,
                 child: Card(
                     child: CheckedBoxWidget(
                   setFinalList: passList,
-                  noChartAttached: true,
                 )),
               ),
               IconButton(
                 onPressed: () {
+                  print(ChartList);
                   sendChart(ChartList);
                   Navigator.of(ctx).pop();
                 },

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/race.dart';
+import 'package:flutter_complete_guide/names.dart';
 
 class AppSetup extends ChangeNotifier {
   //TODO: store settings and preferences locally on the device
   Race currentRaceSelected = races2023[0];
-  List chartList = [];
+  List chartList = [
+    DateTime(2023, 1, 1, 1, 2, 0, 0),
+    DateTime(2023, 1, 1, 1, 4, 0, 0)
+  ];
   int mainScreenDesktopIndex = 0;
   AppSetup();
 
@@ -18,7 +22,7 @@ class AppSetup extends ChangeNotifier {
   }
 
   setList(List l) {
-    chartList = l;
+    chartList = [chartList[0], chartList[1]] + l;
     notifyListeners();
   }
 
@@ -27,7 +31,7 @@ class AppSetup extends ChangeNotifier {
   }
 
   bool listContainsAllItems() {
-    return chartList.length == 6;
+    return chartList.length == 8;
   }
 
   void removeItemFromlist(dynamic item) {
@@ -47,5 +51,11 @@ class AppSetup extends ChangeNotifier {
 
   bool checkIndex(int i) {
     return mainScreenDesktopIndex == i;
+  }
+
+  void setTimeConstraints(dynamic start, dynamic end) {
+    chartList[0] = start;
+    chartList[1] = end;
+    notifyListeners();
   }
 }

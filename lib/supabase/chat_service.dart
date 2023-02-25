@@ -100,7 +100,7 @@ Future<void> sendChart(List<dynamic> l) async {
       .select('full_name')
       .eq('id', getCurrentUserId())
       .single();
-
+  print(l.toString());
   final message = Message.createChart(
     content: l.toString(),
     userFrom: getCurrentUserId(),
