@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/gestures.dart';
@@ -66,6 +68,7 @@ class _EchartsWidgetState extends State<EchartsWidget> {
 class EchartsWidget extends StatelessWidget {
   EchartsWidget({super.key, required this.finalList});
   final List<dynamic> finalList;
+  final List n = ['15E'];
   late final start = finalList[0].minute.toString().padLeft(2, '0') +
       ':' +
       finalList[0].second.toString().padLeft(2, '0') +
@@ -79,11 +82,12 @@ class EchartsWidget extends StatelessWidget {
   final _stream = supabase
       .from('telemetry_system_data')
       .stream(primaryKey: ['id']).order('racing_time', ascending: true);
-
+  final stream =
+      supabase.from('telemetry_system_data2').stream(primaryKey: ['id']);
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: _stream,
+      stream: stream,
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (!snapshot.hasData) {
           return Center(
@@ -105,15 +109,24 @@ class EchartsWidget extends StatelessWidget {
                 );
               }
             });
-
-            //   // {'racing_time': '1.05', 'value': 10, 'group': 'rpm'}
-            //   // {'racing_time': '1.05', 'value': 1, 'group': 'oil_pressure'}
           });
+          //print(snapshot.data);
 
-          //print('The data is : ${lineMarkerData}');
-          //print(lineMarkerData);
-          //widget.function(widget.finalList);
-
+          //snapshot.data?.forEach((data) {
+          //  n.forEach((item) {
+          //    print(data);
+          //    print(item);
+          //    if (data.containsValue(item))
+          //      lineMarkerData.add(
+          //        {
+          //          'racing_time': data['timestamp2'],
+          //          'value': data['value'],
+          //          'group': data['canbusId'],
+          //        },
+          //      );
+          //  });
+          //});
+          //print(jsonDecode(snapshot.data![0]['timestamp2']));
           return SingleChildScrollView(
             child: Center(
               child: Column(
