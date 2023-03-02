@@ -68,7 +68,6 @@ class _EchartsWidgetState extends State<EchartsWidget> {
 class EchartsWidget extends StatelessWidget {
   EchartsWidget({super.key, required this.finalList});
   final List<dynamic> finalList;
-  //final List n = ['15E'];
   late final start = finalList[0].hour.toString().padLeft(2, '0') +
       ':' +
       finalList[0].minute.toString().padLeft(2, '0') +

@@ -13,7 +13,10 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(message.content);
+    var width = (MediaQuery.of(context).size.width < 600)
+        ? MediaQuery.of(context).size.width * 0.8
+        : MediaQuery.of(context).size.width * 0.5;
+
     AppSetup setup = Provider.of<AppSetup>(context);
     var chatContents = [
       const SizedBox(width: 12.0),
@@ -35,10 +38,7 @@ class ChatBubble extends StatelessWidget {
                   Flexible(
                     fit: FlexFit.loose,
                     child: Container(
-                      constraints: BoxConstraints(
-                          maxWidth: (MediaQuery.of(context).size.width < 600)
-                              ? MediaQuery.of(context).size.width * 0.8
-                              : MediaQuery.of(context).size.width * 0.5),
+                      constraints: BoxConstraints(maxWidth: width),
                       padding: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 12),
                       decoration: BoxDecoration(
@@ -65,8 +65,8 @@ class ChatBubble extends StatelessWidget {
                                   ),
                                   Container(
                                     color: Colors.transparent,
-                                    width: 600,
-                                    height: 310,
+                                    width: width,
+                                    height: 550,
                                   ),
                                 ],
                               ),
@@ -104,6 +104,12 @@ class ChatBubble extends StatelessWidget {
                                                 setup.setList(
                                                   chartStringToList(
                                                       message.content),
+                                                );
+                                                setup.setTimeConstraints(
+                                                  chartStringToList(
+                                                      message.content)[0],
+                                                  chartStringToList(
+                                                      message.content)[1],
                                                 );
                                                 Navigator.of(context).pop();
                                               },
@@ -150,13 +156,11 @@ class ChatBubble extends StatelessWidget {
 List<dynamic> chartStringToList(String t) {
   List<dynamic> l = [], u = [];
   u = t.replaceFirst('[', '').replaceFirst(']', '').split(',').toList();
-  print(u);
 
   l.add(DateTime.parse(u[0]));
   l.add(DateTime.parse(u[1].replaceFirst(' ', '')));
   for (int i = 2; i < u.length; i++) {
     l.add(u[i].replaceFirst(' ', ''));
   }
-  print(l);
   return l;
 }
