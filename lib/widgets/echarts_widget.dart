@@ -68,22 +68,28 @@ class _EchartsWidgetState extends State<EchartsWidget> {
 class EchartsWidget extends StatelessWidget {
   EchartsWidget({super.key, required this.finalList});
   final List<dynamic> finalList;
-  final List n = ['15E'];
-  late final start = finalList[0].minute.toString().padLeft(2, '0') +
+  //final List n = ['15E'];
+  late final start = finalList[0].hour.toString().padLeft(2, '0') +
+      ':' +
+      finalList[0].minute.toString().padLeft(2, '0') +
       ':' +
       finalList[0].second.toString().padLeft(2, '0') +
-      ':' +
+      '.' +
       finalList[0].millisecond.toString().padLeft(3, '0');
-  late final end = finalList[1].minute.toString().padLeft(2, '0') +
+  late final end = finalList[1].hour.toString().padLeft(2, '0') +
+      ':' +
+      finalList[1].minute.toString().padLeft(2, '0') +
       ':' +
       finalList[1].second.toString().padLeft(2, '0') +
-      ':' +
+      '.' +
       finalList[1].millisecond.toString().padLeft(3, '0');
   final _stream = supabase
       .from('telemetry_system_data')
       .stream(primaryKey: ['id']).order('racing_time', ascending: true);
-  final stream =
-      supabase.from('telemetry_system_data2').stream(primaryKey: ['id']);
+  final stream = supabase
+      .from('telemetry_system_data2')
+      .stream(primaryKey: ['id']).order('timest', ascending: true);
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -95,37 +101,43 @@ class EchartsWidget extends StatelessWidget {
           );
         } else {
           final List<Map<String, dynamic>> lineMarkerData = [];
+          //print(snapshot.data);
+          //snapshot.data?.forEach((data) {
+          //  finalList.skip(2).forEach((item) {
+          //  if (start.compareTo(data['racing_time']) < 0 &&
+          //        data['racing_time'].compareTo(end) < 0) {
+          //      lineMarkerData.add(
+          //        {
+          //          'racing_time': data['racing_time'],
+          //          'value': data[item],
+          //          'group': item,
+          //        },
+          //      );
+          //    }
+          //  });
+          //});
+          //print(snapshot.data);
 
           snapshot.data?.forEach((data) {
             finalList.skip(2).forEach((item) {
-              if (start.compareTo(data['racing_time']) < 0 &&
-                  data['racing_time'].compareTo(end) < 0) {
-                lineMarkerData.add(
-                  {
-                    'racing_time': data['racing_time'],
-                    'value': data[item],
-                    'group': item,
-                  },
-                );
+              if (start.compareTo(data['timestamp2']) < 0 &&
+                  data['timestamp2'].compareTo(end) < 0) {
+                if (data.containsValue(item))
+                  lineMarkerData.add(
+                    {
+                      'racing_time': data['timestamp2'],
+                      'value': data['value'],
+                      'group': data['canbusId'],
+                    },
+                  );
               }
             });
           });
-          //print(snapshot.data);
-
-          //snapshot.data?.forEach((data) {
-          //  n.forEach((item) {
-          //    print(data);
-          //    print(item);
-          //    if (data.containsValue(item))
-          //      lineMarkerData.add(
-          //        {
-          //          'racing_time': data['timestamp2'],
-          //          'value': data['value'],
-          //          'group': data['canbusId'],
-          //        },
-          //      );
-          //  });
-          //});
+          lineMarkerData.sort(
+            (a, b) {
+              return a['racing_time'].compareTo(b['racing_time']);
+            },
+          );
           //print(jsonDecode(snapshot.data![0]['timestamp2']));
           return SingleChildScrollView(
             child: Center(

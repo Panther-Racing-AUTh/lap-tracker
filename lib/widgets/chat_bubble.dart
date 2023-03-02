@@ -13,6 +13,7 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(message.content);
     AppSetup setup = Provider.of<AppSetup>(context);
     var chatContents = [
       const SizedBox(width: 12.0),
@@ -59,12 +60,8 @@ class ChatBubble extends StatelessWidget {
                                 children: [
                                   //Edw tha paixtei mpalitsa na kses
                                   EchartsWidget(
-                                    finalList: message.content
-                                        .replaceFirst('[', '')
-                                        .replaceFirst(']', '')
-                                        .replaceAll(' ', '')
-                                        .split(',')
-                                        .toList(),
+                                    finalList:
+                                        chartStringToList(message.content),
                                   ),
                                   Container(
                                     color: Colors.transparent,
@@ -89,16 +86,10 @@ class ChatBubble extends StatelessWidget {
                                                         return AlertDialog(
                                                             actions: [
                                                               EchartsWidget(
-                                                                finalList: message
-                                                                    .content
-                                                                    .replaceFirst(
-                                                                        '[', '')
-                                                                    .replaceFirst(
-                                                                        ']', '')
-                                                                    .replaceAll(
-                                                                        ' ', '')
-                                                                    .split(',')
-                                                                    .toList(),
+                                                                finalList:
+                                                                    chartStringToList(
+                                                                        message
+                                                                            .content),
                                                               )
                                                             ]);
                                                       });
@@ -110,12 +101,10 @@ class ChatBubble extends StatelessWidget {
                                                   'Open in \'Chart\' page'),
                                               onTap: () {
                                                 setup.setIndex(4);
-                                                setup.setList(message.content
-                                                    .replaceFirst('[', '')
-                                                    .replaceFirst(']', '')
-                                                    .replaceAll(' ', '')
-                                                    .split(',')
-                                                    .toList());
+                                                setup.setList(
+                                                  chartStringToList(
+                                                      message.content),
+                                                );
                                                 Navigator.of(context).pop();
                                               },
                                             ),
@@ -156,4 +145,18 @@ class ChatBubble extends StatelessWidget {
       ),
     );
   }
+}
+
+List<dynamic> chartStringToList(String t) {
+  List<dynamic> l = [], u = [];
+  u = t.replaceFirst('[', '').replaceFirst(']', '').split(',').toList();
+  print(u);
+
+  l.add(DateTime.parse(u[0]));
+  l.add(DateTime.parse(u[1].replaceFirst(' ', '')));
+  for (int i = 2; i < u.length; i++) {
+    l.add(u[i].replaceFirst(' ', ''));
+  }
+  print(l);
+  return l;
 }

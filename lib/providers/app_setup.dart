@@ -6,8 +6,8 @@ class AppSetup extends ChangeNotifier {
   //TODO: store settings and preferences locally on the device
   Race currentRaceSelected = races2023[0];
   List chartList = [
-    DateTime(2023, 1, 1, 1, 2, 0, 0),
-    DateTime(2023, 1, 1, 1, 4, 0, 0)
+    DateTime(2023, 1, 1, 0, 0, 0, 0),
+    DateTime(2023, 1, 1, 1, 0, 0, 0)
   ];
   int mainScreenDesktopIndex = 0;
   AppSetup();

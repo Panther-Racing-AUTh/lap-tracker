@@ -25,11 +25,10 @@ class Data {
 }
 
 Map<String, String> m = {
-  '15E': 'Brake Pressure',
   '65': 'Oil Pressure',
   '66': 'Air Intake Pressure',
   '12A': 'Air Intake Temperature',
-  '15D': 'Throttle Position',
+  '15E': 'Throttle Position',
   '12B': 'Fuel Temperature',
-  '69': 'RPM'
+  '15D': 'RPM'
 };

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:universal_io/io.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/message.dart';

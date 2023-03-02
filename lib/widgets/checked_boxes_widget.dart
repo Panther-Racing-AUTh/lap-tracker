@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
+import '../models/telemetry.dart';
 import '../providers/app_setup.dart';
 import 'package:intl/intl.dart';
 
@@ -33,7 +34,7 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
           title: 'Air Intake Temperature',
           supabaseTitle: 'air_intake_temperature'),
       CheckBoxClass(
-          title: 'Throttle position', supabaseTitle: 'throttle_position'),
+          title: 'Throttle Position', supabaseTitle: 'throttle_position'),
       CheckBoxClass(
           title: 'Fuel Temperature', supabaseTitle: 'fuel_temperature'),
     ];
@@ -42,14 +43,7 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
       if (a.listContainsAllItems()) {
         a.setList([]);
       } else {
-        a.setList([
-          'rpm',
-          'oil_pressure',
-          'air_intake_pressure',
-          'air_intake_temperature',
-          'throttle_position',
-          'fuel_temperature'
-        ]);
+        a.setList(m.keys.toList());
       }
     }
 
@@ -81,10 +75,11 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
     }
       */
     onItemClicked(CheckBoxClass ckbItem) {
-      if (a.listContainsItem(ckbItem.supabaseTitle)) {
-        a.removeItemFromlist(ckbItem.supabaseTitle);
+      String item = m.keys.firstWhere((element) => m[element] == ckbItem.title);
+      if (a.listContainsItem(item)) {
+        a.removeItemFromlist(item);
       } else
-        a.addItemTolist(ckbItem.supabaseTitle);
+        a.addItemTolist(item);
       widget.setFinalList(widget.finalSelectedList);
     }
 
@@ -119,6 +114,7 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
       widget.setFinalList(widget.finalSelectedList);
     }
 
+    var seconds = false;
     return ListView(
       children: [
         ListTile(
@@ -135,7 +131,8 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
               (item) => ListTile(
                 onTap: () => onItemClicked(item),
                 leading: Checkbox(
-                  value: a.chartList.contains(item.supabaseTitle),
+                  value: a.chartList.contains(
+                      m.keys.firstWhere((element) => m[element] == item.title)),
                   onChanged: (value) => onItemClicked(item),
                 ),
                 title: Text(item.title),
@@ -143,14 +140,14 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
             )
             .toList(),
         SfRangeSlider(
-          min: DateTime(2023, 1, 1, 1, 0, 0, 0),
-          max: DateTime(2023, 1, 1, 1, 6, 0, 0),
+          min: DateTime(2023, 1, 1, 0, 0, 0, 0),
+          max: DateTime(2023, 1, 1, 1, 0, 0, 0),
           enableTooltip: true,
-          dateFormat: DateFormat.ms(),
+          dateFormat: DateFormat.Hms(),
           dateIntervalType: DateIntervalType.seconds,
           values: SfRangeValues(a.chartList[0], a.chartList[1]),
           onChanged: (SfRangeValues newRange) => sliderChange(newRange),
-        )
+        ),
       ],
     );
   }
