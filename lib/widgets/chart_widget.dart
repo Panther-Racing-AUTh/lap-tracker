@@ -35,7 +35,7 @@ class _EchartsPageState extends State<EchartsPage> {
           Column(
             children: [
               Container(
-                height: 500,
+                height: MediaQuery.of(context).size.height * 0.8,
                 width: 250,
                 child: CheckedBoxWidget(
                   setFinalList: refresh,

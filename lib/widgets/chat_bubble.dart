@@ -101,16 +101,19 @@ class ChatBubble extends StatelessWidget {
                                                   'Open in \'Chart\' page'),
                                               onTap: () {
                                                 setup.setIndex(4);
-                                                setup.setList(
+                                                setup.setListFull(
                                                   chartStringToList(
                                                       message.content),
                                                 );
+                                                print(chartStringToList(
+                                                    message.content));
                                                 setup.setTimeConstraints(
                                                   chartStringToList(
                                                       message.content)[0],
                                                   chartStringToList(
                                                       message.content)[1],
                                                 );
+                                                print('hello world');
                                                 Navigator.of(context).pop();
                                               },
                                             ),
@@ -157,8 +160,9 @@ List<dynamic> chartStringToList(String t) {
   List<dynamic> l = [], u = [];
   u = t.replaceFirst('[', '').replaceFirst(']', '').split(',').toList();
 
-  l.add(DateTime.parse(u[0]));
-  l.add(DateTime.parse(u[1].replaceFirst(' ', '')));
+  l.add(u[0]);
+  l.add(u[1].replaceFirst(' ', ''));
+
   for (int i = 2; i < u.length; i++) {
     l.add(u[i].replaceFirst(' ', ''));
   }

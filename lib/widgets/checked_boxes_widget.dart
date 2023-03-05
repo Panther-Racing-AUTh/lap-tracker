@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/setupChange.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../models/telemetry.dart';
@@ -16,7 +17,37 @@ class CheckedBoxWidget extends StatefulWidget {
   State<CheckedBoxWidget> createState() => _CheckedBoxWidgetState();
 }
 
+List<FixedExtentScrollController> hour = [];
+List<FixedExtentScrollController> min = [];
+List<FixedExtentScrollController> sec = [];
+List<FixedExtentScrollController> mil = [];
+
+@override
 class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
+  //
+  //
+
+  void initState() {
+    super.initState();
+    print('hello world');
+
+    final a = Provider.of<AppSetup>(context, listen: false);
+
+    for (int i = 0; i < 2; i++) {
+      hour.add(FixedExtentScrollController(
+          initialItem: int.parse(a.chartList[i].toString().substring(0, 2))));
+
+      min.add(FixedExtentScrollController(
+          initialItem: int.parse(a.chartList[i].toString().substring(3, 5))));
+      sec.add(FixedExtentScrollController(
+          initialItem: int.parse(a.chartList[i].toString().substring(6, 8))));
+      mil.add(FixedExtentScrollController(
+          initialItem:
+              int.parse(a.chartList[i].toString().substring(9, null))));
+    }
+    ;
+  }
+
   @override
   Widget build(BuildContext context) {
     AppSetup a = Provider.of<AppSetup>(context);
@@ -46,6 +77,8 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
         a.setList(m.keys.toList());
       }
     }
+
+///////////////////////////////////
 
     /*final newValue = !ckbItem.value;
       setState(
@@ -114,8 +147,8 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
       widget.setFinalList(widget.finalSelectedList);
     }
 
-    var seconds = false;
     return ListView(
+      physics: NeverScrollableScrollPhysics(),
       children: [
         ListTile(
           onTap: () => onAllClicked(allChecked),
@@ -139,15 +172,19 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
               ),
             )
             .toList(),
-        SfRangeSlider(
-          min: DateTime(2023, 1, 1, 0, 0, 0, 0),
-          max: DateTime(2023, 1, 1, 1, 0, 0, 0),
-          enableTooltip: true,
-          dateFormat: DateFormat.Hms(),
-          dateIntervalType: DateIntervalType.seconds,
-          values: SfRangeValues(a.chartList[0], a.chartList[1]),
-          onChanged: (SfRangeValues newRange) => sliderChange(newRange),
-        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CustomTimeSelector(a, 0),
+            SizedBox(height: 30),
+            Text(
+              'to',
+              style: TextStyle(fontSize: 20),
+            ),
+            CustomTimeSelector(a, 1)
+          ],
+        )
       ],
     );
   }
@@ -161,3 +198,119 @@ class CheckBoxClass {
   CheckBoxClass(
       {required this.title, required this.supabaseTitle, this.value = false});
 }
+
+MyWidget(dynamic i, int index) => Container(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 2.5),
+        child: Text(
+          i.toString().padLeft(index, '0'),
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+CustomTimeSelector(AppSetup a, int index) => Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          height: 25,
+          width: 200,
+          color: Colors.grey.withOpacity(0.4),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 90,
+              width: 40,
+              child: ListWheelScrollView(
+                controller: hour[index],
+                physics: FixedExtentScrollPhysics(),
+                useMagnifier: true,
+                magnification: 1.2,
+                children: [
+                  for (int i = 0; i < 2; i++) MyWidget(i, 1),
+                ],
+                itemExtent: 30,
+                onSelectedItemChanged: (value) {
+                  a.setTimeConstraintsAuto(
+                      a.chartList[index].replaceRange(1, 2, value.toString()),
+                      index);
+                },
+              ),
+            ),
+            SizedBox(width: 10),
+            Container(
+              height: 90,
+              width: 40,
+              child: ListWheelScrollView(
+                controller: min[index],
+                useMagnifier: true,
+                magnification: 1.2,
+                children: [
+                  for (int i = 0; i < 60; i++) MyWidget(i, 2),
+                ],
+                itemExtent: 30,
+                physics: FixedExtentScrollPhysics(),
+                onSelectedItemChanged: (value) {
+                  a.setTimeConstraintsAuto(
+                      a.chartList[index].replaceRange(
+                        3,
+                        5,
+                        value.toString().padLeft(2, '0'),
+                      ),
+                      index);
+                },
+              ),
+            ),
+            SizedBox(width: 10),
+            Container(
+              height: 90,
+              width: 40,
+              child: ListWheelScrollView(
+                controller: sec[index],
+                physics: FixedExtentScrollPhysics(),
+                useMagnifier: true,
+                magnification: 1.2,
+                children: [
+                  for (int i = 0; i < 60; i++) MyWidget(i, 2),
+                ],
+                itemExtent: 30,
+                onSelectedItemChanged: (value) {
+                  a.setTimeConstraintsAuto(
+                      a.chartList[index].replaceRange(
+                        6,
+                        8,
+                        value.toString().padLeft(2, '0'),
+                      ),
+                      index);
+                },
+              ),
+            ),
+            SizedBox(width: 5),
+            Container(
+              height: 90,
+              width: 40,
+              child: ListWheelScrollView(
+                controller: mil[index],
+                physics: FixedExtentScrollPhysics(),
+                useMagnifier: true,
+                magnification: 1.2,
+                children: [
+                  for (int i = 0; i < 1000; i++) MyWidget(i, 3),
+                ],
+                itemExtent: 30,
+                onSelectedItemChanged: (value) {
+                  a.setTimeConstraintsAuto(
+                      a.chartList[index].replaceRange(
+                        9,
+                        null,
+                        value.toString().padLeft(3, '0'),
+                      ),
+                      index);
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );

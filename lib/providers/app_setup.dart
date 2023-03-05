@@ -6,8 +6,8 @@ class AppSetup extends ChangeNotifier {
   //TODO: store settings and preferences locally on the device
   Race currentRaceSelected = races2023[0];
   List chartList = [
-    DateTime(2023, 1, 1, 0, 0, 0, 0),
-    DateTime(2023, 1, 1, 1, 0, 0, 0)
+    '00:00:00.000',
+    '01:00:00.000',
   ];
   int mainScreenDesktopIndex = 0;
   AppSetup();
@@ -23,6 +23,11 @@ class AppSetup extends ChangeNotifier {
 
   setList(List l) {
     chartList = [chartList[0], chartList[1]] + l;
+    notifyListeners();
+  }
+
+  setListFull(List l) {
+    chartList = l;
     notifyListeners();
   }
 
@@ -57,5 +62,12 @@ class AppSetup extends ChangeNotifier {
     chartList[0] = start;
     chartList[1] = end;
     notifyListeners();
+    print(chartList);
+  }
+
+  void setTimeConstraintsAuto(dynamic value, int index) {
+    chartList[index] = value;
+    notifyListeners();
+    print(chartList);
   }
 }

@@ -77,7 +77,6 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         currentWindDirection = data.currentWindDirection!.round();
         mainWindDirection = data.mainWindDirection!.round();
         dailyTotalPrecipitation = data.totalPrecipitation!.round();
-        description = data.description!;
         sunrise = data.sunrise!;
         sunset = data.sunset!;
 
@@ -90,6 +89,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         dailyHighTemperatures = data.dailyTempsHigh!;
         dailyLowTemperatures = data.dailyTempsLow!;
         dailyPrecipitation = data.dailyPrecipitation!;
+
         //determining which icon to use according to data codes and hour of the day
         if (sunset.contains(
           DateTime.now().day.toString() +
