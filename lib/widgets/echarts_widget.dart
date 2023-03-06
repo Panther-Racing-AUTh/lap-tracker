@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:graphic/graphic.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -62,7 +64,7 @@ class _EchartsWidgetState extends State<EchartsWidget> {
   }
 }
 */
-
+/*
 class EchartsWidget extends StatelessWidget {
   EchartsWidget({super.key, required this.finalList});
   final List<dynamic> finalList;
@@ -248,5 +250,93 @@ class EchartsWidget extends StatelessWidget {
         }
       },
     );
+  }
+}
+*/
+class EchartsWidget extends StatefulWidget {
+  EchartsWidget({super.key, required this.finalList, this.showLegend = true});
+  final List<dynamic> finalList;
+  final bool showLegend;
+  late final start = finalList[0];
+  late final end = finalList[1];
+
+  @override
+  State<EchartsWidget> createState() => _EchartsWidgetState();
+}
+
+class _EchartsWidgetState extends State<EchartsWidget> {
+  final stream = supabase
+      .from('telemetry_system_data2')
+      .stream(primaryKey: ['id']).order('timest', ascending: true);
+
+  final _stream = supabase
+      .from('telemetry_system_data')
+      .stream(primaryKey: ['id']).order('racing_time', ascending: true);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+        stream: stream,
+        builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            final List<Map<String, dynamic>> lineMarkerData = [];
+
+            snapshot.data?.forEach((data) {
+              widget.finalList.skip(2).forEach((item) {
+                if (widget.start.compareTo(data['timestamp2']) <= 0 &&
+                    data['timestamp2'].compareTo(widget.end) <= 0) {
+                  if (data.containsValue(item))
+                    lineMarkerData.add(
+                      {
+                        'racing_time': data['timestamp2'],
+                        'value': data['value'],
+                        'group': data['canbusId'],
+                      },
+                    );
+                }
+              });
+            });
+            lineMarkerData.sort(
+              (a, b) {
+                return a['racing_time'].compareTo(b['racing_time']);
+              },
+            );
+            return Container(
+              width: MediaQuery.of(context).size.width * 0.7,
+              child: SfCartesianChart(
+                  primaryXAxis: CategoryAxis(),
+                  legend: Legend(isVisible: widget.showLegend),
+                  tooltipBehavior: TooltipBehavior(enable: true),
+                  zoomPanBehavior: ZoomPanBehavior(
+                    enablePinching: true,
+                    enableMouseWheelZooming: true,
+                    enablePanning: true,
+                    enableSelectionZooming: true,
+                    enableDoubleTapZooming: true,
+                  ),
+                  series: <ChartSeries<dynamic, dynamic>>[
+                    for (int i = 2; i < widget.finalList.length; i++)
+                      LineSeries<dynamic, dynamic>(
+                        dataSource: lineMarkerData,
+                        xValueMapper: (sales, _) =>
+                            (sales['group'] == widget.finalList[i])
+                                ? sales['racing_time']
+                                : null,
+                        yValueMapper: (sales, _) =>
+                            (sales['group'] == widget.finalList[i])
+                                ? sales['value']
+                                : null,
+                        name: m[widget.finalList[i]],
+                        // Enable data label
+                        dataLabelSettings: DataLabelSettings(isVisible: false),
+                      )
+                  ]),
+            );
+          }
+        });
   }
 }

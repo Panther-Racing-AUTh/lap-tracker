@@ -62,11 +62,12 @@ class ChatBubble extends StatelessWidget {
                                   EchartsWidget(
                                     finalList:
                                         chartStringToList(message.content),
+                                    showLegend: false,
                                   ),
                                   Container(
                                     color: Colors.transparent,
                                     width: width,
-                                    height: 550,
+                                    height: 300,
                                   ),
                                 ],
                               ),
@@ -84,14 +85,13 @@ class ChatBubble extends StatelessWidget {
                                                       context: ctx,
                                                       builder: (c) {
                                                         return AlertDialog(
-                                                            actions: [
-                                                              EchartsWidget(
-                                                                finalList:
-                                                                    chartStringToList(
-                                                                        message
-                                                                            .content),
-                                                              )
-                                                            ]);
+                                                            content:
+                                                                EchartsWidget(
+                                                          finalList:
+                                                              chartStringToList(
+                                                                  message
+                                                                      .content),
+                                                        ));
                                                       });
                                                 }),
                                           ),
@@ -100,20 +100,15 @@ class ChatBubble extends StatelessWidget {
                                               title: Text(
                                                   'Open in \'Chart\' page'),
                                               onTap: () {
-                                                setup.setIndex(4);
                                                 setup.setListFull(
                                                   chartStringToList(
                                                       message.content),
                                                 );
-                                                print(chartStringToList(
-                                                    message.content));
-                                                setup.setTimeConstraints(
+                                                print(
                                                   chartStringToList(
-                                                      message.content)[0],
-                                                  chartStringToList(
-                                                      message.content)[1],
+                                                      message.content),
                                                 );
-                                                print('hello world');
+                                                setup.setIndex(4);
                                                 Navigator.of(context).pop();
                                               },
                                             ),
