@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/race.dart';
-import 'package:flutter_complete_guide/names.dart';
 
 class AppSetup extends ChangeNotifier {
   //TODO: store settings and preferences locally on the device
@@ -62,12 +61,10 @@ class AppSetup extends ChangeNotifier {
     chartList[0] = start;
     chartList[1] = end;
     notifyListeners();
-    print(chartList);
   }
 
   void setTimeConstraintsAuto(dynamic value, int index) {
     chartList[index] = value;
     notifyListeners();
-    print(chartList);
   }
 }
