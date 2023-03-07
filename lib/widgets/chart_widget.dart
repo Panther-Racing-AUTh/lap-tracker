@@ -18,9 +18,7 @@ class _EchartsPageState extends State<EchartsPage> {
   refresh(newfinalList) {
     setState(() {
       finalList = newfinalList;
-      //print('final list:' + finalList.toString());
     });
-    // print('The final list2 is ${finalList}');
   }
 
   @override
@@ -35,13 +33,13 @@ class _EchartsPageState extends State<EchartsPage> {
           Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.8,
+                height: MediaQuery.of(context).size.height * 0.85,
                 width: 250,
                 child: CheckedBoxWidget(
                   setFinalList: refresh,
                 ),
               ),
-              if (finalList.length > 2)
+              if (finalList.length > 3)
                 TextButton(
                     onPressed: () => sendChart(finalList),
                     child: Text(
@@ -50,7 +48,7 @@ class _EchartsPageState extends State<EchartsPage> {
                     )),
             ],
           ),
-          if (finalList.length > 2)
+          if (finalList.length > 3)
             EchartsWidget(
               finalList: a.chartList,
             ),

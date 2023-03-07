@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter/gestures.dart';
-import 'package:graphic/graphic.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 final supabase = Supabase.instance.client;
@@ -283,60 +281,144 @@ class _EchartsWidgetState extends State<EchartsWidget> {
               child: CircularProgressIndicator(),
             );
           } else {
-            final List<Map<String, dynamic>> lineMarkerData = [];
-
+            final List<Map<String, dynamic>> dataXAxis = [];
+            final List<Map<String, dynamic>> dataYAxis = [];
             snapshot.data?.forEach((data) {
-              widget.finalList.skip(2).forEach((item) {
+              widget.finalList.skip(3).forEach((item) {
                 if (widget.start.compareTo(data['timestamp2']) <= 0 &&
                     data['timestamp2'].compareTo(widget.end) <= 0) {
-                  if (data.containsValue(item))
-                    lineMarkerData.add(
-                      {
-                        'racing_time': data['timestamp2'],
-                        'value': data['value'],
-                        'group': data['canbusId'],
-                      },
-                    );
+                  if (data['canbusId'] == item)
+                    dataYAxis.add({
+                      'value': data['value'],
+                      'id': data['canbusId'],
+                      'time': data['timestamp2'],
+                    });
                 }
               });
+              if (data['canbusId'] == widget.finalList[2]) {
+                dataXAxis.add({
+                  'value': data['value'],
+                  'id': data['canbusId'],
+                  'time': data['timestamp2'],
+                });
+              }
             });
-            lineMarkerData.sort(
-              (a, b) {
-                return a['racing_time'].compareTo(b['racing_time']);
-              },
-            );
+
+            if (dataXAxis.isEmpty) {
+              dataYAxis.sort(
+                (a, b) {
+                  return a['time'].compareTo(b['time']);
+                },
+              );
+            } else {
+              dataXAxis.sort(
+                (a, b) {
+                  return a['value'].compareTo(b['value']);
+                },
+              );
+              final Map<String, int> mappings = {
+                for (int i = 0; i < dataXAxis.length; i++)
+                  dataXAxis[i]['time']: dataXAxis[i]['value']
+              };
+
+              dataYAxis.forEach((element) {
+                for (int i = 0; i < dataXAxis.length; i++) {
+                  if (mappings.keys.toList().contains(element['time']))
+                    element['time'] = mappings[element['time']];
+                }
+              });
+              dataYAxis.sort(
+                (a, b) {
+                  return a['time'].compareTo(b['time']);
+                },
+              );
+            }
+
+            //if (widget.finalList[2] == '') {
+            //  print('h');
+            //  lineMarkerData.add(
+            //    {
+            //      'xAxis': data['timestamp2'],
+            //      'yAxis': data['value'],
+            //      'group': data['canbusId'],
+            //    },
+            //  );
+            //} else {
+            //  print('object');
+            //  lineMarkerData.add({
+            //    'xAxis': snapshot.data!
+            //        .where((element) =>
+            //            element['canbusId'] == widget.finalList[2])
+            //        .toList()[i]['value'],
+            //    'yAxis': data['value'],
+            //    'group': data['canbusId'],
+            //  });
+            //  print(data['canbusId'].toString() +
+            //      ' ' +
+            //      i.toString() +
+            //      '/' +
+            //      snapshot.data!
+            //          .where((element) =>
+            //              element['canbusId'] == widget.finalList[2])
+            //          .toList()
+            //          .length
+            //          .toString());
+            //  if (i ==
+            //      snapshot.data!
+            //              .where((element) =>
+            //                  element['canbusId'] ==
+            //                  widget.finalList[2])
+            //              .toList()
+            //              .length -
+            //          1)
+            //    i = 0;
+            //  else
+            //    i++;
+            //}
+
             return Container(
               width: MediaQuery.of(context).size.width * 0.7,
+              height: MediaQuery.of(context).size.height * 0.8,
               child: SfCartesianChart(
-                  primaryXAxis: CategoryAxis(),
-                  legend: Legend(isVisible: widget.showLegend),
-                  tooltipBehavior: TooltipBehavior(enable: true),
-                  zoomPanBehavior: ZoomPanBehavior(
-                    enablePinching: true,
-                    enableMouseWheelZooming: true,
-                    enablePanning: true,
-                    enableSelectionZooming: true,
-                    enableDoubleTapZooming: true,
+                primaryXAxis: CategoryAxis(
+                  title: AxisTitle(
+                    text: dataXAxis.isEmpty ? 'Time' : m[dataXAxis[0]['id']],
                   ),
-                  series: <ChartSeries<dynamic, dynamic>>[
-                    for (int i = 2; i < widget.finalList.length; i++)
-                      LineSeries<dynamic, dynamic>(
-                        dataSource: lineMarkerData,
-                        xValueMapper: (sales, _) =>
-                            (sales['group'] == widget.finalList[i])
-                                ? sales['racing_time']
-                                : null,
-                        yValueMapper: (sales, _) =>
-                            (sales['group'] == widget.finalList[i])
-                                ? sales['value']
-                                : null,
-                        name: m[widget.finalList[i]],
-                        // Enable data label
-                        dataLabelSettings: DataLabelSettings(isVisible: false),
-                      )
-                  ]),
+                ),
+                legend: Legend(isVisible: widget.showLegend),
+                tooltipBehavior: TooltipBehavior(enable: true),
+                zoomPanBehavior: ZoomPanBehavior(
+                  enablePinching: true,
+                  enableMouseWheelZooming: true,
+                  enablePanning: true,
+                  enableSelectionZooming: true,
+                  enableDoubleTapZooming: true,
+                ),
+                series: <ChartSeries<dynamic, dynamic>>[
+                  for (int i = 3; i < widget.finalList.length; i++)
+                    calculateGraph(dataYAxis, dataXAxis, widget.finalList[i])
+                ],
+              ),
             );
           }
         });
   }
+}
+
+LineSeries calculateGraph(List<dynamic> y, List<dynamic> x, String id) {
+  List<dynamic> l = [];
+
+  y.forEach((element) => (element['id'] == id) ? l.add(element) : () {});
+
+  return LineSeries(
+    dataSource: l,
+    xValueMapper: (element, _) {
+      return element['time'];
+    },
+    yValueMapper: (element, _) {
+      return element['value'];
+    },
+    name: m[l[0]['id']],
+    dataLabelSettings: DataLabelSettings(),
+  );
 }

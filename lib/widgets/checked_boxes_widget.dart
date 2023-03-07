@@ -14,16 +14,11 @@ class CheckedBoxWidget extends StatefulWidget {
   State<CheckedBoxWidget> createState() => _CheckedBoxWidgetState();
 }
 
-List<FixedExtentScrollController> hour = [];
-List<FixedExtentScrollController> min = [];
-List<FixedExtentScrollController> sec = [];
-List<FixedExtentScrollController> mil = [];
-
 @override
 class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
   //
   //
-
+  var dropdownvalue = checkboxList[0];
   @override
   Widget build(BuildContext context) {
     AppSetup a = Provider.of<AppSetup>(context);
@@ -144,23 +139,6 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
           ],
         );
 
-    final allChecked =
-        CheckBoxClass(title: 'Select All', supabaseTitle: 'select_all');
-
-    final checkboxList = [
-      CheckBoxClass(title: 'RPM', supabaseTitle: 'rpm'),
-      CheckBoxClass(title: 'Oil Pressure', supabaseTitle: 'oil_pressure'),
-      CheckBoxClass(
-          title: 'Air Intake Pressure', supabaseTitle: 'air_intake_pressure'),
-      CheckBoxClass(
-          title: 'Air Intake Temperature',
-          supabaseTitle: 'air_intake_temperature'),
-      CheckBoxClass(
-          title: 'Throttle Position', supabaseTitle: 'throttle_position'),
-      CheckBoxClass(
-          title: 'Fuel Temperature', supabaseTitle: 'fuel_temperature'),
-    ];
-
     onAllClicked(CheckBoxClass ckbItem) {
       if (a.listContainsAllItems()) {
         a.setList([]);
@@ -234,7 +212,7 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
     */
 
     return ListView(
-      physics: NeverScrollableScrollPhysics(),
+      //physics: NeverScrollableScrollPhysics(),
       children: [
         ListTile(
           onTap: () => onAllClicked(allChecked),
@@ -246,11 +224,12 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
         ),
         Divider(),
         ...checkboxList
+            .skip(1)
             .map(
               (item) => ListTile(
                 onTap: () => onItemClicked(item),
                 leading: Checkbox(
-                  value: a.chartList.contains(
+                  value: a.listContainsItem(
                       m.keys.firstWhere((element) => m[element] == item.title)),
                   onChanged: (value) => onItemClicked(item),
                 ),
@@ -258,6 +237,31 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
               ),
             )
             .toList(),
+        Container(
+          child: Text('Control X Axis variable'),
+          padding: EdgeInsets.all(10),
+        ),
+        Container(
+          padding: EdgeInsets.all(10),
+          child: DropdownButton(
+            alignment: Alignment.centerLeft,
+            value: dropdownvalue,
+            items: checkboxList
+                .map((item) => DropdownMenuItem(
+                      child: Text(item.title),
+                      value: item,
+                    ))
+                .toList(),
+            onChanged: (CheckBoxClass? v) {
+              dropdownvalue = v!;
+              if (dropdownvalue == checkboxList[0]) {
+                a.setXAxis('');
+              } else
+                a.setXAxis(
+                    m.keys.firstWhere((element) => m[element] == v.title));
+            },
+          ),
+        ),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -294,3 +298,18 @@ MyWidget(dynamic i, int index) => Container(
         ),
       ),
     );
+
+final allChecked =
+    CheckBoxClass(title: 'Select All', supabaseTitle: 'select_all');
+
+final checkboxList = [
+  CheckBoxClass(title: 'Time', supabaseTitle: ''),
+  CheckBoxClass(title: 'RPM', supabaseTitle: 'rpm'),
+  CheckBoxClass(title: 'Oil Pressure', supabaseTitle: 'oil_pressure'),
+  CheckBoxClass(
+      title: 'Air Intake Pressure', supabaseTitle: 'air_intake_pressure'),
+  CheckBoxClass(
+      title: 'Air Intake Temperature', supabaseTitle: 'air_intake_temperature'),
+  CheckBoxClass(title: 'Throttle Position', supabaseTitle: 'throttle_position'),
+  CheckBoxClass(title: 'Fuel Temperature', supabaseTitle: 'fuel_temperature'),
+];
