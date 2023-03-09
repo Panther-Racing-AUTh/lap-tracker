@@ -311,29 +311,21 @@ class _EchartsWidgetState extends State<EchartsWidget> {
                 },
               );
             } else {
-              dataXAxis.sort(
-                (a, b) {
-                  return a['value'].compareTo(b['value']);
-                },
-              );
-              final Map<String, int> mappings = {
-                for (int i = 0; i < dataXAxis.length; i++)
-                  dataXAxis[i]['time']: dataXAxis[i]['value']
-              };
-
-              dataYAxis.forEach((element) {
-                for (int i = 0; i < dataXAxis.length; i++) {
-                  if (mappings.keys.toList().contains(element['time']))
-                    element['time'] = mappings[element['time']];
-                }
-              });
               dataYAxis.sort(
                 (a, b) {
                   return a['time'].compareTo(b['time']);
                 },
               );
-            }
 
+              dataYAxis.forEach((element) {
+                for (int i = 0; i < dataXAxis.length; i++) {
+                  if (dataXAxis[i]['time'] == element['time'])
+                    element['time'] = dataXAxis[i]['value'];
+                }
+              });
+            }
+            print(dataYAxis);
+            print(dataXAxis);
             //if (widget.finalList[2] == '') {
             //  print('h');
             //  lineMarkerData.add(
