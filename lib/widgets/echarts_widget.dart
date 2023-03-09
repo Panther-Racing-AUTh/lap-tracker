@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -263,6 +265,19 @@ class EchartsWidget extends StatefulWidget {
 }
 
 class _EchartsWidgetState extends State<EchartsWidget> {
+  late ZoomPanBehavior _zoomPanBehavior;
+  ChartSeriesController? seriesController;
+  @override
+  void initState() {
+    _zoomPanBehavior = ZoomPanBehavior(
+        enableDoubleTapZooming: true,
+        enablePanning: true,
+        enablePinching: true,
+        enableSelectionZooming: true,
+        enableMouseWheelZooming: true);
+    super.initState();
+  }
+
   final stream = supabase
       .from('telemetry_system_data2')
       .stream(primaryKey: ['id']).order('timest', ascending: true);
@@ -324,8 +339,7 @@ class _EchartsWidgetState extends State<EchartsWidget> {
                 }
               });
             }
-            print(dataYAxis);
-            print(dataXAxis);
+
             //if (widget.finalList[2] == '') {
             //  print('h');
             //  lineMarkerData.add(
@@ -372,6 +386,12 @@ class _EchartsWidgetState extends State<EchartsWidget> {
               width: MediaQuery.of(context).size.width * 0.7,
               height: MediaQuery.of(context).size.height * 0.8,
               child: SfCartesianChart(
+                onChartTouchInteractionUp: (tapArgs) {
+                  CartesianChartPoint<dynamic>? chartpoint =
+                      seriesController?.pixelToPoint(tapArgs.position);
+                  print('X point: ${chartpoint!.x}');
+                  print('Y point: ${chartpoint.y}');
+                },
                 primaryXAxis: CategoryAxis(
                   title: AxisTitle(
                     text: dataXAxis.isEmpty ? 'Time' : m[dataXAxis[0]['id']],
@@ -379,38 +399,29 @@ class _EchartsWidgetState extends State<EchartsWidget> {
                 ),
                 legend: Legend(isVisible: widget.showLegend),
                 tooltipBehavior: TooltipBehavior(enable: true),
-                zoomPanBehavior: ZoomPanBehavior(
-                  enablePinching: true,
-                  enableMouseWheelZooming: true,
-                  enablePanning: true,
-                  enableSelectionZooming: true,
-                  enableDoubleTapZooming: true,
-                ),
-                series: <ChartSeries<dynamic, dynamic>>[
+                zoomPanBehavior: _zoomPanBehavior,
+                series: <LineSeries<dynamic, dynamic>>[
                   for (int i = 3; i < widget.finalList.length; i++)
-                    calculateGraph(dataYAxis, dataXAxis, widget.finalList[i])
+                    LineSeries(
+                      dataSource: dataYAxis,
+                      xValueMapper: (element, _) {
+                        if (element['id'] == widget.finalList[i])
+                          return element['time'];
+                      },
+                      yValueMapper: (element, _) {
+                        if (element['id'] == widget.finalList[i])
+                          return element['value'];
+                      },
+                      name: m[widget.finalList[i]],
+                      dataLabelSettings: DataLabelSettings(),
+                      onRendererCreated: (ChartSeriesController controller) {
+                        seriesController = controller;
+                      },
+                    )
                 ],
               ),
             );
           }
         });
   }
-}
-
-LineSeries calculateGraph(List<dynamic> y, List<dynamic> x, String id) {
-  List<dynamic> l = [];
-
-  y.forEach((element) => (element['id'] == id) ? l.add(element) : () {});
-
-  return LineSeries(
-    dataSource: l,
-    xValueMapper: (element, _) {
-      return element['time'];
-    },
-    yValueMapper: (element, _) {
-      return element['value'];
-    },
-    name: m[l[0]['id']],
-    dataLabelSettings: DataLabelSettings(),
-  );
 }
