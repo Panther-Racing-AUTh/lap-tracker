@@ -1,9 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
+import 'package:syncfusion_flutter_core/core.dart';
+import 'package:intl/intl.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -264,9 +265,10 @@ class EchartsWidget extends StatefulWidget {
   State<EchartsWidget> createState() => _EchartsWidgetState();
 }
 
-class _EchartsWidgetState extends State<EchartsWidget> {
+class _EchartsWidgetState extends State<EchartsWidget>
+    with SingleTickerProviderStateMixin {
   late ZoomPanBehavior _zoomPanBehavior;
-  ChartSeriesController? seriesController;
+  late RangeController _rangeController;
   @override
   void initState() {
     _zoomPanBehavior = ZoomPanBehavior(
@@ -300,37 +302,26 @@ class _EchartsWidgetState extends State<EchartsWidget> {
             final List<Map<String, dynamic>> dataYAxis = [];
             snapshot.data?.forEach((data) {
               widget.finalList.skip(3).forEach((item) {
-                if (widget.start.compareTo(data['timestamp2']) <= 0 &&
-                    data['timestamp2'].compareTo(widget.end) <= 0) {
-                  if (data['canbusId'] == item)
-                    dataYAxis.add({
-                      'value': data['value'],
-                      'id': data['canbusId'],
-                      'time': data['timestamp2'],
-                    });
-                }
+                if (data['canbusId'] == item)
+                  dataYAxis.add({
+                    'value': data['value'],
+                    'id': data['canbusId'],
+                    'time': DateTime.parse(data['timest']),
+                  });
               });
               if (data['canbusId'] == widget.finalList[2]) {
                 dataXAxis.add({
                   'value': data['value'],
                   'id': data['canbusId'],
-                  'time': data['timestamp2'],
+                  'time': DateTime.parse(data['timest']),
                 });
               }
             });
 
             if (dataXAxis.isEmpty) {
-              dataYAxis.sort(
-                (a, b) {
-                  return a['time'].compareTo(b['time']);
-                },
-              );
+              dataYAxis.sort((a, b) => a['time'].compareTo(b['time']));
             } else {
-              dataYAxis.sort(
-                (a, b) {
-                  return a['time'].compareTo(b['time']);
-                },
-              );
+              dataYAxis.sort((a, b) => a['time'].compareTo(b['time']));
 
               dataYAxis.forEach((element) {
                 for (int i = 0; i < dataXAxis.length; i++) {
@@ -339,7 +330,9 @@ class _EchartsWidgetState extends State<EchartsWidget> {
                 }
               });
             }
-
+            print(dataYAxis);
+            _rangeController = RangeController(
+                start: dataYAxis.first['time'], end: dataYAxis.last['time']);
             //if (widget.finalList[2] == '') {
             //  print('h');
             //  lineMarkerData.add(
@@ -383,44 +376,91 @@ class _EchartsWidgetState extends State<EchartsWidget> {
             //}
 
             return Container(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: MediaQuery.of(context).size.height * 0.8,
-              child: SfCartesianChart(
-                onChartTouchInteractionUp: (tapArgs) {
-                  CartesianChartPoint<dynamic>? chartpoint =
-                      seriesController?.pixelToPoint(tapArgs.position);
-                  print('X point: ${chartpoint!.x}');
-                  print('Y point: ${chartpoint.y}');
-                },
-                primaryXAxis: CategoryAxis(
-                  title: AxisTitle(
-                    text: dataXAxis.isEmpty ? 'Time' : m[dataXAxis[0]['id']],
-                  ),
-                ),
-                legend: Legend(isVisible: widget.showLegend),
-                tooltipBehavior: TooltipBehavior(enable: true),
-                zoomPanBehavior: _zoomPanBehavior,
-                series: <LineSeries<dynamic, dynamic>>[
-                  for (int i = 3; i < widget.finalList.length; i++)
-                    LineSeries(
-                      dataSource: dataYAxis,
-                      xValueMapper: (element, _) {
-                        if (element['id'] == widget.finalList[i])
-                          return element['time'];
-                      },
-                      yValueMapper: (element, _) {
-                        if (element['id'] == widget.finalList[i])
-                          return element['value'];
-                      },
-                      name: m[widget.finalList[i]],
-                      dataLabelSettings: DataLabelSettings(),
-                      onRendererCreated: (ChartSeriesController controller) {
-                        seriesController = controller;
-                      },
-                    )
-                ],
-              ),
-            );
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.height * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      child: SfCartesianChart(
+                        plotAreaBorderWidth: 0,
+                        primaryXAxis: DateTimeAxis(
+                          visibleMaximum: _rangeController.end,
+                          visibleMinimum: _rangeController.start,
+                          rangeController: _rangeController,
+                          dateFormat: DateFormat.Hms(),
+                          title: AxisTitle(
+                              //text:
+                              ),
+                        ),
+                        primaryYAxis: NumericAxis(isVisible: true),
+                        legend: Legend(isVisible: widget.showLegend),
+                        //tooltipBehavior: TooltipBehavior(enable: true),
+                        //zoomPanBehavior: _zoomPanBehavior,
+                        series: <LineSeries<dynamic, dynamic>>[
+                          for (int i = 3; i < widget.finalList.length; i++)
+                            LineSeries(
+                              dataSource: dataYAxis,
+                              xValueMapper: (element, _) {
+                                if (element['id'] == widget.finalList[i])
+                                  return element['time'];
+                              },
+                              yValueMapper: (element, _) {
+                                if (element['id'] == widget.finalList[i])
+                                  return element['value'];
+                                else
+                                  return null;
+                              },
+                              name: m[widget.finalList[i]],
+                              dataLabelSettings: DataLabelSettings(),
+                            )
+                        ],
+                      ),
+                    ),
+                    SfRangeSelector(
+                      dragMode: SliderDragMode.both,
+                      showLabels: true,
+                      showTicks: true,
+                      dateIntervalType: DateIntervalType.seconds,
+                      min: dataYAxis.first['time'],
+                      max: dataYAxis.last['time'],
+                      dateFormat: DateFormat.Hms(),
+                      controller: _rangeController,
+                      //initialValues: SfRangeValues(0, 1),
+                      child: Container(
+                        height: 130,
+                        child: SfCartesianChart(
+                          primaryXAxis: DateTimeAxis(
+                            isVisible: false,
+                            title: AxisTitle(
+                                //text:
+                                ),
+                          ),
+                          primaryYAxis: NumericAxis(isVisible: false),
+                          plotAreaBorderWidth: 0,
+                          series: <LineSeries<dynamic, dynamic>>[
+                            for (int i = 3; i < widget.finalList.length; i++)
+                              LineSeries(
+                                dataSource: dataYAxis,
+                                xValueMapper: (element, _) {
+                                  if (element['id'] == widget.finalList[i])
+                                    return element['time'];
+                                },
+                                yValueMapper: (element, _) {
+                                  if (element['id'] == widget.finalList[i])
+                                    return element['value'];
+                                  else
+                                    return null;
+                                },
+                                name: m[widget.finalList[i]],
+                                dataLabelSettings: DataLabelSettings(),
+                              )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ));
           }
         });
   }

@@ -41,7 +41,10 @@ dependencies:
   graphic: ^1.0.1
   image_picker: ^0.8.6+2
   http: 
-  syncfusion_flutter_charts: ^20.4.53
+  syncfusion_flutter_charts: 
+  syncfusion_flutter_sliders: 
+  syncfusion_flutter_core:
+
 
    
   
