@@ -83,7 +83,7 @@ class _AdminPanelState extends State<AdminPanel> {
                           ])
                     ]);
               }
-              return CircularProgressIndicator();
+              return Center(child: CircularProgressIndicator());
             },
           );
   }
