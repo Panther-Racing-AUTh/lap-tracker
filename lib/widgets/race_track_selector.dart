@@ -20,28 +20,43 @@ class _RaceTrackSelectorState extends State<RaceTrackSelector> {
     AppSetup setup = Provider.of<AppSetup>(context);
 
     CountryFlags getIcon(int index) {
-      return CountryFlags.flag(races[index].country);
+      return CountryFlags.flag(
+        races[index].country,
+        height: 25,
+        width: 25,
+      );
     }
 
-    return PopupMenuButton<Race>(
-      icon: getIcon(index),
-      itemBuilder: (ctx) {
-        return races.map((Race r) {
-          return PopupMenuItem(
-            value: r,
-            child: Text(r.gpName),
-          );
-        }).toList();
-      },
-      onSelected: (Race? value) {
-        setState(
-          () {
-            index =
-                races.indexWhere((element) => element.gpName == value!.gpName);
+    return Row(
+      children: [
+        getIcon(index),
+        SizedBox(width: 10),
+        PopupMenuButton<Race>(
+          child: Row(
+            children: [
+              Text(races[index].gpName),
+              Icon(Icons.arrow_drop_down),
+            ],
+          ),
+          itemBuilder: (ctx) {
+            return races.map((Race r) {
+              return PopupMenuItem(
+                value: r,
+                child: Text(r.gpName),
+              );
+            }).toList();
           },
-        );
-        setup.setRace(races2023[index]);
-      },
+          onSelected: (Race? value) {
+            setState(
+              () {
+                index = races
+                    .indexWhere((element) => element.gpName == value!.gpName);
+              },
+            );
+            setup.setRace(races2023[index]);
+          },
+        ),
+      ],
     );
   }
 }

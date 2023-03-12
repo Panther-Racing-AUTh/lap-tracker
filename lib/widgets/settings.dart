@@ -72,7 +72,7 @@ class _SettingsState extends State<Settings> {
               ),
             ),
             onPressed: () {
-              signOut();
+              signOut(context);
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushReplacementNamed('/signin');
             },

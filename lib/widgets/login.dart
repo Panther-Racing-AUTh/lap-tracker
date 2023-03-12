@@ -4,6 +4,7 @@ import 'package:flutter_complete_guide/widgets/signIn_alert_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../names.dart';
+import '../providers/app_setup.dart';
 import '../providers/device.dart';
 import './signInTextField.dart';
 import '../supabase/authentication_functions.dart';
@@ -107,7 +108,7 @@ class LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     DeviceManager device = provider.Provider.of<DeviceManager>(context);
-
+    AppSetup a = provider.Provider.of<AppSetup>(context);
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
@@ -292,19 +293,55 @@ class LoginState extends State<Login> {
             isLoading: isLoading,
             auth: 'Facebook',
           ),
-          Container(
-            padding: EdgeInsets.fromLTRB(0, height * 0.03, 0, 0),
-            child: TextButton(
-              child: Text(
-                'Continue as admin',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.orange,
-                ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                child: Text('Admin',
+                    style: TextStyle(fontSize: 28, color: Colors.orange)),
+                onPressed: () {
+                  a.role = 'Admin';
+                  Navigator.of(context).pushReplacementNamed(
+                      device.isDesktopMode()
+                          ? '/main-desktop'
+                          : '/main-mobile');
+                },
               ),
-              onPressed: () => Navigator.of(context).pushReplacementNamed(
-                  device.isDesktopMode() ? '/main-desktop' : '/main-mobile'),
-            ),
+              TextButton(
+                onPressed: () {
+                  a.role = 'engineer';
+                  Navigator.of(context).pushReplacementNamed(
+                      device.isDesktopMode()
+                          ? '/main-desktop'
+                          : '/main-mobile');
+                },
+                child: Text('Engineer',
+                    style: TextStyle(fontSize: 28, color: Colors.orange)),
+              ),
+              TextButton(
+                onPressed: () {
+                  a.role = 'data_analyst';
+                  Navigator.of(context).pushReplacementNamed(
+                      device.isDesktopMode()
+                          ? '/main-desktop'
+                          : '/main-mobile');
+                },
+                child: Text('Data Analyst',
+                    style: TextStyle(fontSize: 28, color: Colors.orange)),
+              ),
+              TextButton(
+                onPressed: () {
+                  a.role = 'default';
+                  Navigator.of(context).pushReplacementNamed(
+                      device.isDesktopMode()
+                          ? '/main-desktop'
+                          : '/main-mobile');
+                },
+                child: Text('Default',
+                    style: TextStyle(fontSize: 28, color: Colors.orange)),
+              ),
+            ],
           ),
           Column(
             //'powered by panther' text

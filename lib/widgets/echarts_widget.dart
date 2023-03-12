@@ -271,12 +271,17 @@ class _EchartsWidgetState extends State<EchartsWidget>
   late RangeController _rangeController;
   @override
   void initState() {
+    _rangeController = RangeController(
+      start: DateTime(2023, 3, 2, 11, 0, 0),
+      end: DateTime(2023, 3, 2, 23, 0, 0),
+    );
     _zoomPanBehavior = ZoomPanBehavior(
-        enableDoubleTapZooming: true,
-        enablePanning: true,
-        enablePinching: true,
-        enableSelectionZooming: true,
-        enableMouseWheelZooming: true);
+      enableDoubleTapZooming: true,
+      enablePanning: true,
+      enablePinching: true,
+      enableSelectionZooming: true,
+      enableMouseWheelZooming: true,
+    );
     super.initState();
   }
 
@@ -331,8 +336,9 @@ class _EchartsWidgetState extends State<EchartsWidget>
               });
             }
             print(dataYAxis);
-            _rangeController = RangeController(
-                start: dataYAxis.first['time'], end: dataYAxis.last['time']);
+
+            print(_rangeController.start);
+            print(_rangeController.end);
             //if (widget.finalList[2] == '') {
             //  print('h');
             //  lineMarkerData.add(
@@ -396,7 +402,7 @@ class _EchartsWidgetState extends State<EchartsWidget>
                         primaryYAxis: NumericAxis(isVisible: true),
                         legend: Legend(isVisible: widget.showLegend),
                         //tooltipBehavior: TooltipBehavior(enable: true),
-                        //zoomPanBehavior: _zoomPanBehavior,
+                        zoomPanBehavior: _zoomPanBehavior,
                         series: <LineSeries<dynamic, dynamic>>[
                           for (int i = 3; i < widget.finalList.length; i++)
                             LineSeries(
@@ -418,12 +424,14 @@ class _EchartsWidgetState extends State<EchartsWidget>
                       ),
                     ),
                     SfRangeSelector(
+                      //onChanged: (sf) => setState(() {}),
+
                       dragMode: SliderDragMode.both,
                       showLabels: true,
                       showTicks: true,
                       dateIntervalType: DateIntervalType.seconds,
-                      min: dataYAxis.first['time'],
-                      max: dataYAxis.last['time'],
+                      min: DateTime(2023, 3, 2, 11, 0, 0),
+                      max: DateTime(2023, 3, 2, 23, 0, 0),
                       dateFormat: DateFormat.Hms(),
                       controller: _rangeController,
                       //initialValues: SfRangeValues(0, 1),
@@ -431,6 +439,8 @@ class _EchartsWidgetState extends State<EchartsWidget>
                         height: 130,
                         child: SfCartesianChart(
                           primaryXAxis: DateTimeAxis(
+                            minimum: DateTime(2023, 3, 2, 11, 0, 0),
+                            maximum: DateTime(2023, 3, 2, 23, 0, 0),
                             isVisible: false,
                             title: AxisTitle(
                                 //text:
