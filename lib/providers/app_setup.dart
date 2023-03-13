@@ -7,10 +7,10 @@ class AppSetup extends ChangeNotifier {
   Race currentRaceSelected = races2023[0];
   List chartList = [DateTime.now()];
 
-  String role = 'k';
+  String role = 'a';
   AppSetup();
   int mainScreenDesktopIndex = 0;
-
+  String chatId = '0';
   get currentRace => currentRaceSelected;
   get chartPreferences => chartList;
   get mainScreenDesktopInd => mainScreenDesktopIndex;
@@ -80,7 +80,13 @@ class AppSetup extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setRoleAuto() async {
+  Future<bool> setRoleAuto() async {
     role = await getUserRoleAuto();
+    return true;
+  }
+
+  void setChatId(String id) {
+    chatId = id;
+    notifyListeners();
   }
 }

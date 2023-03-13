@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/providers/device.dart';
 import 'package:provider/provider.dart';
+import '../providers/app_setup.dart';
 import '../providers/theme.dart';
 import '../supabase/authentication_functions.dart';
 import 'dark_theme_icons.dart';
@@ -14,6 +15,7 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
+    AppSetup a = Provider.of<AppSetup>(context);
     final theme = Provider.of<ThemeChanger>(context);
     final device = Provider.of<DeviceManager>(context);
     int selectedColor = theme.colorIndex;
@@ -71,10 +73,13 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
               signOut(context);
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.of(context).pushReplacementNamed('/signin');
+              await Future.delayed(Duration(seconds: 2));
+              a.setIndex(0);
+              a.role = '';
             },
           ),
           SizedBox(

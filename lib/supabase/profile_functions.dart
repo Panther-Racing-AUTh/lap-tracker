@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
 
-Future<Person> getUserProfile({required String uuid}) async {
+Future<List> getUserProfile({required String uuid}) async {
   final data = await supabase
       .from('users')
       .select('full_name, role, about, department')
@@ -17,16 +17,24 @@ Future<Person> getUserProfile({required String uuid}) async {
   final dept_image = supabase.storage
       .from('departments')
       .getPublicUrl(data['department'] + '.jpeg');
-  return Person(
-    name: data['full_name'],
-    role: data['role'],
-    about: data['about'],
-    department: data['department'],
-    image: await validateImage(image)
-        ? image
-        : image.split('users/').first + 'users/default.webp',
-    department_image: dept_image,
-  );
+
+  final admins = await supabase
+      .from('user_roles')
+      .select('''admin_name: user_id ( full_name )''').eq('role_id', 1);
+
+  return [
+    admins,
+    Person(
+      name: data['full_name'],
+      role: data['role'],
+      about: data['about'],
+      department: data['department'],
+      image: await validateImage(image)
+          ? image
+          : image.split('users/').first + 'users/default.webp',
+      department_image: dept_image,
+    )
+  ];
 }
 
 Future<void> saveProfile(Person p) async {

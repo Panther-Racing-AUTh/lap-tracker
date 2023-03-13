@@ -1,11 +1,25 @@
-import 'dart:convert';
-
+import 'package:flutter_complete_guide/supabase/profile_functions.dart';
 import 'package:universal_io/io.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/message.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
+
+Future<List> getAllUsers() async {
+  final users = await supabase.from('users').select('id, full_name, role')
+      //.neq('id', getCurrentUserId())
+      ;
+  for (var element in users) {
+    var image =
+        supabase.storage.from('users').getPublicUrl(element['id'] + '.jpeg');
+    element['profile_image'] = await validateImage(image)
+        ? image
+        : image.split('users/').first + 'users/default.webp';
+  }
+
+  return users;
+}
 
 Stream<List<Message>> getMessages() {
   updateMessages();

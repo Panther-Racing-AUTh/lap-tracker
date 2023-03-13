@@ -3,9 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/widgets/checked_boxes_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:provider/provider.dart' as provider;
 import '../../models/message.dart';
 import '../names.dart';
+import '../providers/app_setup.dart';
 import '../supabase/chat_service.dart';
 import 'chat_bubble.dart';
 
@@ -92,6 +93,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
+    AppSetup setup = provider.Provider.of<AppSetup>(context);
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.numpadEnter): () {
@@ -103,14 +105,24 @@ class _ChatWidgetState extends State<ChatWidget> {
         child: StreamBuilder<List<Message>>(
           stream: getMessages(),
           builder: (context, snapshot) {
-            if (snapshot.hasData &&
-                (Supabase.instance.client.auth.currentUser != null)) {
+            if (snapshot.hasData
+                //&&(Supabase.instance.client.auth.currentUser != null)
+                ) {
               final messages = snapshot.data!;
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SafeArea(
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          setup.setChatId('0');
+                        },
+                      ),
+                    ),
                     Expanded(
                       child: ListView.builder(
                         reverse: true,

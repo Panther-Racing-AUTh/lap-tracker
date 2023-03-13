@@ -335,10 +335,7 @@ class _EchartsWidgetState extends State<EchartsWidget>
                 }
               });
             }
-            print(dataYAxis);
 
-            print(_rangeController.start);
-            print(_rangeController.end);
             //if (widget.finalList[2] == '') {
             //  print('h');
             //  lineMarkerData.add(

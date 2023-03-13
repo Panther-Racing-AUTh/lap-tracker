@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/new_data_screen.dart';
 import 'package:flutter_complete_guide/widgets/chat_widget.dart';
+import 'package:flutter_complete_guide/widgets/chats_total.dart';
 import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/dashboard_desktop_widget.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/data_desktop_widget.dart';
@@ -59,7 +60,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         case 1:
           return SingleChildScrollView(child: ProfileDesktop());
         case 2:
-          return Container(child: ChatWidget());
+          return ChatLandingPage();
         case 3:
           return DataDesktopWidget();
         case 4:
@@ -119,7 +120,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             icon: Icon(Icons.download),
             onPressed: () {
               setup.setRoleAuto();
-              print(setup.role);
             },
           ),
           SizedBox(width: 10),

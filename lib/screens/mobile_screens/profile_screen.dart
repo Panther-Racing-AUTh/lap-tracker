@@ -55,12 +55,12 @@ class ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             )
-          : FutureBuilder<Person>(
+          : FutureBuilder<List>(
               future: getUserProfile(
                   uuid: Supabase.instance.client.auth.currentUser!.id),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  p = snapshot.data;
+                  p = snapshot.data![1];
 
                   return Profile();
                 } else {

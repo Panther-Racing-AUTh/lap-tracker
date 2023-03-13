@@ -13,12 +13,12 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool session = checkSession();
   late VideoPlayerController _controller;
+  late Future<bool> session;
   @override
   void initState() {
     super.initState();
-
+    session = checkSession(context);
     _controller = VideoPlayerController.asset('images/loading.mp4')
       ..initialize().then((_) {
         setState(() {});
@@ -35,11 +35,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _playVideo() async {
     _controller.play();
-
-    await Future.delayed(const Duration(seconds: 2));
     AppSetup a = Provider.of<AppSetup>(context, listen: false);
-    if (session) a.setRoleAuto();
-    Navigator.of(context).pushReplacementNamed(session ? '/main' : '/signin');
+
+    if (await session) {
+      await Future.value(a.setRoleAuto());
+    }
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    Navigator.of(context)
+        .pushReplacementNamed(await session ? '/main' : '/signin');
   }
 
   @override

@@ -4,7 +4,8 @@ import 'package:flutter_complete_guide/names.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:provider/provider.dart' as provider;
+import '../../providers/app_setup.dart';
 import '../../supabase/profile_functions.dart';
 
 final double coverHeight = 150;
@@ -18,7 +19,7 @@ class ProfileDesktop extends StatefulWidget {
 }
 
 class _ProfileDesktopState extends State<ProfileDesktop> {
-  late Future<Person> dataFuture;
+  late Future<List> dataFuture;
 
   @override
   void initState() {
@@ -28,13 +29,15 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
           getUserProfile(uuid: Supabase.instance.client.auth.currentUser!.id);
   }
 
+  int changeIconsLayout = 1400;
   @override
   Widget build(BuildContext context) {
+    AppSetup setup = provider.Provider.of<AppSetup>(context);
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
 
-    return (Supabase.instance.client.auth.currentUser == null)
+    return (supabase.auth.currentUser == null)
         ? Container(
             height: height,
             child: Center(
@@ -47,70 +50,91 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
               ),
             ),
           )
-        : FutureBuilder<Person>(
+        : FutureBuilder<List>(
             future: dataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                p = snapshot.data;
+                p = snapshot.data![1];
+                final admins = [];
+                snapshot.data![0].forEach((element) {
+                  admins.add(element['admin_name']['full_name']);
+                });
+
                 return Container(
                   constraints: BoxConstraints(
                     minHeight: height,
-                    minWidth: (width >= 1175) ? width * 0.6 : width * 0.75,
+                    minWidth: (width >= changeIconsLayout)
+                        ? width * 0.6
+                        : width * 0.75,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      if (setup.role == 'default')
+                        Stack(
                           children: [
                             Container(
-                              child: buildTop(width, height * 0.2),
+                              color: Colors.grey,
+                              height: 40,
                             ),
-                            (width < 1175)
-                                ? Container(
-                                    padding: EdgeInsets.only(left: 20, top: 20),
-                                    child: nameAndRole())
-                                : Container(),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(35, 30, 10, 20),
-                              child: Text(
-                                p!.about,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  height: 1.4,
-                                  color: Color.fromARGB(255, 121, 119, 119),
-                                ),
-                                textAlign: TextAlign.start,
-                              ),
-                              width:
-                                  (width >= 1175) ? width * 0.6 : width * 0.75,
-                              alignment: Alignment.centerLeft,
-                            ),
-                            Container(
-                              child: (width < 1175)
-                                  ? Container(
-                                      width: width * 0.8,
-                                      padding:
-                                          EdgeInsets.only(left: 20, top: 20),
-                                      child: showIconsHorizontal(),
-                                    )
-                                  : Container(),
-                            )
+                            VerificationMessage(admins),
                           ],
                         ),
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  child: buildTop(width, height * 0.2),
+                                ),
+                                if (width < changeIconsLayout)
+                                  SizedBox(
+                                    height: height * 0.01,
+                                    child: Container(),
+                                  ),
+                                if (width < changeIconsLayout)
+                                  Container(
+                                    padding: EdgeInsets.only(left: 20, top: 20),
+                                    child: nameAndRole(),
+                                  ),
+                                Container(
+                                  padding: EdgeInsets.fromLTRB(35, 30, 10, 20),
+                                  child: Text(
+                                    p!.about,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      height: 1.4,
+                                      color: Color.fromARGB(255, 121, 119, 119),
+                                    ),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  width: (width >= changeIconsLayout)
+                                      ? width * 0.6
+                                      : width * 0.55,
+                                  alignment: Alignment.centerLeft,
+                                ),
+                                if (width < changeIconsLayout)
+                                  Container(
+                                    padding: EdgeInsets.only(left: 20, top: 20),
+                                    child: showIconsHorizontal(),
+                                  )
+                              ],
+                            ),
+                          ),
+                          //social media
+
+                          if (width >= changeIconsLayout)
+                            Container(
+                              width: width * 0.2,
+                              padding: EdgeInsets.only(left: 20, top: 20),
+                              child: showIconsVertical(height * 0.3),
+                            )
+                        ],
                       ),
-                      //social media
-                      Container(
-                        child: (width >= 1175)
-                            ? Container(
-                                width: width * 0.2,
-                                padding: EdgeInsets.only(left: 20, top: 20),
-                                child: showIconsVertical(height * 0.3),
-                              )
-                            : Container(),
-                      )
                     ],
                   ),
                 );
@@ -118,7 +142,9 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
                 return Container(
                   constraints: BoxConstraints(
                     minHeight: height,
-                    minWidth: (width >= 1175) ? width * 0.6 : width * 0.75,
+                    minWidth: (width >= changeIconsLayout)
+                        ? width * 0.6
+                        : width * 0.75,
                   ),
                   child: Center(
                     child: CircularProgressIndicator(),
@@ -145,7 +171,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildProfileImage(),
-              (width >= 1175)
+              (width >= changeIconsLayout)
                   ? Container(
                       width: width * 0.3,
                       height: height * 0.9,
@@ -223,37 +249,44 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
       );
 
   Widget showIconsVertical(double height) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        buildSocialIcon(FontAwesomeIcons.google),
-        const SizedBox(height: 9),
-        buildSocialIcon(FontAwesomeIcons.github),
-        const SizedBox(height: 9),
-        buildSocialIcon(FontAwesomeIcons.twitter),
-        const SizedBox(height: 9),
-        buildSocialIcon(FontAwesomeIcons.linkedin),
-        const SizedBox(height: 9),
-        buildSocialIcon(FontAwesomeIcons.apple),
-        const SizedBox(height: 9),
-        buildSocialIcon(FontAwesomeIcons.microsoft),
-        const SizedBox(height: 9),
         Container(
-          padding: EdgeInsets.all(20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(child: SizedBox(height: height)),
-              Text(
-                learn_more_at,
-                style: TextStyle(fontSize: 15),
-              ),
-              CustomWebsiteButton(),
+              buildSocialIcon(FontAwesomeIcons.google),
+              const SizedBox(height: 9),
+              buildSocialIcon(FontAwesomeIcons.github),
+              const SizedBox(height: 9),
+              buildSocialIcon(FontAwesomeIcons.twitter),
+              const SizedBox(height: 9),
+              buildSocialIcon(FontAwesomeIcons.linkedin),
+              const SizedBox(height: 9),
+              buildSocialIcon(FontAwesomeIcons.apple),
+              const SizedBox(height: 9),
+              buildSocialIcon(FontAwesomeIcons.microsoft),
+              const SizedBox(height: 9),
+              Container(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(child: SizedBox(height: height)),
+                    Text(
+                      learn_more_at,
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    CustomWebsiteButton(),
+                  ],
+                ),
+              )
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -292,7 +325,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
               CustomWebsiteButton()
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -351,3 +384,36 @@ class CustomWebsiteButton extends StatelessWidget {
     );
   }
 }
+
+Widget VerificationMessage(List admins) => Container(
+      height: 40,
+      color: Colors.grey.withOpacity(0.9),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 20),
+              Icon(
+                Icons.warning,
+                color: Colors.red,
+              ),
+              Text(
+                'Contact an admin to be assigned a role!',
+                style: TextStyle(fontSize: 22),
+              ),
+              SizedBox(width: 20),
+              Text(
+                'Admin(s): ' +
+                    admins
+                        .toString()
+                        .replaceFirst('[', '')
+                        .replaceFirst(']', ''),
+                style: TextStyle(fontSize: 17),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );

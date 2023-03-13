@@ -104,10 +104,7 @@ class ChatBubble extends StatelessWidget {
                                                   chartStringToList(
                                                       message.content),
                                                 );
-                                                print(
-                                                  chartStringToList(
-                                                      message.content),
-                                                );
+
                                                 setup.setIndex(4);
                                                 Navigator.of(context).pop();
                                               },

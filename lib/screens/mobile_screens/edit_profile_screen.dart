@@ -13,7 +13,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Person newProfile = Person(name: '', about: '', department: '', role: '');
   final _globalKey = GlobalKey<FormState>();
 
-  late Future<Person> dataFuture;
+  late Future<List> dataFuture;
 
   @override
   void initState() {
@@ -47,11 +47,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<Person>(
+      body: FutureBuilder<List>(
         future: dataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            currentProfile = snapshot.data;
+            currentProfile = snapshot.data![1];
             if (newProfile.department == '')
               newProfile.department = currentProfile!.department;
             return ListView(
