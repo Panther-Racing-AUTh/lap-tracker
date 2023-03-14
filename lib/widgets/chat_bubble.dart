@@ -126,7 +126,6 @@ class ChatBubble extends StatelessWidget {
               child: Text(message.createAt.toString(),
                   style: const TextStyle(color: Colors.grey, fontSize: 12.0)),
             ),
-          //MarkAsRead(message: message),
           const SizedBox(width: 60),
         ],
       ),

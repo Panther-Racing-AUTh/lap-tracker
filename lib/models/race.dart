@@ -1,16 +1,20 @@
-class Race {
-  String gpName;
+class RaceTrack {
+  int id;
+  String name;
   String country;
-
-  Race({
-    required this.gpName,
+  String countryCode;
+  RaceTrack({
+    required this.id,
+    required this.name,
     required this.country,
+    required this.countryCode,
   });
 }
 
+/*
 List<Race> races2023 = [
   Race(
-    gpName: 'MotorLand Aragon',
+    gpName: 'Aragon',
     country: 'es',
   ),
   Race(
@@ -98,3 +102,4 @@ List<Race> races2023 = [
     country: 'es',
   ),
 ];
+*/

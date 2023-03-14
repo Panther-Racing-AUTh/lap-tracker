@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
     AppSetup a = Provider.of<AppSetup>(context, listen: false);
 
     if (await session) {
-      await Future.value(a.setRoleAuto());
+      await Future.value(a.setValuesAuto());
     }
 
     await Future.delayed(const Duration(seconds: 1));

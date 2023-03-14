@@ -3,6 +3,7 @@ import 'package:flutter_complete_guide/models/race.dart';
 import 'package:flutter_complete_guide/supabase/select_race_track_functions.dart';
 import 'package:flutter_complete_guide/widgets/drivers_grid.dart';
 
+import '../../supabase/authentication_functions.dart';
 import '../overview.dart';
 
 class _MyDelegate extends MultiChildLayoutDelegate {
@@ -21,17 +22,17 @@ class _MyDelegate extends MultiChildLayoutDelegate {
     late Size secondSize;
     late Size thirdSize;
 
-    if (hasChild(1)) {
-      firstSize = layoutChild(
-        1,
-        BoxConstraints(),
-      );
-
-      positionChild(
-        1,
-        Offset(screenWidth - firstSize.width, 0),
-      );
-    }
+    //if (hasChild(1)) {
+    //  firstSize = layoutChild(
+    //    1,
+    //    BoxConstraints(),
+    //  );
+//
+    //  positionChild(
+    //    1,
+    //    Offset(screenWidth - firstSize.width, 0),
+    //  );
+    //}
 
     if (hasChild(2)) {
       secondSize = layoutChild(
@@ -65,14 +66,14 @@ class _MyDelegate extends MultiChildLayoutDelegate {
 }
 
 Widget DashBoardDesktop({
-  required Race race,
   required bool showWeather,
   required bool showDriverBoard,
   required double screenHeight,
   required double screenWidth,
 }) {
-  return FutureBuilder<String>(
-    future: getRaceTrack(race: race),
+  return FutureBuilder<dynamic>(
+    //future: getRaceTrack(race: race),
+    future: getCurrentUserIdInt(),
     builder: (context, snapshot) {
       return CustomMultiChildLayout(
         delegate: _MyDelegate(
@@ -80,14 +81,14 @@ Widget DashBoardDesktop({
             screenHeight: screenHeight,
             screenWidth: screenWidth),
         children: [
-          LayoutId(
-            id: 1,
-            child: Container(
-              height: screenHeight * 0.5,
-              width: screenWidth * 0.8,
-              child: DriversDataWidget(),
-            ),
-          ),
+          //LayoutId(
+          //  id: 1,
+          //  child: Container(
+          //    height: screenHeight * 0.5,
+          //    width: screenWidth * 0.8,
+          //    child: DriversDataWidget(),
+          //  ),
+          //),
           LayoutId(
             id: 2,
             child: (snapshot.data == null)
@@ -96,11 +97,12 @@ Widget DashBoardDesktop({
                     //color: Colors.red,
                     height: screenHeight * 0.4,
                     width: screenWidth * 0.35,
-                    child: Image.network(
-                      snapshot.data!,
-                      fit: BoxFit.contain,
+                    child: Container()
+                    //Image.network(
+                    //  snapshot.data!,
+                    //  fit: BoxFit.contain,
+                    //),
                     ),
-                  ),
           ),
           LayoutId(
             id: 3,

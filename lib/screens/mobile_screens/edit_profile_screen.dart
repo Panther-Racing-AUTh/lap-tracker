@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/person.dart';
 import '../../names.dart';
+import '../../providers/app_setup.dart';
 import '../../supabase/profile_functions.dart';
+import 'package:provider/provider.dart' as provider;
 
 class EditProfileScreen extends StatefulWidget {
   @override
@@ -17,9 +19,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void initState() {
+    AppSetup appSetup = provider.Provider.of<AppSetup>(context);
     super.initState();
-    dataFuture =
-        getUserProfile(uuid: Supabase.instance.client.auth.currentUser!.id);
+    dataFuture = getUserProfile(id: appSetup.supabase_id);
   }
 
   static List<String> items = [

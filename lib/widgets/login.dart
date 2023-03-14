@@ -301,7 +301,7 @@ class LoginState extends State<Login> {
                 child: Text('Admin',
                     style: TextStyle(fontSize: 28, color: Colors.orange)),
                 onPressed: () {
-                  a.role = 'Admin';
+                  a.role = 'admin';
                   Navigator.of(context).pushReplacementNamed(
                       device.isDesktopMode()
                           ? '/main-desktop'

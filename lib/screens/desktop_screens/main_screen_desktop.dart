@@ -51,7 +51,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           element == dynamicList(setup.role)[setup.mainScreenDesktopIndex])) {
         case 0:
           return DashBoardDesktop(
-            race: setup.currentRace,
             showWeather: showWeather,
             showDriverBoard: showDriverBoard,
             screenHeight: height,
@@ -61,11 +60,10 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           return SingleChildScrollView(child: ProfileDesktop());
         case 2:
           return ChatLandingPage();
+
         case 3:
-          return DataDesktopWidget();
-        case 4:
           return NewDataScreen();
-        case 5:
+        case 4:
           return SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(
@@ -76,7 +74,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
               ),
             ),
           );
-        case 6:
+        case 5:
           return AdminPanel();
       }
       return CircularProgressIndicator();
@@ -119,7 +117,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           IconButton(
             icon: Icon(Icons.download),
             onPressed: () {
-              setup.setRoleAuto();
+              setup.setValuesAuto();
             },
           ),
           SizedBox(width: 10),
@@ -233,26 +231,26 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       text: names.chat,
       selectedIcon: Icon(Icons.chat),
     ),
+    //_widget(
+    //  3,
+    //  icon: Icon(Icons.data_object_outlined),
+    //  text: names.data,
+    //  selectedIcon: Icon(Icons.data_object),
+    //),
     _widget(
       3,
-      icon: Icon(Icons.data_object_outlined),
-      text: names.data,
-      selectedIcon: Icon(Icons.data_object),
-    ),
-    _widget(
-      4,
       icon: Icon(Icons.bar_chart_outlined),
       text: names.chart,
       selectedIcon: Icon(Icons.bar_chart),
     ),
     _widget(
-      5,
+      4,
       icon: Icon(Icons.settings_outlined),
       text: names.settings,
       selectedIcon: Icon(Icons.settings),
     ),
     _widget(
-      6,
+      5,
       icon: Icon(Icons.admin_panel_settings_outlined),
       text: 'Admin Panel',
       selectedIcon: Icon(Icons.admin_panel_settings),
@@ -262,14 +260,13 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
   List<NavigationRailDestination> dynamicList(String role) {
     List<NavigationRailDestination> l = [];
 
-    if (role == 'Admin') {
+    if (role == 'admin') {
       l.add(allNavigationRailDestinations[0]);
       l.add(allNavigationRailDestinations[1]);
       l.add(allNavigationRailDestinations[2]);
       l.add(allNavigationRailDestinations[3]);
       l.add(allNavigationRailDestinations[4]);
       l.add(allNavigationRailDestinations[5]);
-      l.add(allNavigationRailDestinations[6]);
     }
     if (role == 'engineer') {
       l.add(allNavigationRailDestinations[0]);
@@ -277,17 +274,15 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       l.add(allNavigationRailDestinations[2]);
       l.add(allNavigationRailDestinations[3]);
       l.add(allNavigationRailDestinations[4]);
-      l.add(allNavigationRailDestinations[5]);
     }
     if (role == 'data_analyst') {
       l.add(allNavigationRailDestinations[1]);
       l.add(allNavigationRailDestinations[3]);
       l.add(allNavigationRailDestinations[4]);
-      l.add(allNavigationRailDestinations[5]);
     }
     if (role == 'default') {
       l.add(allNavigationRailDestinations[1]);
-      l.add(allNavigationRailDestinations[5]);
+      l.add(allNavigationRailDestinations[4]);
     }
     return l;
   }

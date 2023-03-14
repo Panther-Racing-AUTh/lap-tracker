@@ -120,10 +120,10 @@ class _AdminPanelState extends State<AdminPanel> {
                             DataCell(
                               IconButton(
                                 disabledColor: Theme.of(context).primaryColor,
-                                onPressed: (users[i]['role']['role'] == 'Admin')
+                                onPressed: (users[i]['role']['role'] == 'admin')
                                     ? null
                                     : () {},
-                                icon: Icon((users[i]['role']['role'] == 'Admin')
+                                icon: Icon((users[i]['role']['role'] == 'admin')
                                     ? Icons.shield_sharp
                                     : Icons.edit),
                               ),

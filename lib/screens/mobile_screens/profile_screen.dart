@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/supabase/profile_functions.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/person.dart';
@@ -24,6 +25,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppSetup appSetup = provider.Provider.of<AppSetup>(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -31,7 +33,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           profile,
         ),
         actions: [
-          _buildEditButton(size: 24, padding: 10),
+          _buildEditButton(size: 24, padding: 10, id: appSetup.supabase_id),
         ],
       ),
       body: (Supabase.instance.client.auth.currentUser == null)
@@ -56,8 +58,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
             )
           : FutureBuilder<List>(
-              future: getUserProfile(
-                  uuid: Supabase.instance.client.auth.currentUser!.id),
+              future: getUserProfile(id: appSetup.supabase_id),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   p = snapshot.data![1];
@@ -88,7 +89,8 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildEditButton({required double size, required double padding}) {
+  Widget _buildEditButton(
+      {required double size, required double padding, required int id}) {
     bool signedIn = supabase.auth.currentSession != null;
     return Container(
       padding: EdgeInsets.all(padding),
@@ -104,8 +106,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               context,
               '/profile/edit',
             ).then((_) => setState(() {
-                  getUserProfile(
-                      uuid: Supabase.instance.client.auth.currentUser!.id);
+                  getUserProfile(id: id);
                   Future.delayed(Duration(seconds: 2));
                   setState(() {});
                 }));

@@ -1,4 +1,5 @@
 import 'package:flutter_complete_guide/names.dart';
+import 'package:flutter_complete_guide/supabase/chat_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../providers/app_setup.dart';
@@ -27,17 +28,20 @@ Future<void> insertUser({
   bool userExists = await userExistsinDb(email: email);
   if (!userExists) {
     await supabase.from('users').insert({
-      'id': supabase.auth.currentUser!.id,
+      'uuid': supabase.auth.currentUser!.id,
       'email': email,
       'password': password,
       'provider': provider,
     });
+    final user = await supabase
+        .from('users')
+        .select('id')
+        .eq('uuid', supabase.auth.currentUser!.id)
+        .single();
 
     await supabase.from('user_roles').insert({
-      'user_id': supabase.auth.currentUser!.id,
+      'user_id': user['id'],
       'role_id': 4,
-      'created_at': DateTime.now().toString(),
-      'last_modified': DateTime.now().toString(),
     });
   }
 }
@@ -59,7 +63,7 @@ Future<void> userLogin({
 
     final User? user = response.user;
     bool userExists = await userExistsinDb(email: email);
-    if (userExists && user != null) a.setRoleAuto();
+    if (userExists && user != null) a.setValuesAuto();
     //Checks if the user does not exist
     if (user != null) {
       //If there's no User inserts one in supabase table
@@ -71,7 +75,7 @@ Future<void> userLogin({
             provider: 'email');
       }
 
-      await Future.value(a.setRoleAuto());
+      await Future.value(a.setValuesAuto());
 
       //await Future.delayed(Duration(seconds: 1));
       Navigator.of(context).popUntil((route) => route.isFirst);
@@ -167,7 +171,7 @@ Future<void> signInWithOAuth(BuildContext context,
   supabase.auth.onAuthStateChange.listen(
     ((event) async {
       if (await checkSession(context)) {
-        a.setRoleAuto();
+        a.setValuesAuto();
 
         if (!userExists)
           insertUser(
@@ -180,24 +184,21 @@ Future<void> signInWithOAuth(BuildContext context,
   );
 }
 
-Future<String> getUserRole({required String uuid}) async {
-  final response = await supabase
+Future<String> getUserRole({required int id}) async {
+  final users = await supabase
       .from('user_roles')
-      .select('role_id')
-      .eq('user_id', uuid)
+      .select('''role: role_id (role)''')
+      .eq('user_id', id)
       .single();
 
-  final r =
-      await supabase.from('roles').select('role').eq('id', response['role_id']);
-
-  return r['role'];
+  return users['role']['role'];
 }
 
 Future<String> getUserRoleAuto() async {
   final users = await supabase
       .from('user_roles')
       .select('''role: role_id (role)''')
-      .eq('user_id', supabase.auth.currentUser!.id)
+      .eq('user_id', await getCurrentUserIdInt())
       .single();
   return users['role']['role'];
 }
@@ -205,8 +206,8 @@ Future<String> getUserRoleAuto() async {
 //check if there is active session and push page if there is
 Future<bool> checkSession(BuildContext context) async {
   if (supabase.auth.currentSession != null) {
-    AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
-    a.role = await getUserRoleAuto();
+    //AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
+    //a.role = await getUserRoleAuto();
     return true;
   }
   return false;
@@ -214,4 +215,13 @@ Future<bool> checkSession(BuildContext context) async {
 
 Future<void> signOut(BuildContext context) async {
   await supabase.auth.signOut();
+}
+
+Future<int> getCurrentUserIdInt() async {
+  final user = await supabase
+      .from('users')
+      .select('id')
+      .eq('uuid', supabase.auth.currentUser!.id)
+      .single();
+  return user['id'];
 }

@@ -23,10 +23,10 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
 
   @override
   void initState() {
+    AppSetup appSetup = provider.Provider.of<AppSetup>(context, listen: false);
     super.initState();
     if (supabase.auth.currentSession != null)
-      dataFuture =
-          getUserProfile(uuid: Supabase.instance.client.auth.currentUser!.id);
+      dataFuture = getUserProfile(id: appSetup.supabase_id);
   }
 
   int changeIconsLayout = 1400;

@@ -12,16 +12,22 @@ class RaceTrackSelector extends StatefulWidget {
 }
 
 class _RaceTrackSelectorState extends State<RaceTrackSelector> {
-  int index = 0;
+  late int index;
+
+  @override
+  void initState() {
+    AppSetup setup = Provider.of<AppSetup>(context, listen: false);
+    index = setup.raceSelectorIndex;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext ctx) {
-    List<Race> races = races2023;
     AppSetup setup = Provider.of<AppSetup>(context);
-
+    List<RaceTrack> races = setup.races2023;
     CountryFlags getIcon(int index) {
       return CountryFlags.flag(
-        races[index].country,
+        races[index].countryCode,
         height: 25,
         width: 25,
       );
@@ -29,31 +35,32 @@ class _RaceTrackSelectorState extends State<RaceTrackSelector> {
 
     return Row(
       children: [
-        getIcon(index),
+        getIcon(setup.raceSelectorIndex),
         SizedBox(width: 10),
-        PopupMenuButton<Race>(
+        PopupMenuButton<RaceTrack>(
           child: Row(
             children: [
-              Text(races[index].gpName),
+              Text(races[setup.raceSelectorIndex].name),
               Icon(Icons.arrow_drop_down),
             ],
           ),
           itemBuilder: (ctx) {
-            return races.map((Race r) {
+            return races.map((RaceTrack r) {
               return PopupMenuItem(
                 value: r,
-                child: Text(r.gpName),
+                child: Text(r.name),
               );
             }).toList();
           },
-          onSelected: (Race? value) {
+          onSelected: (RaceTrack? value) {
             setState(
               () {
-                index = races
-                    .indexWhere((element) => element.gpName == value!.gpName);
+                index =
+                    races.indexWhere((element) => element.name == value!.name);
               },
             );
-            setup.setRace(races2023[index]);
+
+            setup.raceSelectorIndex = index;
           },
         ),
       ],

@@ -4,11 +4,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
 
-Future<List> getUserProfile({required String uuid}) async {
+Future<List> getUserProfile({required int id}) async {
   final data = await supabase
       .from('users')
       .select('full_name, role, about, department')
-      .eq('id', uuid)
+      .eq('id', id)
       .single();
   var image = supabase.storage
       .from('users')

@@ -26,7 +26,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   final _formKey = GlobalKey<FormState>();
   final _msgController = TextEditingController();
 
-  Future<void> pickChart(BuildContext c) async {
+  Future<void> pickChart({required BuildContext c, required int id}) async {
     showDialog(
       context: c,
       builder: (ctx) => AlertDialog(
@@ -45,7 +45,7 @@ class _ChatWidgetState extends State<ChatWidget> {
               IconButton(
                 onPressed: () {
                   print(ChartList);
-                  sendChart(ChartList);
+                  sendChart(list: ChartList, id: id);
                   Navigator.of(ctx).pop();
                 },
                 icon: Icon(Icons.send),
@@ -57,19 +57,19 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 
-  Future pickImage({required bool isCamera}) async {
+  Future pickImage({required bool isCamera, required int id}) async {
     try {
       final image = await ImagePicker().pickImage(
           source: isCamera ? ImageSource.camera : ImageSource.gallery);
       if (image == null) return;
 
-      saveImage(image);
+      saveImage(image: image, id: id);
     } on PlatformException catch (e) {
       print('Failed to pick image: $e');
     }
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(int id) async {
     final text = _msgController.text;
 
     if (text.isEmpty) {
@@ -79,7 +79,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      await saveMessage(text);
+      await saveMessage(content: text, id: id);
 
       _msgController.text = '';
     }
@@ -94,22 +94,22 @@ class _ChatWidgetState extends State<ChatWidget> {
   @override
   Widget build(BuildContext context) {
     AppSetup setup = provider.Provider.of<AppSetup>(context);
+
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.numpadEnter): () {
-          _submit();
+          _submit(setup.supabase_id);
         }
       },
       child: Focus(
         autofocus: true,
         child: StreamBuilder<List<Message>>(
-          stream: getMessages(),
+          stream: getMessages(id: setup.supabase_id, allUsers: setup.allUsers),
           builder: (context, snapshot) {
             if (snapshot.hasData
                 //&&(Supabase.instance.client.auth.currentUser != null)
                 ) {
               final messages = snapshot.data!;
-
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -119,7 +119,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                       child: IconButton(
                         icon: Icon(Icons.arrow_back),
                         onPressed: () {
-                          setup.setChatId('0');
+                          setup.setChatId(0);
                         },
                       ),
                     ),
@@ -158,7 +158,11 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                   width: 10,
                                                 ),
                                                 Text(
-                                                  message.userFromName,
+                                                  setup.allUsers.firstWhere(
+                                                      (element) =>
+                                                          element['id'] ==
+                                                          message
+                                                              .id)['full_name'],
                                                   style: const TextStyle(
                                                       color: Colors.grey,
                                                       fontSize: 16.0),
@@ -188,7 +192,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                         },
                       ),
                     ),
-                    ActionBar(),
+                    ActionBar(setup.supabase_id),
                     const SizedBox(height: 20.0)
                   ],
                 ),
@@ -225,7 +229,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 
-  Widget ActionBar() => SafeArea(
+  Widget ActionBar(int id) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -233,7 +237,7 @@ class _ChatWidgetState extends State<ChatWidget> {
             child: TextFormField(
               controller: _msgController,
               onFieldSubmitted: (value) {
-                _submit();
+                _submit(id);
               },
               decoration: InputDecoration(
                   labelText: 'Message',
@@ -243,24 +247,24 @@ class _ChatWidgetState extends State<ChatWidget> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          pickChart(context);
+                          pickChart(c: context, id: id);
                         },
                         icon: Icon(Icons.bar_chart),
                       ),
                       IconButton(
                         onPressed: () {
-                          pickImage(isCamera: true);
+                          pickImage(isCamera: true, id: id);
                         },
                         icon: Icon(Icons.camera_alt_outlined),
                       ),
                       IconButton(
                         onPressed: () {
-                          pickImage(isCamera: false);
+                          pickImage(isCamera: false, id: id);
                         },
                         icon: Icon(Icons.image_outlined),
                       ),
                       IconButton(
-                        onPressed: () => _submit(),
+                        onPressed: () => _submit(id),
                         icon: const Icon(
                           Icons.send_rounded,
                         ),

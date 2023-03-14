@@ -41,7 +41,8 @@ class _EchartsPageState extends State<EchartsPage> {
               ),
               if (finalList.length > 3)
                 TextButton(
-                    onPressed: () => sendChart(finalList),
+                    onPressed: () =>
+                        sendChart(list: finalList, id: a.supabase_id),
                     child: Text(
                       'Send to Chat',
                       style: TextStyle(fontSize: 20),

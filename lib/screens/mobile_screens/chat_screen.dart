@@ -8,11 +8,10 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(
-        text: chat,
-        context: context,
-      ),
-      body: ChatWidget(),
-    );
+        appBar: MainAppBar(
+          text: chat,
+          context: context,
+        ),
+        body: Container());
   }
 }

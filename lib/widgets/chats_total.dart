@@ -15,7 +15,7 @@ class ChatLandingPage extends StatefulWidget {
 
 class _ChatLandingPageState extends State<ChatLandingPage> {
   late Future<List> dataFuture;
-
+  late List usersGlobal;
   @override
   void initState() {
     super.initState();
@@ -27,15 +27,21 @@ class _ChatLandingPageState extends State<ChatLandingPage> {
   Widget build(BuildContext context) {
     AppSetup setup = Provider.of<AppSetup>(context);
 
-    return (setup.chatId == '0')
+    return (setup.chatId == 0)
         ? FutureBuilder<List>(
             future: dataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                List users = snapshot.data!;
+                List users = [...snapshot.data!];
+                setup.allUsers = [...snapshot.data!];
+
+                users.removeWhere(
+                  (element) => element['id'] == setup.supabase_id,
+                );
+
                 List listWithGroupChat = [
                   {
-                    'id': '1',
+                    'id': 1,
                     'full_name': 'Group Chat',
                     'profile_image':
                         'https://png.pngtree.com/png-vector/20190330/ourmid/pngtree-vector-leader-of-group-icon-png-image_894944.jpg',
@@ -49,8 +55,7 @@ class _ChatLandingPageState extends State<ChatLandingPage> {
                     return GestureDetector(
                         onTap: () {
                           setState(() {
-                            setup.chatId =
-                                listWithGroupChat[index]['id'].toString();
+                            setup.chatId = listWithGroupChat[index]['id'];
                           });
                         },
                         child: Container(
@@ -70,6 +75,7 @@ class _ChatLandingPageState extends State<ChatLandingPage> {
                                 Row(
                                   children: [
                                     CircleAvatar(
+                                      backgroundColor: Colors.black,
                                       radius: 35.0,
                                       backgroundImage: NetworkImage(
                                           listWithGroupChat[index]
