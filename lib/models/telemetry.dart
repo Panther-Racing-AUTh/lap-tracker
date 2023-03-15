@@ -1,27 +1,20 @@
 class Data {
+  String canbusTimelineId;
+
   String canbusId;
   double value;
   String timestamp;
-  late String name;
+  String canbusIdName;
+  String unit;
 
-  Data({required this.canbusId, required this.timestamp, required this.value});
-
-  Data.fromJson(Map<String, dynamic> json)
-      : this.canbusId = json['canbusId'],
-        this.timestamp = json['timestamp2'],
-        this.value = json['value'];
-
-  Map toMap() {
-    return {
-      'canbusId': canbusId,
-      'value': value,
-      'timestamp2': timestamp,
-    };
-  }
-
-  void setName() {
-    name = m[canbusId]!;
-  }
+  Data({
+    required this.canbusId,
+    required this.timestamp,
+    required this.value,
+    required this.canbusIdName,
+    required this.canbusTimelineId,
+    required this.unit,
+  });
 }
 
 Map<String, String> m = {

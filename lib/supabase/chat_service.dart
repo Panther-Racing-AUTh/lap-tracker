@@ -71,5 +71,5 @@ Future<void> sendChart({required List<dynamic> list, required int id}) async {
     content: list.toString(),
     userFromId: id,
   );
-  await supabase.from('messages').insert(message.toMap());
+  await supabase.from('message').insert(message.toMap());
 }

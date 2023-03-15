@@ -28,6 +28,32 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
   bool showSidebar = true;
   bool showWeather = true;
   bool showDriverBoard = true;
+  late List<Widget> _pages;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    AppSetup setup = Provider.of<AppSetup>(context, listen: false);
+
+    _pages = [
+      DashBoardDesktop(),
+      SingleChildScrollView(child: ProfileDesktop()),
+      ChatLandingPage(),
+      NewDataScreen(),
+      Settings(),
+      AdminPanel()
+    ];
+
+    _pageController = PageController(initialPage: setup.mainScreenDesktopIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+
+    super.dispose();
+  }
 
   double _calculateAvailableWidthOfScreen(double deviceScreenWidth) {
     if (showSidebar) {
@@ -46,6 +72,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     var width =
         _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
 
+    /*
     Widget buildPages(double height) {
       switch (allNavigationRailDestinations.indexWhere((element) =>
           element == dynamicList(setup.role)[setup.mainScreenDesktopIndex])) {
@@ -79,6 +106,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       }
       return CircularProgressIndicator();
     }
+    */
 
     return Scaffold(
       appBar: AppBar(
@@ -136,7 +164,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             child: SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height -
+                    minHeight: height -
                         MediaQuery.of(context).padding.top -
                         kToolbarHeight),
                 child: IntrinsicHeight(
@@ -146,9 +174,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                     onDestinationSelected: (value) {
                       setState(() {
                         setup.setIndex(value);
-                        //setup.setIndex(allNavigationRailDestinations.indexWhere(
-                        //    (element) =>
-                        //        element == dynamicList(setup.role)[value]));
+                        _pageController.jumpToPage(value);
                       });
                     },
                     labelType: NavigationRailLabelType.all,
@@ -186,8 +212,10 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           //a different widget is rendered on the right side of screen
 
           Expanded(
-            child: Container(
-              child: buildPages(height),
+            child: PageView(
+              children: _pages,
+              controller: _pageController,
+              physics: NeverScrollableScrollPhysics(),
             ),
           ),
         ],

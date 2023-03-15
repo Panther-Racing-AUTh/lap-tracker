@@ -1,5 +1,7 @@
 import 'package:flutter_complete_guide/models/race.dart';
+import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:math';
 
 final supabase = Supabase.instance.client;
 
@@ -10,26 +12,74 @@ Future<dynamic> searchData(
       .from('session')
       .select('''id, session_order, type, event_date!inner ( date )''').eq(
           'racetrack_id', race.id);
-  print(data);
   data.forEach(
     (element) {
-      print(element['event_date']['date'].runtimeType);
-      print(
-          '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}T');
+      print(DateTime.parse(element['event_date']['date'])
+          .difference(dateTime)
+          .inHours);
       if (element['event_date']['date'].toString().contains(
-          '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}T')) {
+          '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}'))
         list.add(element);
-
-        if (DateTime.parse(element['event_date']['date']).year ==
-                dateTime.year &&
-            DateTime.parse(element['event_date']['date']).month.toString() ==
-                dateTime.month.toString().padLeft(2, '0') &&
-            DateTime.parse(element['event_date']['date']).day.toString() ==
-                dateTime.day.toString().padLeft(2, '0')) list.add(element);
-      }
-      ;
     },
   );
+  return list;
+}
+
+Future<List> getLapFromSession(int id) async {
+  final List data = await supabase
+      .from('lap')
+      .select('id, session_id, lap_order')
+      .eq('session_id', id);
+  print(data);
+  return data;
+}
+
+Future<dynamic> getDataFromLap(int id) async {
+  List<Data> data = [];
+  final List canbusTimelines =
+      await supabase.from('canbus_timeline').select('id').eq('lap_id', id);
+  //print(canbusTimelines);
+
+  for (int i = 0; i < canbusTimelines.length; i++) {
+    print(i);
+    final List raw_data = await supabase
+        .from('canbus_data')
+        .select('canbus_id, canbus_id_name, value, unit')
+        .eq('canbus_timeline_id', canbusTimelines[i]['id']);
+    print(raw_data);
+  }
+  return data;
+}
+
+Future<dynamic> getData() async {
+  final List<Data> l = [];
+  final List data = await supabase
+      .from('can_data')
+      .select()
+      .eq('canbus_id_name', 'APPS1_Raw');
+  int i = 0;
+  data.forEach((data) {
+    //if (i < 5000) {
+    DateTime dt = DateTime.parse(data['timestamp']);
+    int hour = dt.hour;
+    int minute = dt.minute;
+    int second = dt.second;
+    int millisecond = dt.millisecond;
+    String st =
+        '$hour:$minute:${second.toString().padLeft(2, '0')}.${millisecond.toString().padLeft(3, '0')}';
+    l.add(Data(
+        canbusId: data['canbus_id'],
+        timestamp: st,
+        value: data['value'],
+        canbusIdName: '',
+        canbusTimelineId: '',
+        unit: ''));
+    //  i++;
+    //}
+  });
+  l.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+  print(1);
+  return l;
 }
 
 Future<List<RaceTrack>> getRaceTracks() async {

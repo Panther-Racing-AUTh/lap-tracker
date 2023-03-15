@@ -12,9 +12,14 @@ class Settings extends StatefulWidget {
   State<Settings> createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsState extends State<Settings>
+    with AutomaticKeepAliveClientMixin<Settings> {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     AppSetup a = Provider.of<AppSetup>(context);
     final theme = Provider.of<ThemeChanger>(context);
     final device = Provider.of<DeviceManager>(context);

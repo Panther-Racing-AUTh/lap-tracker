@@ -60,9 +60,10 @@ class ChatBubble extends StatelessWidget {
                                 children: [
                                   //Edw tha paixtei mpalitsa na kses
                                   EchartsWidget(
+                                    isMessage: true,
                                     finalList:
                                         chartStringToList(message.content),
-                                    showLegend: false,
+                                    showDetails: false,
                                   ),
                                   Container(
                                     color: Colors.transparent,

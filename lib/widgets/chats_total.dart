@@ -13,7 +13,11 @@ class ChatLandingPage extends StatefulWidget {
   State<ChatLandingPage> createState() => _ChatLandingPageState();
 }
 
-class _ChatLandingPageState extends State<ChatLandingPage> {
+class _ChatLandingPageState extends State<ChatLandingPage>
+    with AutomaticKeepAliveClientMixin<ChatLandingPage> {
+  @override
+  bool get wantKeepAlive => true;
+
   late Future<List> dataFuture;
   late List usersGlobal;
   @override
@@ -25,6 +29,7 @@ class _ChatLandingPageState extends State<ChatLandingPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     AppSetup setup = Provider.of<AppSetup>(context);
 
     return (setup.chatId == 0)

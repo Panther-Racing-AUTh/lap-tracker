@@ -26,14 +26,14 @@ class _EchartsPageState extends State<EchartsPage> {
     AppSetup a = Provider.of<AppSetup>(context);
     finalList = a.chartList;
     return Container(
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery.of(context).size.height * 0.8,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.85,
+                height: MediaQuery.of(context).size.height * 0.5,
                 width: 250,
                 child: CheckedBoxWidget(
                   setFinalList: refresh,

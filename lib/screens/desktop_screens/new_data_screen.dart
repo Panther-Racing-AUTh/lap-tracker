@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/supabase/data_functions.dart';
+import 'package:flutter_complete_guide/widgets/chart_widget.dart';
+import 'package:flutter_complete_guide/widgets/echarts_widget.dart';
 import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +17,11 @@ class NewDataScreen extends StatefulWidget {
 late TextEditingController dateController;
 bool isLoading = false;
 
-class _NewDataScreenState extends State<NewDataScreen> {
+class _NewDataScreenState extends State<NewDataScreen>
+    with AutomaticKeepAliveClientMixin<NewDataScreen> {
+  @override
+  bool get wantKeepAlive => false;
+
   @override
   void initState() {
     dateController = TextEditingController();
@@ -24,6 +30,7 @@ class _NewDataScreenState extends State<NewDataScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     AppSetup setup = Provider.of<AppSetup>(context);
@@ -85,34 +92,126 @@ class _NewDataScreenState extends State<NewDataScreen> {
                     setState(() {
                       isLoading = false;
                     });
+
                     showDialog(
                         context: context,
                         builder: ((context) {
                           return AlertDialog(
                             actions: [
                               Container(
-                                color: Colors.pink,
-                                height: screenHeight * 0.8,
-                                width: screenWidth * 0.8,
-                                child: (res != null)
-                                    ? ListView.builder(
-                                        itemCount: res.length,
-                                        itemBuilder: (context, index) {
-                                          return ListTile(
-                                            leading: Text(
-                                              (index + 1).toString(),
+                                width: screenWidth * 0.7,
+                                height: screenHeight * 0.6,
+                                child: (res!.isNotEmpty)
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                            Container(
+                                              height: 40,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                      'Showing results for track  ',
+                                                      style: TextStyle(
+                                                          fontSize: 20)),
+                                                  Text(
+                                                    setup.racetrack.name,
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                        fontSize: 24),
+                                                  ),
+                                                  Text('  on the day of ',
+                                                      style: TextStyle(
+                                                          fontSize: 20)),
+                                                  Text(
+                                                    '${setup.date.year}-${setup.date.month.toString().padLeft(2, '0')}-${setup.date.day.toString().padLeft(2, '0')}',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                        fontSize: 24),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                            title: Row(
-                                              children: [],
+                                            ListTile(
+                                              title: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Text("No"),
+                                                  SizedBox(
+                                                      width: screenWidth * 0.2),
+                                                  Text("Time"),
+                                                  SizedBox(
+                                                      width: screenWidth * 0.2),
+                                                  Text("Session")
+                                                ],
+                                              ),
                                             ),
-                                          );
-                                        },
-                                      )
-                                    : Center(
-                                        child: Text(
-                                        'No data matching your filters',
-                                        style: TextStyle(fontSize: 22),
-                                      )),
+                                            Column(
+                                              children: [
+                                                ListView.builder(
+                                                  shrinkWrap: true,
+                                                  itemCount: res.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return ListTile(
+                                                      title: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text((index + 1)
+                                                              .toString()),
+                                                          SizedBox(
+                                                              width:
+                                                                  screenWidth *
+                                                                      0.2),
+                                                          Text(res[index][
+                                                                      'event_date']
+                                                                  ['date']
+                                                              .toString()
+                                                              .split('T')[1]),
+                                                          SizedBox(
+                                                              width:
+                                                                  screenWidth *
+                                                                      0.2),
+                                                          Text(res[index]
+                                                              ['type'])
+                                                        ],
+                                                      ),
+                                                      onTap: () {
+                                                        print(res[index]);
+
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        showLapDialog(
+                                                          context: context,
+                                                          session: res[index],
+                                                          screenHeight:
+                                                              screenHeight,
+                                                          screenWidth:
+                                                              screenWidth,
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ])
+                                    : Container(
+                                        height: screenHeight * 0.1,
+                                        child: Center(
+                                            child: Text(
+                                          'No data matching your filters',
+                                          style: TextStyle(fontSize: 22),
+                                        )),
+                                      ),
                               )
                             ],
                           );
@@ -122,8 +221,19 @@ class _NewDataScreenState extends State<NewDataScreen> {
                     'Search',
                     style: TextStyle(fontSize: 19),
                   ),
+                ),
+                SizedBox(width: 500),
+                TextButton(
+                  child: Text(
+                    'Center Graph',
+                    style: TextStyle(fontSize: 19),
+                  ),
+                  onPressed: () => setState(() {}),
                 )
               ],
+            ),
+            EchartsWidget(
+              finalList: [],
             )
           ],
         ),
@@ -131,3 +241,95 @@ class _NewDataScreenState extends State<NewDataScreen> {
     );
   }
 }
+
+showLapDialog({
+  required BuildContext context,
+  required Map session,
+  required double screenWidth,
+  required double screenHeight,
+}) =>
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(actions: [
+          FutureBuilder<List>(
+            future: getLapFromSession(session['id']),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                List laps = snapshot.data!;
+                return Container(
+                  width: screenWidth * 0.7,
+                  height: screenHeight * 0.6,
+                  child: (laps.isNotEmpty)
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                              Container(
+                                height: 40,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Showing results for ',
+                                        style: TextStyle(fontSize: 20)),
+                                    Text(
+                                      session['type'],
+                                      style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontSize: 24),
+                                    ),
+                                    Text('  session',
+                                        style: TextStyle(fontSize: 20)),
+                                  ],
+                                ),
+                              ),
+                              ListTile(
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text("No"),
+                                    SizedBox(width: screenWidth * 0.6),
+                                  ],
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: laps.length,
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        title: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                                'Lap ' + (index + 1).toString())
+                                          ],
+                                        ),
+                                        onTap: () {
+                                          print(laps[index]);
+                                          getDataFromLap(laps[index]['id']);
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ])
+                      : Container(
+                          height: screenHeight * 0.1,
+                          child: Center(
+                              child: Text(
+                            'No laps found',
+                            style: TextStyle(fontSize: 22),
+                          )),
+                        ),
+                );
+              }
+              return Center(child: CircularProgressIndicator());
+            },
+          )
+        ]);
+      },
+    );

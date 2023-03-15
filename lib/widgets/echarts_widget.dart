@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/telemetry.dart';
+import 'package:flutter_complete_guide/supabase/data_functions.dart';
+import 'package:flutter_complete_guide/widgets/graph.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -255,85 +257,49 @@ class EchartsWidget extends StatelessWidget {
 }
 */
 class EchartsWidget extends StatefulWidget {
-  EchartsWidget({super.key, required this.finalList, this.showLegend = true});
+  EchartsWidget(
+      {super.key,
+      required this.finalList,
+      this.showDetails = true,
+      this.isMessage = false});
   final List<dynamic> finalList;
-  final bool showLegend;
-  late final start = finalList[0];
-  late final end = finalList[1];
-
+  final bool showDetails;
+  final bool isMessage;
   @override
   State<EchartsWidget> createState() => _EchartsWidgetState();
 }
 
-class _EchartsWidgetState extends State<EchartsWidget>
-    with SingleTickerProviderStateMixin {
-  late ZoomPanBehavior _zoomPanBehavior;
-  late RangeController _rangeController;
-  @override
-  void initState() {
-    _rangeController = RangeController(
-      start: DateTime(2023, 3, 2, 11, 0, 0),
-      end: DateTime(2023, 3, 2, 23, 0, 0),
-    );
-    _zoomPanBehavior = ZoomPanBehavior(
-      enableDoubleTapZooming: true,
-      enablePanning: true,
-      enablePinching: true,
-      enableSelectionZooming: true,
-      enableMouseWheelZooming: true,
-    );
-    super.initState();
-  }
-
+class _EchartsWidgetState extends State<EchartsWidget> {
   final stream = supabase
-      .from('telemetry_system_data2')
-      .stream(primaryKey: ['id']).order('timest', ascending: true);
-
-  final _stream = supabase
-      .from('telemetry_system_data')
-      .stream(primaryKey: ['id']).order('racing_time', ascending: true);
+      .from('can_data')
+      .stream(primaryKey: ['id']).order('timestamp', ascending: true);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: stream,
-        builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+    return FutureBuilder<dynamic>(
+        future: getData(),
+        builder: (context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return Center(
               child: CircularProgressIndicator(),
             );
           } else {
+            List<Data> l = [];
             final List<Map<String, dynamic>> dataXAxis = [];
             final List<Map<String, dynamic>> dataYAxis = [];
-            snapshot.data?.forEach((data) {
-              widget.finalList.skip(3).forEach((item) {
-                if (data['canbusId'] == item)
-                  dataYAxis.add({
-                    'value': data['value'],
-                    'id': data['canbusId'],
-                    'time': DateTime.parse(data['timest']),
-                  });
-              });
-              if (data['canbusId'] == widget.finalList[2]) {
-                dataXAxis.add({
-                  'value': data['value'],
-                  'id': data['canbusId'],
-                  'time': DateTime.parse(data['timest']),
-                });
-              }
-            });
 
+            l = snapshot.data;
             if (dataXAxis.isEmpty) {
               dataYAxis.sort((a, b) => a['time'].compareTo(b['time']));
             } else {
-              dataYAxis.sort((a, b) => a['time'].compareTo(b['time']));
+              //dataYAxis.sort((a, b) => a['time'].compareTo(b['time']));
+              //dataYAxis.forEach((element) {
+              //  for (int i = 0; i < dataXAxis.length; i++) {
+              //    if (dataXAxis[i]['time'] == element['time'])
+              //      element['time'] = dataXAxis[i]['value'];
+              //  }
+              //});
 
-              dataYAxis.forEach((element) {
-                for (int i = 0; i < dataXAxis.length; i++) {
-                  if (dataXAxis[i]['time'] == element['time'])
-                    element['time'] = dataXAxis[i]['value'];
-                }
-              });
             }
 
             //if (widget.finalList[2] == '') {
@@ -378,96 +344,11 @@ class _EchartsWidgetState extends State<EchartsWidget>
             //    i++;
             //}
 
-            return Container(
-                width: MediaQuery.of(context).size.width * 0.7,
-                height: MediaQuery.of(context).size.height * 0.8,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Container(
-                      child: SfCartesianChart(
-                        plotAreaBorderWidth: 0,
-                        primaryXAxis: DateTimeAxis(
-                          visibleMaximum: _rangeController.end,
-                          visibleMinimum: _rangeController.start,
-                          rangeController: _rangeController,
-                          dateFormat: DateFormat.Hms(),
-                          title: AxisTitle(
-                              //text:
-                              ),
-                        ),
-                        primaryYAxis: NumericAxis(isVisible: true),
-                        legend: Legend(isVisible: widget.showLegend),
-                        //tooltipBehavior: TooltipBehavior(enable: true),
-                        zoomPanBehavior: _zoomPanBehavior,
-                        series: <LineSeries<dynamic, dynamic>>[
-                          for (int i = 3; i < widget.finalList.length; i++)
-                            LineSeries(
-                              dataSource: dataYAxis,
-                              xValueMapper: (element, _) {
-                                if (element['id'] == widget.finalList[i])
-                                  return element['time'];
-                              },
-                              yValueMapper: (element, _) {
-                                if (element['id'] == widget.finalList[i])
-                                  return element['value'];
-                                else
-                                  return null;
-                              },
-                              name: m[widget.finalList[i]],
-                              dataLabelSettings: DataLabelSettings(),
-                            )
-                        ],
-                      ),
-                    ),
-                    SfRangeSelector(
-                      //onChanged: (sf) => setState(() {}),
-
-                      dragMode: SliderDragMode.both,
-                      showLabels: true,
-                      showTicks: true,
-                      dateIntervalType: DateIntervalType.seconds,
-                      min: DateTime(2023, 3, 2, 11, 0, 0),
-                      max: DateTime(2023, 3, 2, 23, 0, 0),
-                      dateFormat: DateFormat.Hms(),
-                      controller: _rangeController,
-                      //initialValues: SfRangeValues(0, 1),
-                      child: Container(
-                        height: 130,
-                        child: SfCartesianChart(
-                          primaryXAxis: DateTimeAxis(
-                            minimum: DateTime(2023, 3, 2, 11, 0, 0),
-                            maximum: DateTime(2023, 3, 2, 23, 0, 0),
-                            isVisible: false,
-                            title: AxisTitle(
-                                //text:
-                                ),
-                          ),
-                          primaryYAxis: NumericAxis(isVisible: false),
-                          plotAreaBorderWidth: 0,
-                          series: <LineSeries<dynamic, dynamic>>[
-                            for (int i = 3; i < widget.finalList.length; i++)
-                              LineSeries(
-                                dataSource: dataYAxis,
-                                xValueMapper: (element, _) {
-                                  if (element['id'] == widget.finalList[i])
-                                    return element['time'];
-                                },
-                                yValueMapper: (element, _) {
-                                  if (element['id'] == widget.finalList[i])
-                                    return element['value'];
-                                  else
-                                    return null;
-                                },
-                                name: m[widget.finalList[i]],
-                                dataLabelSettings: DataLabelSettings(),
-                              )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ));
+            return Graph(
+              dataList: l,
+              showDetails: widget.showDetails,
+              isMessage: widget.isMessage,
+            );
           }
         });
   }

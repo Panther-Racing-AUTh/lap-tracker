@@ -11,7 +11,11 @@ class AdminPanel extends StatefulWidget {
   State<AdminPanel> createState() => _AdminPanelState();
 }
 
-class _AdminPanelState extends State<AdminPanel> {
+class _AdminPanelState extends State<AdminPanel>
+    with AutomaticKeepAliveClientMixin<AdminPanel> {
+  @override
+  bool get wantKeepAlive => true;
+
   late Future<List> dataFuture;
 
   @override
@@ -22,6 +26,7 @@ class _AdminPanelState extends State<AdminPanel> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return (FutureBuilder<List>(
       future: dataFuture,
       builder: (context, snapshot) {

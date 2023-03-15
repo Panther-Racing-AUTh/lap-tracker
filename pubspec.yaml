@@ -44,6 +44,7 @@ dependencies:
   syncfusion_flutter_charts: 
   syncfusion_flutter_sliders: 
   syncfusion_flutter_core:
+  charts_flutter: ^0.12.0
 
 
    

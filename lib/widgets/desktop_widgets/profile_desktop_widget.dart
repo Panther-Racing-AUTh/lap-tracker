@@ -18,7 +18,11 @@ class ProfileDesktop extends StatefulWidget {
   State<ProfileDesktop> createState() => _ProfileDesktopState();
 }
 
-class _ProfileDesktopState extends State<ProfileDesktop> {
+class _ProfileDesktopState extends State<ProfileDesktop>
+    with AutomaticKeepAliveClientMixin<ProfileDesktop> {
+  @override
+  bool get wantKeepAlive => true;
+
   late Future<List> dataFuture;
 
   @override
@@ -32,6 +36,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
   int changeIconsLayout = 1400;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     AppSetup setup = provider.Provider.of<AppSetup>(context);
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height -

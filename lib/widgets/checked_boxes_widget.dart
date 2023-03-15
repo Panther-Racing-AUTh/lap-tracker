@@ -262,19 +262,6 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
             },
           ),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CustomTimeSelector(a, 0),
-            SizedBox(height: 30),
-            Text(
-              'to',
-              style: TextStyle(fontSize: 20),
-            ),
-            CustomTimeSelector(a, 1)
-          ],
-        )
       ],
     );
   }
