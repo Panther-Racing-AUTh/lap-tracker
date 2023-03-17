@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/widgets/chat_widget.dart';
+import 'package:flutter_complete_guide/widgets/chats_total.dart';
 import '../../widgets/main_appbar.dart';
 
 class ChatScreen extends StatelessWidget {
@@ -8,10 +9,11 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MainAppBar(
-          text: chat,
-          context: context,
-        ),
-        body: Container());
+      appBar: MainAppBar(
+        text: chat,
+        context: context,
+      ),
+      body: ChatLandingPage(),
+    );
   }
 }

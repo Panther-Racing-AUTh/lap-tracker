@@ -280,27 +280,13 @@ class _EchartsWidgetState extends State<EchartsWidget> {
         future: getData(),
         builder: (context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
+            print('no data');
             return Center(
               child: CircularProgressIndicator(),
             );
           } else {
             List<Data> l = [];
-            final List<Map<String, dynamic>> dataXAxis = [];
-            final List<Map<String, dynamic>> dataYAxis = [];
-
             l = snapshot.data;
-            if (dataXAxis.isEmpty) {
-              dataYAxis.sort((a, b) => a['time'].compareTo(b['time']));
-            } else {
-              //dataYAxis.sort((a, b) => a['time'].compareTo(b['time']));
-              //dataYAxis.forEach((element) {
-              //  for (int i = 0; i < dataXAxis.length; i++) {
-              //    if (dataXAxis[i]['time'] == element['time'])
-              //      element['time'] = dataXAxis[i]['value'];
-              //  }
-              //});
-
-            }
 
             //if (widget.finalList[2] == '') {
             //  print('h');
@@ -343,7 +329,7 @@ class _EchartsWidgetState extends State<EchartsWidget> {
             //  else
             //    i++;
             //}
-
+            print('hello chat');
             return Graph(
               dataList: l,
               showDetails: widget.showDetails,

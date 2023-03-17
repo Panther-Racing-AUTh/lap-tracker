@@ -70,8 +70,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                               DateFormat('dd/MM/yyyy').format(newDate);
                           setup.setDate(newDate);
                         });
-                      } else
-                        print('not selected');
+                      }
                     },
                   ),
                 ),
@@ -88,7 +87,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                     });
                     final List? res = await searchData(
                         dateTime: setup.date, race: setup.racetrack);
-                    print(res);
+
                     setState(() {
                       isLoading = false;
                     });
@@ -185,8 +184,6 @@ class _NewDataScreenState extends State<NewDataScreen>
                                                         ],
                                                       ),
                                                       onTap: () {
-                                                        print(res[index]);
-
                                                         Navigator.of(context)
                                                             .pop();
                                                         showLapDialog(
@@ -308,7 +305,6 @@ showLapDialog({
                                           ],
                                         ),
                                         onTap: () {
-                                          print(laps[index]);
                                           getDataFromLap(laps[index]['id']);
                                         },
                                       );

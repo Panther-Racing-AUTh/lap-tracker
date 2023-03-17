@@ -58,7 +58,6 @@ class ChatBubble extends StatelessWidget {
                           : GestureDetector(
                               child: Stack(
                                 children: [
-                                  //Edw tha paixtei mpalitsa na kses
                                   EchartsWidget(
                                     isMessage: true,
                                     finalList:
@@ -86,12 +85,23 @@ class ChatBubble extends StatelessWidget {
                                                       context: ctx,
                                                       builder: (c) {
                                                         return AlertDialog(
-                                                            content:
-                                                                EchartsWidget(
-                                                          finalList:
-                                                              chartStringToList(
-                                                                  message
-                                                                      .content),
+                                                            content: Container(
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height *
+                                                              0.8,
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                          child: EchartsWidget(
+                                                            finalList:
+                                                                chartStringToList(
+                                                                    message
+                                                                        .content),
+                                                          ),
                                                         ));
                                                       });
                                                 }),

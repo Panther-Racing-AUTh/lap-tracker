@@ -101,7 +101,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   newProfile.department = 'public_relations';
                                 else
                                   newProfile.department = 'department';
-                                print(newProfile.department);
                               });
                             })),
                       ),

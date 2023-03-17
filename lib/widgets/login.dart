@@ -249,6 +249,7 @@ class LoginState extends State<Login> {
             ),
           ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               //button to change from login to sign up and vice versa
               Text(signedUp ? no_account : have_account),
@@ -294,54 +295,63 @@ class LoginState extends State<Login> {
             auth: 'Facebook',
           ),
           SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                child: Text('Admin',
-                    style: TextStyle(fontSize: 28, color: Colors.orange)),
-                onPressed: () {
-                  a.role = 'admin';
-                  Navigator.of(context).pushReplacementNamed(
-                      device.isDesktopMode()
-                          ? '/main-desktop'
-                          : '/main-mobile');
-                },
-              ),
-              TextButton(
-                onPressed: () {
-                  a.role = 'engineer';
-                  Navigator.of(context).pushReplacementNamed(
-                      device.isDesktopMode()
-                          ? '/main-desktop'
-                          : '/main-mobile');
-                },
-                child: Text('Engineer',
-                    style: TextStyle(fontSize: 28, color: Colors.orange)),
-              ),
-              TextButton(
-                onPressed: () {
-                  a.role = 'data_analyst';
-                  Navigator.of(context).pushReplacementNamed(
-                      device.isDesktopMode()
-                          ? '/main-desktop'
-                          : '/main-mobile');
-                },
-                child: Text('Data Analyst',
-                    style: TextStyle(fontSize: 28, color: Colors.orange)),
-              ),
-              TextButton(
-                onPressed: () {
-                  a.role = 'default';
-                  Navigator.of(context).pushReplacementNamed(
-                      device.isDesktopMode()
-                          ? '/main-desktop'
-                          : '/main-mobile');
-                },
-                child: Text('Default',
-                    style: TextStyle(fontSize: 28, color: Colors.orange)),
-              ),
-            ],
+          Container(
+            height: 70,
+            child: ListView(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      child: Text('Admin',
+                          style: TextStyle(fontSize: 28, color: Colors.orange)),
+                      onPressed: () {
+                        a.role = 'admin';
+                        Navigator.of(context).pushReplacementNamed(
+                            device.isDesktopMode()
+                                ? '/main-desktop'
+                                : '/main-mobile');
+                      },
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        a.role = 'engineer';
+                        Navigator.of(context).pushReplacementNamed(
+                            device.isDesktopMode()
+                                ? '/main-desktop'
+                                : '/main-mobile');
+                      },
+                      child: Text('Engineer',
+                          style: TextStyle(fontSize: 28, color: Colors.orange)),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        a.role = 'data_analyst';
+                        Navigator.of(context).pushReplacementNamed(
+                            device.isDesktopMode()
+                                ? '/main-desktop'
+                                : '/main-mobile');
+                      },
+                      child: Text('Data Analyst',
+                          style: TextStyle(fontSize: 28, color: Colors.orange)),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        a.role = 'default';
+                        Navigator.of(context).pushReplacementNamed(
+                            device.isDesktopMode()
+                                ? '/main-desktop'
+                                : '/main-mobile');
+                      },
+                      child: Text('Default',
+                          style: TextStyle(fontSize: 28, color: Colors.orange)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           Column(
             //'powered by panther' text

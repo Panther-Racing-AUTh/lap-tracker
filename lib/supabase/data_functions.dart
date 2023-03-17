@@ -52,14 +52,16 @@ Future<dynamic> getDataFromLap(int id) async {
 }
 
 Future<dynamic> getData() async {
+  print('fetching data');
   final List<Data> l = [];
   final List data = await supabase
       .from('can_data')
       .select()
       .eq('canbus_id_name', 'APPS1_Raw');
-  int i = 0;
+
+  print(1);
+  print(data);
   data.forEach((data) {
-    //if (i < 5000) {
     DateTime dt = DateTime.parse(data['timestamp']);
     int hour = dt.hour;
     int minute = dt.minute;
@@ -74,11 +76,9 @@ Future<dynamic> getData() async {
         canbusIdName: '',
         canbusTimelineId: '',
         unit: ''));
-    //  i++;
-    //}
   });
   l.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-  print(1);
+  print(l);
   return l;
 }
 

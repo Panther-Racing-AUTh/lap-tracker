@@ -16,7 +16,7 @@ class ChatWidget extends StatefulWidget {
 }
 
 List<dynamic> ChartList = [];
-
+List<Message> messagesGlobal = [];
 void passList(List l) {
   ChartList = l;
   print(ChartList);
@@ -25,6 +25,11 @@ void passList(List l) {
 class _ChatWidgetState extends State<ChatWidget> {
   final _formKey = GlobalKey<FormState>();
   final _msgController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    print('drew chat widget');
+  }
 
   Future<void> pickChart({required BuildContext c, required int id}) async {
     showDialog(
@@ -104,24 +109,30 @@ class _ChatWidgetState extends State<ChatWidget> {
       child: Focus(
         autofocus: true,
         child: StreamBuilder<List<Message>>(
+          initialData: messagesGlobal,
           stream: getMessages(id: setup.supabase_id, allUsers: setup.allUsers),
           builder: (context, snapshot) {
-            if (snapshot.hasData
-                //&&(Supabase.instance.client.auth.currentUser != null)
-                ) {
+            if (snapshot.hasData) {
               final messages = snapshot.data!;
+              messagesGlobal = messages;
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SafeArea(
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () {
-                          setup.setChatId(0);
-                        },
-                      ),
+                    Stack(
+                      children: [
+                        Container(
+                          height: 45,
+                          child: IconButton(
+                            iconSize: 30,
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: () {
+                              setup.setChatId(0);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     Expanded(
                       child: ListView.builder(

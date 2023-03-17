@@ -62,8 +62,11 @@ class ProfileScreenState extends State<ProfileScreen> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   p = snapshot.data![1];
-
-                  return Profile();
+                  final admins = [];
+                  snapshot.data![0].forEach((element) {
+                    admins.add(element['admin_name']['full_name']);
+                  });
+                  return Profile(admins);
                 } else {
                   return Center(child: CircularProgressIndicator());
                 }
@@ -72,19 +75,30 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget Profile() {
+  Widget Profile(List admins) {
     ThemeChanger theme = provider.Provider.of<ThemeChanger>(context);
-    return Stack(
-      alignment: Alignment.bottomRight,
+    AppSetup setup = provider.Provider.of<AppSetup>(context);
+    return Column(
       children: [
-        ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            buildTop(),
-            buildContent(theme),
+        if (setup.role == 'default') VerificationMessage(admins),
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            Container(
+              constraints:
+                  BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+              child: ListView(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  buildTop(),
+                  buildContent(theme),
+                ],
+              ),
+            ),
+            //_buildEditButton(size: 30, padding: 10),
           ],
         ),
-        //_buildEditButton(size: 30, padding: 10),
       ],
     );
   }
@@ -257,3 +271,36 @@ class ProfileScreenState extends State<ProfileScreen> {
         ),
       );
 }
+
+Widget VerificationMessage(List admins) => Container(
+      height: 40,
+      color: Colors.grey.withOpacity(0.9),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 20),
+              Icon(
+                Icons.warning,
+                color: Colors.red,
+              ),
+              Text(
+                'Contact an admin to be assigned a role!',
+                style: TextStyle(fontSize: 22),
+              ),
+              SizedBox(width: 20),
+              Text(
+                'Admin(s): ' +
+                    admins
+                        .toString()
+                        .replaceFirst('[', '')
+                        .replaceFirst(']', ''),
+                style: TextStyle(fontSize: 17),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );

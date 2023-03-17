@@ -1,7 +1,241 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_complete_guide/models/setupChange.dart';
 import 'package:flutter_complete_guide/supabase/motorcycle_setup_functions.dart';
 
+var _selectedIndex = 0;
+void motorcycleSetup({required BuildContext context}) {
+  showDialog(
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (context, setState) {
+        List<Widget> _pages = [
+          SetupPage(
+            ctx: context,
+            titles: ['Front Swingarm', 'Rear Single Shock Absorber'],
+            settings: [
+              [
+                'Front pre-load',
+                'Oil quantity',
+                'Front spring hardness',
+                'Front swingarm compression',
+                'Front swingarm extension'
+              ],
+              [
+                'Rear pre-load',
+                'Swingarm connector',
+                'Single shock absorber compression',
+                'Single shock absorber extension'
+              ]
+            ],
+          ),
+          SetupPage(
+            ctx: context,
+            titles: ['Vehicle Geometry'],
+            settings: [
+              [
+                'Steering head inclination',
+                'Trail',
+                'Steering plate position',
+                'Rear swingarm length',
+              ]
+            ],
+          ),
+          SetupPage(
+            ctx: context,
+            titles: [
+              'Gear Ratio',
+              'Pinion - Crown',
+              'Clutch',
+            ],
+            settings: [
+              ['1st Gear', '2nd Gear', '3rd Gear', '4th Gear', '6th Gear'],
+              ['Final ratio'],
+              ['Slipper Clutch'],
+            ],
+          ),
+          SetupPage(
+            ctx: context,
+            titles: ['Electronic Control Unit'],
+            settings: [
+              ['Traction Control', 'Engine Break', 'Power mapping'],
+            ],
+          ),
+        ];
+        return AlertDialog(
+          //backgroundColor: Colors.grey.shade400,
+          title: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.8,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  NavigationRail(
+                    //backgroundColor: Colors.grey.shade400,
+                    destinations: navigationRailDestinations,
+                    selectedIndex: _selectedIndex,
+                    groupAlignment: 0,
+                    onDestinationSelected: (value) {
+                      setState(() {
+                        _selectedIndex = value;
+                      });
+                    },
+                    labelType: NavigationRailLabelType.all,
+                  ),
+                  VerticalDivider(
+                    width: 1,
+                    thickness: 1,
+                    color: Colors.black,
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Container(
+                        height: MediaQuery.of(context).size.height * 0.8,
+                        child: _pages[_selectedIndex]),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
+
+final List<NavigationRailDestination> navigationRailDestinations = [
+  NavigationRailDestination(
+    icon: Icon(Icons.abc),
+    label: Text('SUSPENSION'),
+  ),
+  NavigationRailDestination(
+    icon: Icon(Icons.wheelchair_pickup),
+    label: Text('VEHICLE GEOMETRY'),
+  ),
+  NavigationRailDestination(
+    icon: Icon(Icons.wheelchair_pickup),
+    label: Text('TRANSMISSION'),
+  ),
+  NavigationRailDestination(
+    icon: Icon(Icons.wheelchair_pickup),
+    label: Text('ECU'),
+  ),
+];
+
+class SetupPage extends StatefulWidget {
+  SetupPage({required this.titles, required this.settings, required this.ctx});
+  List titles;
+  List settings;
+  BuildContext ctx;
+  @override
+  State<SetupPage> createState() => _SetupPageState();
+}
+
+class _SetupPageState extends State<SetupPage> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        for (int i = 0; i < widget.titles.length; i++)
+          Column(
+            children: [
+              SizedBox(height: 40),
+              ListviewFromTitle(
+                  widget.titles[i], widget.settings[i], widget.ctx)
+            ],
+          )
+      ],
+    );
+  }
+}
+
+ListviewFromTitle(String title, List data, BuildContext ctx) {
+  return ListView.builder(
+    physics: NeverScrollableScrollPhysics(),
+    shrinkWrap: true,
+    itemCount: data.length + 1,
+    itemBuilder: (context, index) {
+      if (index == 0)
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(fontSize: 30),
+            ),
+            SizedBox(height: 5),
+          ],
+        );
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              elevation: 1,
+              child: Container(
+                width: MediaQuery.of(ctx).size.width * 0.7,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.grey.shade300,
+                      Colors.grey.shade200,
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      data[index - 1],
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Row(
+                      children: [
+                        InkWell(
+                            onTap: () {},
+                            child: Icon(
+                              Icons.remove,
+                              size: 16,
+                            )),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(3),
+                              color: Colors.white),
+                          child: Text(
+                            '3',
+                            style: TextStyle(color: Colors.black, fontSize: 16),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {},
+                          child: Icon(
+                            Icons.add,
+                            size: 16,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 5),
+          ],
+        ),
+      );
+    },
+  );
+}
+/*
 bool frontSuspensionVisibility = false;
 bool brakeVisibility = false;
 bool rearSuspensionVisibility = false;
@@ -385,3 +619,4 @@ class _MyDelegate extends MultiChildLayoutDelegate {
     return oldDelegate.position != position;
   }
 }
+*/

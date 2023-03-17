@@ -43,7 +43,7 @@ class _GraphState extends State<Graph> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     late var ratio;
-    if (widget.dataList.length > 100) ratio = widget.showDetails ? 1 : 4;
+    if (widget.dataList.length > 100) ratio = widget.showDetails ? 4 : 8;
     if (widget.isMessage) ratio = 50;
     List<Data> points = [];
     for (int i = 0; i < widget.dataList.length; i++) {
@@ -104,7 +104,7 @@ class _GraphState extends State<Graph> {
             dateFormat: DateFormat.Hms(),
             controller: _rangeController,
             child: Container(
-              height: 130,
+              height: screenHeight * 0.1,
               child: SfCartesianChart(
                 primaryXAxis: DateTimeAxis(
                   minimum: minimum,
