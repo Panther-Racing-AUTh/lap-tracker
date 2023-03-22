@@ -57,6 +57,7 @@ class _RaceTrackSelectorState extends State<RaceTrackSelector> {
               () {
                 index =
                     races.indexWhere((element) => element.name == value!.name);
+                setup.setTrack(value!.id);
               },
             );
 

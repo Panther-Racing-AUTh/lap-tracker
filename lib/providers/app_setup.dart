@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/race.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
@@ -8,22 +10,30 @@ class AppSetup extends ChangeNotifier {
   //TODO: store settings and preferences locally on the device
 
   int raceSelectorIndex = 0;
-  List chartList = [DateTime.now()];
-
+  List chartList = [
+    DateTime.now(),
+    1,
+  ];
+  var loadedData;
   String role = 'a';
-  int supabase_id = 4;
+  int supabase_id = -1;
   AppSetup();
   int mainScreenDesktopIndex = 0;
-  int chatId = 0;
+  int chatId = -1;
+  bool isOverview = false;
   late List allUsers;
   late List<RaceTrack> races2023;
-
+  String username = '';
+  String userEmail = '';
+  String userDepartment = '';
   get chartPreferences => chartList;
   get mainScreenDesktopInd => mainScreenDesktopIndex;
   get date => chartList[0];
   get racetrack => races2023[raceSelectorIndex];
+
   setList(List l) {
-    chartList = [chartList[0], chartList[1], chartList[2]] + l;
+    chartList = [chartList[0], chartList[1]] + l;
+    print(chartList);
     notifyListeners();
   }
 
@@ -33,11 +43,11 @@ class AppSetup extends ChangeNotifier {
   }
 
   bool listContainsItem(dynamic item) {
-    return chartList.skip(3).contains(item);
+    return chartList.skip(1).contains(item);
   }
 
   bool listContainsAllItems() {
-    return chartList.length == 9;
+    return chartList.length == 8;
   }
 
   void removeItemFromlist(dynamic item) {
@@ -82,14 +92,29 @@ class AppSetup extends ChangeNotifier {
   }
 
   Future<bool> setValuesAuto() async {
-    supabase_id = await getCurrentUserIdInt();
+    Map l = await getCurrentUserIdInt();
+    print(l);
+    supabase_id = l['id'];
     role = await getUserRole(id: supabase_id);
     races2023 = await getRaceTracks();
+
+    username = l['full_name'];
+    userEmail = l['email'];
+    userDepartment = l['department'];
     return true;
   }
 
   void setChatId(int id) {
     chatId = id;
     notifyListeners();
+  }
+
+  void setOverview(bool value) {
+    isOverview = value;
+    notifyListeners();
+  }
+
+  void setTrack(int value) {
+    chartList[1] = value;
   }
 }

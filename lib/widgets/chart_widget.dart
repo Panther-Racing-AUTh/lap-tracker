@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:flutter_complete_guide/supabase/chat_service.dart';
+import 'package:flutter_complete_guide/supabase/data_functions.dart';
+import 'package:flutter_complete_guide/widgets/graph.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_setup.dart';
 import './checked_boxes_widget.dart';
@@ -14,16 +17,14 @@ class EchartsPage extends StatefulWidget {
 
 class _EchartsPageState extends State<EchartsPage> {
   List<dynamic> finalList = [];
-
+  List<List<Data>> dataList = [];
   refresh(newfinalList) {
-    setState(() {
-      finalList = newfinalList;
-    });
+    finalList = newfinalList;
   }
 
   @override
   Widget build(BuildContext context) {
-    AppSetup a = Provider.of<AppSetup>(context);
+    AppSetup a = Provider.of<AppSetup>(context, listen: false);
     finalList = a.chartList;
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
@@ -39,20 +40,34 @@ class _EchartsPageState extends State<EchartsPage> {
                   setFinalList: refresh,
                 ),
               ),
-              if (finalList.length > 3)
+              TextButton(
+                  onPressed: () async {
+                    dataList =
+                        await getDataFromList(a.chartList.skip(2).toList());
+                    setState(() {});
+                  },
+                  child: Text(
+                    'Search',
+                    style: TextStyle(fontSize: 20),
+                  )),
+              if (finalList.length > 1)
                 TextButton(
-                    onPressed: () =>
-                        sendChart(list: finalList, id: a.supabase_id),
-                    child: Text(
-                      'Send to Chat',
-                      style: TextStyle(fontSize: 20),
-                    )),
+                  onPressed: () =>
+                      sendChart(list: finalList, id: a.supabase_id),
+                  child: Text(
+                    'Send to Chat',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
             ],
           ),
-          if (finalList.length > 3)
-            EchartsWidget(
-              finalList: a.chartList,
+          Expanded(
+            child: Graph(
+              list: dataList,
+              isMessage: false,
+              showDetails: true,
             ),
+          ),
         ],
       ),
     );

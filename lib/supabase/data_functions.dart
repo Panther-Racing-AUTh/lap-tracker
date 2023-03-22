@@ -14,9 +14,6 @@ Future<dynamic> searchData(
           'racetrack_id', race.id);
   data.forEach(
     (element) {
-      print(DateTime.parse(element['event_date']['date'])
-          .difference(dateTime)
-          .inHours);
       if (element['event_date']['date'].toString().contains(
           '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}'))
         list.add(element);
@@ -30,37 +27,39 @@ Future<List> getLapFromSession(int id) async {
       .from('lap')
       .select('id, session_id, lap_order')
       .eq('session_id', id);
-  print(data);
   return data;
 }
 
 Future<dynamic> getDataFromLap(int id) async {
-  List<Data> data = [];
+  var d1 = await supabase
+      .from('canbus_data')
+      .select('*, canbus_data_timeline!inner(*)');
+  print(d1[0]);
+  List timelines = [];
   final List canbusTimelines =
       await supabase.from('canbus_timeline').select('id').eq('lap_id', id);
-  //print(canbusTimelines);
 
   for (int i = 0; i < canbusTimelines.length; i++) {
-    print(i);
-    final List raw_data = await supabase
-        .from('canbus_data')
-        .select('canbus_id, canbus_id_name, value, unit')
-        .eq('canbus_timeline_id', canbusTimelines[i]['id']);
-    print(raw_data);
+    timelines.add(canbusTimelines[i]['id']);
   }
+
+  var data = await supabase
+      .from('canbus_data')
+      .select()
+      .in_('canbus_timeline_id', timelines.sublist(149000))
+      .onError((error, stackTrace) =>
+          print(error!.toString() + stackTrace.toString() + 1.toString()));
+
   return data;
 }
 
 Future<dynamic> getData() async {
-  print('fetching data');
   final List<Data> l = [];
   final List data = await supabase
       .from('can_data')
       .select()
       .eq('canbus_id_name', 'APPS1_Raw');
 
-  print(1);
-  print(data);
   data.forEach((data) {
     DateTime dt = DateTime.parse(data['timestamp']);
     int hour = dt.hour;
@@ -78,8 +77,35 @@ Future<dynamic> getData() async {
         unit: ''));
   });
   l.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-  print(l);
+  print(l[0].canbusIdName);
   return l;
+}
+
+Future<dynamic> getDataFromList(List list) async {
+  List<List<Data>> dataList = [];
+  for (int i = 0; i < list.length; i++) {
+    dataList.add([]);
+    final data =
+        await supabase.from('can_data').select().eq('canbus_id_name', list[i]);
+    data.forEach((data) {
+      DateTime dt = DateTime.parse(data['timestamp']);
+      int hour = dt.hour;
+      int minute = dt.minute;
+      int second = dt.second;
+      int millisecond = dt.millisecond;
+      String st =
+          '$hour:$minute:${second.toString().padLeft(2, '0')}.${millisecond.toString().padLeft(3, '0')}';
+      dataList[i].add(Data(
+          canbusId: data['canbus_id'],
+          timestamp: st,
+          value: data['value'],
+          canbusIdName: '',
+          canbusTimelineId: '',
+          unit: ''));
+    });
+  }
+
+  return dataList;
 }
 
 Future<List<RaceTrack>> getRaceTracks() async {

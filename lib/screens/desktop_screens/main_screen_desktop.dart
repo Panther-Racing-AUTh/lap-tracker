@@ -18,6 +18,7 @@ import '../../widgets/desktop_widgets/panther_desktop_widget.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
 import '../../widgets/diagram_comparison_button.dart';
 import '../../widgets/motorcycle_setup.dart';
+import 'package:intl/intl.dart';
 
 class MainScreenDesktop extends StatefulWidget {
   @override
@@ -34,16 +35,8 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
   @override
   void initState() {
     super.initState();
-    AppSetup setup = Provider.of<AppSetup>(context, listen: false);
 
-    _pages = [
-      DashBoardDesktop(),
-      SingleChildScrollView(child: ProfileDesktop()),
-      ChatLandingPage(),
-      NewDataScreen(),
-      Settings(),
-      AdminPanel()
-    ];
+    AppSetup setup = Provider.of<AppSetup>(context, listen: false);
 
     _pageController = PageController(initialPage: setup.mainScreenDesktopIndex);
   }
@@ -71,7 +64,14 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     var height = MediaQuery.of(context).size.height;
     var width =
         _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
-
+    _pages = [
+      DashBoardDesktop(width),
+      SingleChildScrollView(child: ProfileDesktop()),
+      ChatLandingPage(),
+      NewDataScreen(),
+      Settings(),
+      AdminPanel(),
+    ];
     /*
     Widget buildPages(double height) {
       switch (allNavigationRailDestinations.indexWhere((element) =>
@@ -126,14 +126,31 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             ),
             WeatherWidget(
               appbar: true,
-              screenWidth: MediaQuery.of(context).size.width,
-            )
+              screenWidth: width,
+            ),
+            SizedBox(width: width * 0.1),
+            if (width > 620)
+              StreamBuilder(
+                stream: Stream.periodic(const Duration(seconds: 1)),
+                builder: (context, snapshot) {
+                  return Text(
+                      DateFormat('MM/dd/yyyy hh:mm:ss').format(DateTime.now()));
+                },
+              ),
           ],
         ),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         //title: Text('Panther Racing AUTh'),
         actions: [
           DiagramComparison(context),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                setup.setOverview(!setup.isOverview);
+              });
+            },
+            icon: Icon(Icons.screen_search_desktop_rounded),
+          ),
           SizedBox(width: 10),
           IconButton(
             onPressed: () => motorcycleSetup(context: context),
@@ -152,7 +169,54 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           //RaceTrackSelector(),
           SizedBox(width: 10),
           //dark theme toggle button
-          DarkThemeButton(context: context, lightThemeColor: Colors.white),
+          IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('INFO', style: TextStyle(fontSize: 30)),
+                      actions: [
+                        Container(
+                            child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text('Username: ',
+                                    style: TextStyle(fontSize: 20)),
+                                Text(setup.username,
+                                    style: TextStyle(fontSize: 20))
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text('Email: ', style: TextStyle(fontSize: 20)),
+                                Text(setup.userEmail,
+                                    style: TextStyle(fontSize: 20))
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text('Department: ',
+                                    style: TextStyle(fontSize: 20)),
+                                Text(setup.userDepartment,
+                                    style: TextStyle(fontSize: 20))
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text('Role: ', style: TextStyle(fontSize: 20)),
+                                Text(setup.role, style: TextStyle(fontSize: 20))
+                              ],
+                            )
+                          ],
+                        ))
+                      ],
+                    );
+                  },
+                );
+              },
+              icon: Icon(Icons.info)),
           SizedBox(width: 5),
         ],
       ),

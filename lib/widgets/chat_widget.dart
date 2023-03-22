@@ -28,7 +28,6 @@ class _ChatWidgetState extends State<ChatWidget> {
   @override
   void initState() {
     super.initState();
-    print('drew chat widget');
   }
 
   Future<void> pickChart({required BuildContext c, required int id}) async {
@@ -110,8 +109,11 @@ class _ChatWidgetState extends State<ChatWidget> {
         autofocus: true,
         child: StreamBuilder<List<Message>>(
           initialData: messagesGlobal,
-          stream: getMessages(id: setup.supabase_id, allUsers: setup.allUsers),
+          stream: getMessages(
+              channel_id: setup.chatId, allChannelUsersList: setup.allUsers),
           builder: (context, snapshot) {
+            print(snapshot.connectionState);
+            print(snapshot.data);
             if (snapshot.hasData) {
               final messages = snapshot.data!;
               messagesGlobal = messages;
@@ -128,7 +130,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                             iconSize: 30,
                             icon: Icon(Icons.arrow_back),
                             onPressed: () {
-                              setup.setChatId(0);
+                              setup.setChatId(-1);
                             },
                           ),
                         ),
@@ -169,11 +171,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                                   width: 10,
                                                 ),
                                                 Text(
-                                                  setup.allUsers.firstWhere(
-                                                      (element) =>
-                                                          element['id'] ==
-                                                          message
-                                                              .id)['full_name'],
+                                                  '',
                                                   style: const TextStyle(
                                                       color: Colors.grey,
                                                       fontSize: 16.0),

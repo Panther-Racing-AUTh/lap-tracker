@@ -3,10 +3,13 @@ import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:flutter_complete_guide/supabase/data_functions.dart';
 import 'package:flutter_complete_guide/widgets/graph.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart' as provider;
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:syncfusion_flutter_core/core.dart';
 import 'package:intl/intl.dart';
+
+import '../providers/app_setup.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -276,15 +279,16 @@ class _EchartsWidgetState extends State<EchartsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    AppSetup appSetup = provider.Provider.of<AppSetup>(context);
+    print(appSetup.role);
     return FutureBuilder<dynamic>(
         future: getData(),
         builder: (context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData) {
-            print('no data');
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
+          print(snapshot.connectionState);
+          print(snapshot.hasData);
+          //print(snapshot.data);
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
             List<Data> l = [];
             l = snapshot.data;
 
@@ -329,11 +333,14 @@ class _EchartsWidgetState extends State<EchartsWidget> {
             //  else
             //    i++;
             //}
-            print('hello chat');
             return Graph(
-              dataList: l,
+              list: [],
               showDetails: widget.showDetails,
               isMessage: widget.isMessage,
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
             );
           }
         });

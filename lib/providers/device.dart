@@ -14,7 +14,7 @@ class DeviceManager with ChangeNotifier {
       mode = 'desktop';
     } else if (Device.get().isTablet) {
       isTablet = true;
-      mode = 'mobile';
+      mode = 'desktop';
     } else if (Device.get().isPhone) isPhone = true;
   }
 

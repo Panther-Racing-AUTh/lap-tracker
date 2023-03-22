@@ -15,12 +15,14 @@ class NewDataScreen extends StatefulWidget {
 }
 
 late TextEditingController dateController;
-bool isLoading = false;
+bool isLoadingRacetrack = false;
+bool isLoadingChart = false;
+bool fetchedData = false;
 
 class _NewDataScreenState extends State<NewDataScreen>
     with AutomaticKeepAliveClientMixin<NewDataScreen> {
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -35,10 +37,115 @@ class _NewDataScreenState extends State<NewDataScreen>
     double screenWidth = MediaQuery.of(context).size.width;
     AppSetup setup = Provider.of<AppSetup>(context);
     dateController.text = DateFormat('dd/MM/yyyy').format(setup.date);
+
+    showLapDialog({
+      required BuildContext context,
+      required Map session,
+      required double screenWidth,
+      required double screenHeight,
+    }) =>
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(actions: [
+              FutureBuilder<List>(
+                future: getLapFromSession(session['id']),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    List laps = snapshot.data!;
+                    return Container(
+                      width: screenWidth * 0.7,
+                      height: screenHeight * 0.6,
+                      child: (laps.isNotEmpty)
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                  Container(
+                                    height: 40,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('Showing results for ',
+                                            style: TextStyle(fontSize: 20)),
+                                        Text(
+                                          session['type'],
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                              fontSize: 24),
+                                        ),
+                                        Text('  session',
+                                            style: TextStyle(fontSize: 20)),
+                                      ],
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text("No"),
+                                        SizedBox(width: screenWidth * 0.6),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    children: [
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: laps.length,
+                                        itemBuilder: (context, index) {
+                                          return ListTile(
+                                            title: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text('Lap ' +
+                                                    (index + 1).toString())
+                                              ],
+                                            ),
+                                            onTap: () async {
+                                              Navigator.of(context).pop();
+                                              setState(() {
+                                                isLoadingChart = true;
+                                              });
+                                              setup.loadedData = await
+                                                  //getDataFromLap(laps[index]['id']);
+                                                  getData();
+                                              setState(() {
+                                                isLoadingChart = false;
+                                                fetchedData = true;
+                                              });
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ])
+                          : Container(
+                              height: screenHeight * 0.1,
+                              child: Center(
+                                  child: Text(
+                                'No laps found',
+                                style: TextStyle(fontSize: 22),
+                              )),
+                            ),
+                    );
+                  }
+                  return Center(child: CircularProgressIndicator());
+                },
+              )
+            ]);
+          },
+        );
+
     return Stack(
       children: [
         Visibility(
-          visible: isLoading,
+          visible: isLoadingRacetrack,
           child: Container(
             color: Colors.white.withOpacity(0.5),
             child: Center(child: CircularProgressIndicator()),
@@ -83,13 +190,13 @@ class _NewDataScreenState extends State<NewDataScreen>
                 TextButton(
                   onPressed: () async {
                     setState(() {
-                      isLoading = true;
+                      isLoadingRacetrack = true;
                     });
                     final List? res = await searchData(
                         dateTime: setup.date, race: setup.racetrack);
 
                     setState(() {
-                      isLoading = false;
+                      isLoadingRacetrack = false;
                     });
 
                     showDialog(
@@ -229,103 +336,10 @@ class _NewDataScreenState extends State<NewDataScreen>
                 )
               ],
             ),
-            EchartsWidget(
-              finalList: [],
-            )
+            if (!isLoadingChart && fetchedData == true) EchartsPage()
           ],
         ),
       ],
     );
   }
 }
-
-showLapDialog({
-  required BuildContext context,
-  required Map session,
-  required double screenWidth,
-  required double screenHeight,
-}) =>
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(actions: [
-          FutureBuilder<List>(
-            future: getLapFromSession(session['id']),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                List laps = snapshot.data!;
-                return Container(
-                  width: screenWidth * 0.7,
-                  height: screenHeight * 0.6,
-                  child: (laps.isNotEmpty)
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                              Container(
-                                height: 40,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('Showing results for ',
-                                        style: TextStyle(fontSize: 20)),
-                                    Text(
-                                      session['type'],
-                                      style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
-                                          fontSize: 24),
-                                    ),
-                                    Text('  session',
-                                        style: TextStyle(fontSize: 20)),
-                                  ],
-                                ),
-                              ),
-                              ListTile(
-                                title: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text("No"),
-                                    SizedBox(width: screenWidth * 0.6),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: laps.length,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        title: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                'Lap ' + (index + 1).toString())
-                                          ],
-                                        ),
-                                        onTap: () {
-                                          getDataFromLap(laps[index]['id']);
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ])
-                      : Container(
-                          height: screenHeight * 0.1,
-                          child: Center(
-                              child: Text(
-                            'No laps found',
-                            style: TextStyle(fontSize: 22),
-                          )),
-                        ),
-                );
-              }
-              return Center(child: CircularProgressIndicator());
-            },
-          )
-        ]);
-      },
-    );

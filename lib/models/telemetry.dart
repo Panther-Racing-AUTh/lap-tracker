@@ -18,10 +18,10 @@ class Data {
 }
 
 Map<String, String> m = {
-  '65': 'Oil Pressure',
-  '66': 'Air Intake Pressure',
-  '12A': 'Air Intake Temperature',
-  '15E': 'Throttle Position',
-  '12B': 'Fuel Temperature',
-  '15D': 'RPM'
+  'SUSP_FL': 'SUSP_FL',
+  'SUSP_FR': 'SUSP_FR',
+  'Strai_Gauge_FR': 'Strai_Gauge_FR',
+  'Strain_Gauge_FL': 'Strain_Gauge_FLn',
+  'Vdc': 'Vdc',
+  'APPS1_Raw': 'APPS1_Raw'
 };

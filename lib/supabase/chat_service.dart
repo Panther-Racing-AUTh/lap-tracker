@@ -20,23 +20,68 @@ Future<List> getAllUsers() async {
   return users;
 }
 
-Stream<List<Message>> getMessages({required int id, required List allUsers}) {
+Future<List> getAllChannelsForUser({required int id}) async {
+  List<int> channelList = [];
+  final allChannelIds = await supabase
+      .from('channel_users')
+      .select('channel_id')
+      .eq('user_id', id);
+  allChannelIds.forEach((element) {
+    channelList.add(element['channel_id']);
+  });
+  final allChannels =
+      await supabase.from('channel').select().in_('id', channelList);
+  return allChannels;
+}
+
+Stream<List<Message>> getMessages(
+    {required int channel_id, required List allChannelUsersList}) {
   return supabase
       .from('message')
       .stream(primaryKey: ['id'])
       .order('created_at')
+      .eq('channel_id', channel_id)
       .map(
         (maps) => maps.map((item) {
-          final senderImage = allUsers.firstWhere(
-              (element) => element['id'] == item['user_from'])['profile_image'];
+          late String image;
+          late int id;
 
+          for (var element in allChannelUsersList) {
+            print(element);
+            if (item['user_id'] == element['id']) {
+              id = element['id'];
+              image = element['profile_image'];
+              break;
+            }
+          }
           return Message.fromJson(
             item,
             id,
-            senderImage,
+            image,
           );
         }).toList(),
       );
+}
+
+Future getAllUsersFromChannel({required int channelId}) async {
+  List allUsers = [];
+  List allUsersWithImage = [];
+  final data = await supabase
+      .from('channel_users')
+      .select(''' user_id: user_id(id, full_name, role, department, uuid) ''');
+  data.forEach((element) {
+    allUsers.add(element['user_id']);
+  });
+
+  for (var element in allUsers) {
+    var image = supabase.storage.from('users').getPublicUrl(
+        (element['uuid'] == null) ? '' : element['uuid'] + '.jpeg');
+    element['profile_image'] = await validateImage(image)
+        ? image
+        : image.split('users/').first + 'users/default.webp';
+    allUsersWithImage.add(element);
+  }
+  return allUsersWithImage;
 }
 
 //TODO: fix handling of image upload

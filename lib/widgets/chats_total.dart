@@ -4,6 +4,7 @@ import 'package:flutter_complete_guide/widgets/chat_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/app_setup.dart';
+import '../supabase/authentication_functions.dart';
 import '../supabase/chat_service.dart';
 
 class ChatLandingPage extends StatefulWidget {
@@ -22,9 +23,10 @@ class _ChatLandingPageState extends State<ChatLandingPage>
   late List usersGlobal;
   @override
   void initState() {
+    AppSetup setup = Provider.of<AppSetup>(context, listen: false);
     super.initState();
     //if (supabase.auth.currentSession != null)
-    dataFuture = getAllUsers();
+    dataFuture = getAllChannelsForUser(id: setup.supabase_id);
   }
 
   @override
@@ -32,35 +34,24 @@ class _ChatLandingPageState extends State<ChatLandingPage>
     super.build(context);
     AppSetup setup = Provider.of<AppSetup>(context);
 
-    return (setup.chatId == 0)
+    return (setup.chatId == -1)
         ? FutureBuilder<List>(
             future: dataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                List users = [...snapshot.data!];
-                setup.allUsers = [...snapshot.data!];
+                List channels = [...snapshot.data!];
+                //setup.allUsers = [...snapshot.data!];
 
-                users.removeWhere(
-                  (element) => element['id'] == setup.supabase_id,
-                );
-
-                List listWithGroupChat = [
-                  {
-                    'id': 1,
-                    'full_name': 'Group Chat',
-                    'profile_image':
-                        'https://png.pngtree.com/png-vector/20190330/ourmid/pngtree-vector-leader-of-group-icon-png-image_894944.jpg',
-                    'role': ''
-                  },
-                  ...users
-                ];
                 return ListView.builder(
-                  itemCount: users.length + 1,
+                  itemCount: channels.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
-                        onTap: () {
+                        onTap: () async {
+                          setup.allUsers = await getAllUsersFromChannel(
+                              channelId: channels[index]['id']);
+                          print(setup.allUsers);
                           setState(() {
-                            setup.chatId = listWithGroupChat[index]['id'];
+                            setup.chatId = channels[index]['id'];
                           });
                         },
                         child: Container(
@@ -83,8 +74,8 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                                       backgroundColor: Colors.black,
                                       radius: 35.0,
                                       backgroundImage: NetworkImage(
-                                          listWithGroupChat[index]
-                                              ['profile_image']),
+                                        'https://png.pngtree.com/png-vector/20190330/ourmid/pngtree-vector-leader-of-group-icon-png-image_894944.jpg',
+                                      ),
                                     ),
                                     SizedBox(
                                       width: 10.0,
@@ -96,9 +87,7 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                              listWithGroupChat[index]
-                                                  ['full_name'],
+                                          Text(channels[index]['name'],
                                               style: TextStyle(
                                                 fontSize: 20.0,
                                                 fontWeight: FontWeight.bold,
@@ -106,16 +95,6 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                                           SizedBox(
                                             height: 5.0,
                                           ),
-                                          (index != 0)
-                                              ? Text(
-                                                  listWithGroupChat[index]
-                                                      ['role'],
-                                                  style: TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 17.0,
-                                                    fontWeight: FontWeight.bold,
-                                                  ))
-                                              : Container(),
                                         ],
                                       ),
                                     ),

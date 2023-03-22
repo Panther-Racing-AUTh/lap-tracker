@@ -46,7 +46,7 @@ var hourlyWeatherCodes = []; //list of the hourly weather codes
 var dailyHighTemperatures = [];
 var dailyLowTemperatures = [];
 var dailyPrecipitation = [];
-
+var widthLimit = 1100;
 WeatherApiClient client =
     WeatherApiClient(); //api declaration for weather data fetching
 Weather data = Weather(); // weather class declaration where data is stored
@@ -163,7 +163,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         ? Container(
             child: Row(
               children: [
-                if (widget.screenWidth > 800)
+                if (widget.screenWidth > widthLimit)
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -204,7 +204,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 SizedBox(width: 10),
                 GestureDetector(
                   child: Container(
-                    width: (widget.screenWidth > 800) ? 300 : 100,
+                    width: (widget.screenWidth > widthLimit) ? 300 : 100,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(

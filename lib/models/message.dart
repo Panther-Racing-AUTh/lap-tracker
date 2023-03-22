@@ -1,5 +1,4 @@
 class Message {
-  final int id;
   final String content;
   final int userFromId;
   final DateTime createAt;
@@ -8,7 +7,6 @@ class Message {
   final String type;
 
   Message({
-    required this.id,
     required this.content,
     required this.userFromId,
     required this.createAt,
@@ -20,8 +18,7 @@ class Message {
   Message.createText({
     required this.content,
     required this.userFromId,
-  })  : id = 0,
-        isMine = true,
+  })  : isMine = true,
         createAt = DateTime.now(),
         userFromImage = '',
         type = 'text';
@@ -29,8 +26,7 @@ class Message {
   Message.createImage({
     required this.content,
     required this.userFromId,
-  })  : id = 0,
-        isMine = true,
+  })  : isMine = true,
         createAt = DateTime.now(),
         userFromImage = '',
         type = 'image';
@@ -38,18 +34,16 @@ class Message {
   Message.createChart({
     required this.content,
     required this.userFromId,
-  })  : id = 0,
-        isMine = true,
+  })  : isMine = true,
         createAt = DateTime.now(),
         userFromImage = '',
         type = 'chart';
 
   Message.fromJson(Map<String, dynamic> json, int senderId, String senderImage)
-      : id = senderId,
-        content = json['content'],
-        userFromId = json['user_from'],
+      : content = json['content'],
+        userFromId = json['user_id'],
         createAt = DateTime.parse(json['created_at']),
-        isMine = json['user_from'] == senderId,
+        isMine = json['user_id'] == senderId,
         userFromImage = senderImage,
         type = json['type'];
 

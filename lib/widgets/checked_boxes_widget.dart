@@ -3,153 +3,35 @@ import 'package:provider/provider.dart';
 import '../models/telemetry.dart';
 import '../providers/app_setup.dart';
 
-class CheckedBoxWidget extends StatefulWidget {
+class CheckedBoxWidget extends StatelessWidget {
   final setFinalList;
 
   CheckedBoxWidget({Key? key, required this.setFinalList}) : super(key: key);
 
   var finalSelectedList = [];
 
-  @override
-  State<CheckedBoxWidget> createState() => _CheckedBoxWidgetState();
-}
-
-@override
-class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
   //
   //
   var dropdownvalue = checkboxList[0];
   @override
   Widget build(BuildContext context) {
-    AppSetup a = Provider.of<AppSetup>(context);
-    widget.finalSelectedList = a.chartList;
-    CustomTimeSelector(AppSetup a, int index) => Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              height: 25,
-              width: 200,
-              color: Colors.grey.withOpacity(0.4),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 90,
-                  width: 40,
-                  child: ListWheelScrollView(
-                    controller: FixedExtentScrollController(
-                        initialItem: int.parse(
-                            a.chartList[index].toString().substring(0, 2))),
-                    physics: FixedExtentScrollPhysics(),
-                    useMagnifier: true,
-                    magnification: 1.2,
-                    children: [
-                      for (int i = 0; i < 2; i++) MyWidget(i, 1),
-                    ],
-                    itemExtent: 30,
-                    onSelectedItemChanged: (value) {
-                      a.setTimeConstraintsAuto(
-                          a.chartList[index]
-                              .replaceRange(1, 2, value.toString()),
-                          index);
-                    },
-                  ),
-                ),
-                SizedBox(width: 10),
-                Container(
-                  height: 90,
-                  width: 40,
-                  child: ListWheelScrollView(
-                    controller: FixedExtentScrollController(
-                        initialItem: int.parse(
-                            a.chartList[index].toString().substring(3, 5))),
-                    useMagnifier: true,
-                    magnification: 1.2,
-                    children: [
-                      for (int i = 0; i < 60; i++) MyWidget(i, 2),
-                    ],
-                    itemExtent: 30,
-                    physics: FixedExtentScrollPhysics(),
-                    onSelectedItemChanged: (value) {
-                      a.setTimeConstraintsAuto(
-                          a.chartList[index].replaceRange(
-                            3,
-                            5,
-                            value.toString().padLeft(2, '0'),
-                          ),
-                          index);
-                    },
-                  ),
-                ),
-                SizedBox(width: 10),
-                Container(
-                  height: 90,
-                  width: 40,
-                  child: ListWheelScrollView(
-                    controller: FixedExtentScrollController(
-                        initialItem: int.parse(
-                            a.chartList[index].toString().substring(6, 8))),
-                    physics: FixedExtentScrollPhysics(),
-                    useMagnifier: true,
-                    magnification: 1.2,
-                    children: [
-                      for (int i = 0; i < 60; i++) MyWidget(i, 2),
-                    ],
-                    itemExtent: 30,
-                    onSelectedItemChanged: (value) {
-                      a.setTimeConstraintsAuto(
-                          a.chartList[index].replaceRange(
-                            6,
-                            8,
-                            value.toString().padLeft(2, '0'),
-                          ),
-                          index);
-                    },
-                  ),
-                ),
-                SizedBox(width: 5),
-                Container(
-                  height: 90,
-                  width: 40,
-                  child: ListWheelScrollView(
-                    controller: FixedExtentScrollController(
-                        initialItem: int.parse(
-                            a.chartList[index].toString().substring(9, null))),
-                    physics: FixedExtentScrollPhysics(),
-                    useMagnifier: true,
-                    magnification: 1.2,
-                    children: [
-                      for (int i = 0; i < 1000; i++) MyWidget(i, 3),
-                    ],
-                    itemExtent: 30,
-                    onSelectedItemChanged: (value) {
-                      a.setTimeConstraintsAuto(
-                          a.chartList[index].replaceRange(
-                            9,
-                            null,
-                            value.toString().padLeft(3, '0'),
-                          ),
-                          index);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
+    AppSetup a = Provider.of<AppSetup>(context, listen: false);
+
+    finalSelectedList = a.chartList;
 
     onAllClicked(CheckBoxClass ckbItem) {
       if (a.listContainsAllItems()) {
         a.setList([]);
       } else {
         a.setList(m.keys.toList());
+        print(a.chartList);
       }
     }
 
 ///////////////////////////////////
 
-    /*final newValue = !ckbItem.value;
+    /*
+    final newValue = !ckbItem.value;
       setState(
         () {
           ckbItem.value = newValue;
@@ -182,7 +64,8 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
         a.removeItemFromlist(item);
       } else
         a.addItemTolist(item);
-      widget.setFinalList(widget.finalSelectedList);
+      print(a.chartList);
+      setFinalList(finalSelectedList);
     }
 
     /*
@@ -214,26 +97,32 @@ class _CheckedBoxWidgetState extends State<CheckedBoxWidget> {
     return ListView(
       //physics: NeverScrollableScrollPhysics(),
       children: [
-        ListTile(
-          onTap: () => onAllClicked(allChecked),
-          leading: Checkbox(
-            value: a.listContainsAllItems(),
-            onChanged: (value) => onAllClicked(allChecked),
-          ),
-          title: Text(allChecked.title),
+        Consumer<AppSetup>(
+          builder: (context, value, child) {
+            return ListTile(
+              onTap: () => onAllClicked(allChecked),
+              leading: Checkbox(
+                value: value.listContainsAllItems(),
+                onChanged: (value) => onAllClicked(allChecked),
+              ),
+              title: Text(allChecked.title),
+            );
+          },
         ),
         Divider(),
         ...checkboxList
             .skip(1)
             .map(
-              (item) => ListTile(
-                onTap: () => onItemClicked(item),
-                leading: Checkbox(
-                  value: a.listContainsItem(
-                      m.keys.firstWhere((element) => m[element] == item.title)),
-                  onChanged: (value) => onItemClicked(item),
+              (item) => Consumer<AppSetup>(
+                builder: (context, value, child) => ListTile(
+                  onTap: () => onItemClicked(item),
+                  leading: Checkbox(
+                    value: value.listContainsItem(m.keys
+                        .firstWhere((element) => m[element] == item.title)),
+                    onChanged: (value) => onItemClicked(item),
+                  ),
+                  title: Text(item.title),
                 ),
-                title: Text(item.title),
               ),
             )
             .toList(),
@@ -291,12 +180,11 @@ final allChecked =
 
 final checkboxList = [
   CheckBoxClass(title: 'Time', supabaseTitle: ''),
-  CheckBoxClass(title: 'RPM', supabaseTitle: 'rpm'),
-  CheckBoxClass(title: 'Oil Pressure', supabaseTitle: 'oil_pressure'),
+  CheckBoxClass(title: 'SUSP_FL', supabaseTitle: 'rpm'),
+  CheckBoxClass(title: 'SUSP_FR', supabaseTitle: 'oil_pressure'),
+  CheckBoxClass(title: 'Strai_Gauge_FR', supabaseTitle: 'air_intake_pressure'),
   CheckBoxClass(
-      title: 'Air Intake Pressure', supabaseTitle: 'air_intake_pressure'),
-  CheckBoxClass(
-      title: 'Air Intake Temperature', supabaseTitle: 'air_intake_temperature'),
-  CheckBoxClass(title: 'Throttle Position', supabaseTitle: 'throttle_position'),
-  CheckBoxClass(title: 'Fuel Temperature', supabaseTitle: 'fuel_temperature'),
+      title: 'Strain_Gauge_FLn', supabaseTitle: 'air_intake_temperature'),
+  CheckBoxClass(title: 'Vdc', supabaseTitle: 'throttle_position'),
+  CheckBoxClass(title: 'APPS1_Raw', supabaseTitle: 'fuel_temperature'),
 ];

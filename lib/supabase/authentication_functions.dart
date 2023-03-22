@@ -217,11 +217,12 @@ Future<void> signOut(BuildContext context) async {
   await supabase.auth.signOut();
 }
 
-Future<int> getCurrentUserIdInt() async {
-  final user = await supabase
+Future<Map> getCurrentUserIdInt() async {
+  final userData = await supabase
       .from('users')
-      .select('id')
+      .select('id, email, full_name, role, department')
       .eq('uuid', supabase.auth.currentUser!.id)
       .single();
-  return user['id'];
+
+  return userData;
 }

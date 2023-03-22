@@ -5,8 +5,8 @@ class Weather {
   double? currentWindSpeed;
   double? maxWind;
   double? currentWindDirection;
-  double? mainWindDirection;
-  double? currenthumidity;
+  int? mainWindDirection;
+  int? currenthumidity;
   double? totalPrecipitation;
   double? temp_max;
   double? temp_min;
@@ -50,6 +50,7 @@ class Weather {
     this.dailyTempsLow,
   });
   //decode json map and put values in variables
+
   Weather.fromJson(
       Map<String, dynamic> json, String? cityName, String? cityCountry) {
     this.cityName = cityName;

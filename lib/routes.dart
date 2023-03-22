@@ -27,14 +27,10 @@ class RouteGenerator {
           builder: (_) => SigninScreen(),
         );
       case '/main':
-        if (defaultTargetPlatform == TargetPlatform.iOS ||
-            defaultTargetPlatform == TargetPlatform.android) {
-          return MaterialPageRoute(builder: (_) => MainScreen());
-        } else {
-          return MaterialPageRoute(
-            builder: (_) => MainScreenDesktop(),
-          );
-        }
+        return MaterialPageRoute(
+          builder: (_) => MainScreenDesktop(),
+        );
+
       case '/main-mobile':
         return MaterialPageRoute(builder: (_) => MainScreen());
       case '/main-desktop':
