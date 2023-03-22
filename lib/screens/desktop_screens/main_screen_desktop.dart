@@ -4,6 +4,7 @@ import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_scree
 import 'package:flutter_complete_guide/screens/desktop_screens/new_data_screen.dart';
 import 'package:flutter_complete_guide/widgets/chat_widget.dart';
 import 'package:flutter_complete_guide/widgets/chats_total.dart';
+import 'package:flutter_complete_guide/widgets/create_new_vehicle_screen.dart';
 import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/dashboard_desktop_widget.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/data_desktop_widget.dart';
@@ -142,7 +143,15 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         //title: Text('Panther Racing AUTh'),
         actions: [
-          DiagramComparison(context),
+          if (setup.role == 'admin')
+            IconButton(
+                icon: Icon(Icons.cake_rounded),
+                onPressed: () => showDialog(
+                      context: context,
+                      builder: (context) {
+                        return NewVehicleScreen();
+                      },
+                    )),
           IconButton(
             onPressed: () {
               setState(() {
