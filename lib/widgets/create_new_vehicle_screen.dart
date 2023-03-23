@@ -8,80 +8,199 @@ class NewVehicleScreen extends StatefulWidget {
 }
 
 class _NewVehicleScreenState extends State<NewVehicleScreen> {
-  @override
-  void initState() {
-    late TextEditingController textEditingController;
-    super.initState();
+  double screenWidth =
+      MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.width;
+  double screenHeight =
+      MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.height;
+
+  //vehicle controllers
+  TextEditingController vehicleName = new TextEditingController();
+  TextEditingController vehicleYear = new TextEditingController();
+  TextEditingController vehicleDescription = new TextEditingController();
+
+  //system controllers
+  List<TextEditingController> systemNameControllerList = [
+    TextEditingController(),
+  ];
+  List<TextEditingController> systemDescriptionControllerList = [
+    TextEditingController(),
+  ];
+
+  //part controllers
+  List<List<TextEditingController>> partNameControllerList = [
+    [TextEditingController(), TextEditingController(), TextEditingController()],
+  ];
+  List<List<TextEditingController>> partValueControllerList = [
+    [TextEditingController(), TextEditingController(), TextEditingController()],
+  ];
+  List<List<TextEditingController>> partMeasureControllerList = [
+    [TextEditingController(), TextEditingController(), TextEditingController()],
+  ];
+
+  late List<List<Widget>> partBoxList = [
+    [
+      PartBox(
+        id: 0,
+        partNameControllerList: partNameControllerList[0],
+        partMeasureControllerList: partMeasureControllerList[0],
+        partValueControllerList: partValueControllerList[0],
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+      ),
+      PartBox(
+        id: 1,
+        partNameControllerList: partNameControllerList[0],
+        partMeasureControllerList: partMeasureControllerList[0],
+        partValueControllerList: partValueControllerList[0],
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+      ),
+      PartBox(
+        id: 2,
+        partNameControllerList: partNameControllerList[0],
+        partMeasureControllerList: partMeasureControllerList[0],
+        partValueControllerList: partValueControllerList[0],
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+      ),
+    ],
+  ];
+  late List<Widget> systemBoxList = [
+    Container(
+      padding: EdgeInsets.only(top: 5),
+      child: SystemBox(
+        id: 0,
+        systemNameControllerList: systemNameControllerList,
+        systemDescriptionControllerList: systemDescriptionControllerList,
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+        children: partBoxList[0],
+        addPartFunction: addPart,
+      ),
+    ),
+  ];
+  void addPart({required int partNumber, required int systemNumber}) {
+    setState(() {
+      partNameControllerList[systemNumber].add(TextEditingController());
+      partValueControllerList[systemNumber].add(TextEditingController());
+      partMeasureControllerList[systemNumber].add(TextEditingController());
+      partBoxList[systemNumber].add(
+        PartBox(
+          id: partNumber,
+          partNameControllerList: partNameControllerList[systemNumber],
+          partMeasureControllerList: partMeasureControllerList[systemNumber],
+          partValueControllerList: partValueControllerList[systemNumber],
+          screenWidth: screenWidth,
+          screenHeight: screenHeight,
+        ),
+      );
+    });
   }
 
-  TextEditingController textEditingController = new TextEditingController();
+  void addSystem({required int systemNumber}) {
+    setState(() {
+      partNameControllerList.add([]);
+      partValueControllerList.add([]);
+      partMeasureControllerList.add([]);
+      systemNameControllerList.add(TextEditingController());
+      systemDescriptionControllerList.add(TextEditingController());
+      partBoxList.add([]);
+      addPart(partNumber: 0, systemNumber: systemNumber);
+      addPart(partNumber: 1, systemNumber: systemNumber);
+      addPart(partNumber: 2, systemNumber: systemNumber);
+      systemBoxList.add(
+        Container(
+          padding: EdgeInsets.only(top: 5),
+          child: SystemBox(
+            id: systemNumber,
+            systemNameControllerList: systemNameControllerList,
+            systemDescriptionControllerList: systemDescriptionControllerList,
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+            children: partBoxList[systemNumber],
+            addPartFunction: addPart,
+          ),
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    return AlertDialog(
-      actions: [
-        Container(
-          height: screenHeight * 0.9,
-          width: screenWidth * 0.9,
-          child: SingleChildScrollView(
-            child: Column(
+    return Container(
+      height: screenHeight * 0.9,
+      width: screenWidth * 0.9,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 VehicleBox(
-                  textEditingController: textEditingController,
+                  vehicleNameController: vehicleName,
+                  vehicleDescriptionController: vehicleDescription,
+                  vehicleYearController: vehicleYear,
                   screenWidth: screenWidth,
                 ),
-                SizedBox(height: 5),
-                SystemBox(
-                  textEditingController: textEditingController,
-                  screenWidth: screenWidth,
-                  screenHeight: screenHeight,
-                  children: [],
-                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      addSystem(systemNumber: systemBoxList.length);
+                    });
+                  },
+                  child: Text(
+                    'Add System',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                )
               ],
             ),
-          ),
+            SizedBox(height: 5),
+            ...systemBoxList,
+            SizedBox(height: 5),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
 
-/*
-Container(
-                      width: screenWidth * 0.3,
-                      height: screenHeight * 0.1,
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        children: [
-                          Container(
-                            color: Colors.yellow,
-                          ),
-                          Container(
-                            color: Colors.pink,
-                          ),
-                          Container(
-                            color: Colors.green,
-                          )
-                        ],
-                        shrinkWrap: true,
-                      ),
-                    )
-*/
-Widget SystemBox({
-  required TextEditingController textEditingController,
-  required double screenWidth,
-  required double screenHeight,
-  required List<Widget> children,
-}) =>
-    Container(
+class SystemBox extends StatefulWidget {
+  SystemBox({
+    required int this.id,
+    required List<TextEditingController> this.systemNameControllerList,
+    required List<TextEditingController> this.systemDescriptionControllerList,
+    required double this.screenWidth,
+    required double this.screenHeight,
+    required List<Widget> this.children,
+    required Function({required int partNumber, required int systemNumber})
+        this.addPartFunction,
+  });
+  int id;
+  List<TextEditingController> systemNameControllerList;
+  List<TextEditingController> systemDescriptionControllerList;
+  double screenWidth;
+  double screenHeight;
+  List<Widget> children;
+  Function({required int partNumber, required int systemNumber})
+      addPartFunction;
+  @override
+  State<SystemBox> createState() => _SystemBoxState();
+}
+
+class _SystemBoxState extends State<SystemBox> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
       decoration: BoxDecoration(border: Border.all(width: 2)),
       padding: EdgeInsets.all(10),
-      width: screenWidth * 0.9,
-      height: (calculateRows(children.length) == 1)
-          ? (screenHeight * 0.25)
-          : (screenHeight * 0.22) * calculateRows(children.length),
+      width: widget.screenWidth * 0.9,
+      height: (calculateRows(widget.children.length) == 1)
+          ? (widget.screenHeight * 0.265)
+          : (widget.screenHeight * 0.22) *
+              calculateRows(widget.children.length),
       child: IntrinsicHeight(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -95,9 +214,9 @@ Widget SystemBox({
                   style: TextStyle(fontSize: 24),
                 ),
                 Container(
-                  width: screenWidth * 0.2,
+                  width: widget.screenWidth * 0.2,
                   child: TextField(
-                    controller: textEditingController,
+                    controller: widget.systemNameControllerList[widget.id],
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(width: 3, color: Colors.black),
@@ -105,11 +224,12 @@ Widget SystemBox({
                     ),
                   ),
                 ),
-                SizedBox(height: screenHeight * 0.01),
+                SizedBox(height: widget.screenHeight * 0.01),
                 Container(
-                  width: screenWidth * 0.2,
+                  width: widget.screenWidth * 0.2,
                   child: TextField(
-                    controller: textEditingController,
+                    controller:
+                        widget.systemDescriptionControllerList[widget.id],
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(width: 3, color: Colors.black),
@@ -122,7 +242,12 @@ Widget SystemBox({
                     'Add Part',
                     style: TextStyle(fontSize: 20),
                   ),
-                  onPressed: () {},
+                  onPressed: () => setState(() {
+                    widget.addPartFunction(
+                      partNumber: widget.children.length,
+                      systemNumber: widget.id,
+                    );
+                  }),
                 )
               ],
             ),
@@ -132,28 +257,33 @@ Widget SystemBox({
               color: Colors.black,
             ),
             SizedBox(
-              width: screenWidth * 0.67,
+              width: widget.screenWidth * 0.67,
               child: Wrap(
                 alignment: WrapAlignment.start,
                 spacing: 5,
                 runSpacing: 5,
-                children: children,
+                children: widget.children,
               ),
-            )
+            ),
           ],
         ),
       ),
     );
+  }
+}
 
 Widget PartBox({
-  required TextEditingController textEditingController,
+  required int id,
+  required List<TextEditingController> partNameControllerList,
+  required List<TextEditingController> partValueControllerList,
+  required List<TextEditingController> partMeasureControllerList,
   required double screenWidth,
   required double screenHeight,
 }) =>
     Container(
       decoration: BoxDecoration(border: Border.all(width: 2)),
       padding: EdgeInsets.all(5),
-      height: screenHeight * 0.19,
+      height: screenHeight * 0.2,
       width: screenWidth * 0.22,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,7 +296,7 @@ Widget PartBox({
           Container(
             width: screenWidth * 0.2,
             child: TextField(
-              controller: textEditingController,
+              controller: partNameControllerList[id],
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(width: 3, color: Colors.black),
@@ -179,7 +309,7 @@ Widget PartBox({
               Container(
                 width: screenWidth * 0.1,
                 child: TextField(
-                  controller: textEditingController,
+                  controller: partMeasureControllerList[id],
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(width: 3, color: Colors.black),
@@ -193,7 +323,7 @@ Widget PartBox({
               Container(
                 width: screenWidth * 0.1,
                 child: TextField(
-                  controller: textEditingController,
+                  controller: partValueControllerList[id],
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(width: 3, color: Colors.black),
@@ -208,7 +338,9 @@ Widget PartBox({
     );
 
 Widget VehicleBox({
-  required TextEditingController textEditingController,
+  required TextEditingController vehicleNameController,
+  required TextEditingController vehicleYearController,
+  required TextEditingController vehicleDescriptionController,
   required double screenWidth,
 }) =>
     Container(
@@ -227,7 +359,7 @@ Widget VehicleBox({
               Container(
                 width: screenWidth * 0.2,
                 child: TextField(
-                  controller: textEditingController,
+                  controller: vehicleNameController,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(width: 3, color: Colors.black),
@@ -239,7 +371,7 @@ Widget VehicleBox({
               Container(
                 width: screenWidth * 0.08,
                 child: TextField(
-                  controller: textEditingController,
+                  controller: vehicleYearController,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(width: 3, color: Colors.black),
@@ -253,7 +385,7 @@ Widget VehicleBox({
           Container(
             width: screenWidth * 0.29,
             child: TextField(
-              controller: textEditingController,
+              controller: vehicleDescriptionController,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(width: 3, color: Colors.black),

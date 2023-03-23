@@ -149,7 +149,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                 onPressed: () => showDialog(
                       context: context,
                       builder: (context) {
-                        return NewVehicleScreen();
+                        return AlertDialog(content: NewVehicleScreen());
                       },
                     )),
           IconButton(

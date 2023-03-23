@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/race.dart';
 import 'package:flutter_complete_guide/supabase/select_race_track_functions.dart';
+import 'package:flutter_complete_guide/widgets/create_new_vehicle_screen.dart';
 import 'package:flutter_complete_guide/widgets/drivers_grid.dart';
 import 'package:provider/provider.dart';
 
