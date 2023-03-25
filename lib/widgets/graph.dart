@@ -86,7 +86,6 @@ class _GraphState extends State<Graph> {
                   height: screenHeight * 0.65,
                   child: SfCartesianChart(
                     //backgroundColor: Colors.pink,
-                    plotAreaBackgroundColor: Colors.yellow,
                     plotAreaBorderWidth: 0,
                     primaryXAxis: DateTimeAxis(
                       visibleMaximum: _rangeController.end,

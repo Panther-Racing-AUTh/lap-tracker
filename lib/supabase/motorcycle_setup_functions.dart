@@ -76,20 +76,28 @@ Stream<List<Vehicle>> getAllVehicles() {
 //  }
 Future<Vehicle> getVehicle(int id) async {
   List<System> systemsList = [];
-  List<List<Part>> partsList = [];
+  Map<int, List<Subsystem>> subsystemsList = {};
+  Map<int, List<Part>> partsList = {};
   final vehicle = await supabase.from('vehicle').select().eq('id', id).single();
-  print('object');
+
   final systems =
       await supabase.from('system').select().eq('vehicle_id', vehicle['id']);
-  print('object');
 
   final systemIds = [];
   for (var item in systems) {
     systemIds.add(item['id']);
   }
 
+  final subsystems =
+      await supabase.from('subsystem').select().in_('system_id', systemIds);
+  final subsystemIds = [];
+
+  for (var item in subsystems) {
+    subsystemIds.add(item['id']);
+  }
+
   final parts =
-      await supabase.from('part').select().in_('system_id', systemIds);
+      await supabase.from('part').select().in_('subsystem_id', subsystemIds);
   final partIds = [];
   for (var item in parts) {
     partIds.add(item['id']);
@@ -106,33 +114,61 @@ Future<Vehicle> getVehicle(int id) async {
     }
   }
 
-  for (int i = 0; i < systems.length; i++) {
-    partsList.add([]);
-    for (int j = 0; j < parts.length; j++) {
-      if (systems[i]['id'] == parts[j]['system_id']) {
-        partsList[i].add(
-          Part(
-            name: parts[j]['name'],
-            measurementUnit: parts[j]['measurement_unit'],
-            value: parts[j]['current_value_id'],
-          ),
-        );
-      }
-    }
+  for (int i = 0; i < parts.length; i++) {
+    if (partsList.containsKey(parts[i]['subsystem_id'])) {
+      partsList[parts[i]['subsystem_id']]!.add(
+        Part(
+          id: parts[i]['id'],
+          name: parts[i]['name'],
+          measurementUnit: parts[i]['measurement_unit'],
+          value: parts[i]['current_value_id'],
+        ),
+      );
+    } else
+      partsList[parts[i]['subsystem_id']] = [
+        Part(
+          id: parts[i]['id'],
+          name: parts[i]['name'],
+          measurementUnit: parts[i]['measurement_unit'],
+          value: parts[i]['current_value_id'],
+        ),
+      ];
+  }
+
+  for (int i = 0; i < subsystems.length; i++) {
+    if (subsystemsList.containsKey(subsystems[i]['system_id'])) {
+      subsystemsList[subsystems[i]['system_id']]!.add(
+        Subsystem(
+          id: subsystems[i]['id'],
+          name: subsystems[i]['name'],
+          description: subsystems[i]['description'],
+          parts: partsList[subsystems[i]['id']]!,
+        ),
+      );
+    } else
+      subsystemsList[subsystems[i]['system_id']] = [
+        Subsystem(
+          id: subsystems[i]['id'],
+          name: subsystems[i]['name'],
+          description: subsystems[i]['description'],
+          parts: partsList[subsystems[i]['id']]!,
+        ),
+      ];
   }
 
   for (int i = 0; i < systems.length; i++) {
     systemsList.add(
       System(
+        id: systems[i]['id'],
         name: systems[i]['name'],
         description: systems[i]['description'],
-        parts: partsList[i],
-        id: systems[i]['id'],
+        subsystems: subsystemsList[systems[i]['id']]!,
       ),
     );
   }
 
   return Vehicle(
+    id: vehicle['id'],
     name: vehicle['name'],
     year: vehicle['year'],
     description: vehicle['description'],

@@ -6,10 +6,7 @@ import 'package:flutter_complete_guide/supabase/motorcycle_setup_functions.dart'
 import '../../models/vehicle.dart';
 
 var _selectedIndex = 0;
-late final Future<Vehicle> myFuture;
-final List<Widget> _pages = [];
-
-void buildPages(Vehicle vehicle) {}
+List<Widget> _pages = [];
 
 /*
  List<SetupPage> _pages = [
@@ -64,7 +61,7 @@ void buildPages(Vehicle vehicle) {}
 */
 class EditVehicleSetup extends StatefulWidget {
   EditVehicleSetup(this.backFunction, this.vehicleId);
-  Function backFunction;
+  Function({required bool edit, required Vehicle vehicle}) backFunction;
   int vehicleId;
   @override
   State<EditVehicleSetup> createState() => _EditVehicleSetupState();
@@ -72,23 +69,17 @@ class EditVehicleSetup extends StatefulWidget {
 
 class _EditVehicleSetupState extends State<EditVehicleSetup> {
   @override
-  void initState() {
-    myFuture = getVehicle(widget.vehicleId);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
     return FutureBuilder<Vehicle>(
-      future: myFuture,
+      future: getVehicle(widget.vehicleId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          print(snapshot.data);
           Vehicle v = snapshot.data!;
-          v.printVehicle();
+          //v.printVehicle();
+
           List<NavigationRailDestination> navigationRailDestinations = [];
           for (int i = 0; i < v.systems.length; i++) {
             navigationRailDestinations.add(
@@ -98,14 +89,15 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
               ),
             );
           }
-          buildPages(v);
+          _pages = [];
           for (int i = 0; i < v.systems.length; i++) {
             _pages.add(
               SetupPage(
-                parts: v.systems[i].parts,
+                subsystems: v.systems[i].subsystems,
               ),
             );
           }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -113,8 +105,18 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
                 height: screenHeight * 0.05,
                 child: Stack(
                   children: [
-                    BackButton(
-                      onPressed: () => widget.backFunction(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        BackButton(
+                          onPressed: () =>
+                              widget.backFunction(edit: false, vehicle: v),
+                        ),
+                        IconButton(
+                            onPressed: () =>
+                                widget.backFunction(edit: true, vehicle: v),
+                            icon: Icon(Icons.edit)),
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -136,22 +138,24 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      NavigationRail(
-                        destinations: navigationRailDestinations,
-                        selectedIndex: _selectedIndex,
-                        groupAlignment: 0,
-                        onDestinationSelected: (value) {
-                          setState(() {
-                            _selectedIndex = value;
-                          });
-                        },
-                        labelType: NavigationRailLabelType.all,
-                      ),
-                      VerticalDivider(
-                        width: 1,
-                        thickness: 1,
-                        color: Colors.black,
-                      ),
+                      if (v.systems.length > 2)
+                        NavigationRail(
+                          destinations: navigationRailDestinations,
+                          selectedIndex: _selectedIndex,
+                          groupAlignment: 0,
+                          onDestinationSelected: (value) {
+                            setState(() {
+                              _selectedIndex = value;
+                            });
+                          },
+                          labelType: NavigationRailLabelType.all,
+                        ),
+                      if (v.systems.length > 2)
+                        VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.black,
+                        ),
                       SizedBox(width: 10),
                       Container(child: _pages[_selectedIndex]),
                     ],
@@ -168,8 +172,8 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
 }
 
 class SetupPage extends StatefulWidget {
-  SetupPage({required this.parts});
-  List<Part> parts;
+  SetupPage({required this.subsystems});
+  List<Subsystem> subsystems;
   @override
   State<SetupPage> createState() => _SetupPageState();
 }
@@ -181,59 +185,43 @@ class _SetupPageState extends State<SetupPage> {
       child: ListView.builder(
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
-        itemCount: widget.parts.length,
+        itemCount: widget.subsystems.length,
         itemBuilder: (context, index) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.parts[index].name,
-                  style: TextStyle(color: Colors.black, fontSize: 26)),
-              Card(
-                elevation: 1,
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+              Text(
+                widget.subsystems[index].name,
+                style: TextStyle(color: Colors.black, fontSize: 26),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: widget.subsystems[index].parts.length,
+                itemBuilder: ((context, index1) {
+                  return Card(
+                    elevation: 1,
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            widget.parts[index].measurementUnit,
-                            style: TextStyle(color: Colors.black, fontSize: 16),
-                          ),
-                          SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.5),
-                          InkWell(
-                            onTap: () {},
-                            child: Icon(
-                              Icons.remove,
-                              size: 16,
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 3),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 3, vertical: 2),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(3),
-                                color: Colors.white),
-                            child: Text(
-                              widget.parts[index].value.toString(),
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {},
-                            child: Icon(
-                              Icons.add,
-                              size: 16,
-                            ),
-                          ),
+                          Row(
+                            children: [
+                              Text(
+                                widget.subsystems[index].parts[index1]
+                                    .measurementUnit,
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 16),
+                              ),
+                              SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.5),
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  ),
-                ),
+                      ),
+                    ),
+                  );
+                }),
               ),
             ],
           );

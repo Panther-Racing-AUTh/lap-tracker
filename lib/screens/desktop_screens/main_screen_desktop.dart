@@ -53,8 +53,8 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
   void openChartInPage() {
     AppSetup setup = Provider.of<AppSetup>(context, listen: false);
     setState(() {
-      setup.setIndex(3);
-      _pageController.jumpToPage(3);
+      setup.setIndex(2);
+      _pageController.jumpToPage(2);
     });
   }
 
@@ -76,12 +76,12 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
     _Allpages = [
       DashBoardDesktop(width),
-      SingleChildScrollView(child: ProfileDesktop()),
       ChatLandingPage(openChartInPage),
       NewDataScreen(),
-      Settings(),
       VehicleScreen(),
       AdminPanel(),
+      SingleChildScrollView(child: ProfileDesktop()),
+      Settings(),
     ];
 
     /*
@@ -135,10 +135,11 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             SizedBox(
               width: 10,
             ),
-            WeatherWidget(
-              appbar: true,
-              screenWidth: width,
-            ),
+            if (setup.role != 'default' && setup.role != 'data_analyst')
+              WeatherWidget(
+                appbar: true,
+                screenWidth: width,
+              ),
             SizedBox(width: width * 0.1),
             if (width > 620)
               StreamBuilder(
@@ -153,14 +154,15 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         //title: Text('Panther Racing AUTh'),
         actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                setup.setOverview(!setup.isOverview);
-              });
-            },
-            icon: Icon(Icons.screen_search_desktop_rounded),
-          ),
+          if (setup.role != 'default' && setup.role != 'data_analyst')
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  setup.setOverview(!setup.isOverview);
+                });
+              },
+              icon: Icon(Icons.screen_search_desktop_rounded),
+            ),
           SizedBox(width: 10),
 
           SizedBox(width: 10),
@@ -316,14 +318,9 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       text: names.dashboard,
       selectedIcon: Icon(Icons.dashboard),
     ),
+
     _widget(
       1,
-      icon: Icon(Icons.person_outlined),
-      text: names.profile,
-      selectedIcon: Icon(Icons.person),
-    ),
-    _widget(
-      2,
       icon: Icon(Icons.chat_outlined),
       text: names.chat,
       selectedIcon: Icon(Icons.chat),
@@ -335,29 +332,36 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     //  selectedIcon: Icon(Icons.data_object),
     //),
     _widget(
-      3,
+      2,
       icon: Icon(Icons.bar_chart_outlined),
       text: names.chart,
       selectedIcon: Icon(Icons.bar_chart),
     ),
+
     _widget(
-      4,
-      icon: Icon(Icons.settings_outlined),
-      text: names.settings,
-      selectedIcon: Icon(Icons.settings),
-    ),
-    _widget(
-      5,
+      3,
       icon: Icon(Icons.cake_outlined),
       text: 'Vehicle Setup',
       selectedIcon: Icon(Icons.cake),
     ),
     _widget(
-      6,
+      4,
       icon: Icon(Icons.admin_panel_settings_outlined),
       text: 'Admin Panel',
       selectedIcon: Icon(Icons.admin_panel_settings),
-    )
+    ),
+    _widget(
+      5,
+      icon: Icon(Icons.person_outlined),
+      text: names.profile,
+      selectedIcon: Icon(Icons.person),
+    ),
+    _widget(
+      6,
+      icon: Icon(Icons.settings_outlined),
+      text: names.settings,
+      selectedIcon: Icon(Icons.settings),
+    ),
   ];
 
   List<Widget> _pagesCustom(String role) {
@@ -370,19 +374,19 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       l.add(_Allpages[0]);
       l.add(_Allpages[1]);
       l.add(_Allpages[2]);
-      l.add(_Allpages[3]);
-      l.add(_Allpages[4]);
+      l.add(_Allpages[5]);
+      l.add(_Allpages[6]);
     }
 
     if (role == 'data_analyst') {
-      l.add(_Allpages[1]);
-      l.add(_Allpages[3]);
-      l.add(_Allpages[4]);
+      l.add(_Allpages[2]);
+      l.add(_Allpages[5]);
+      l.add(_Allpages[6]);
     }
 
     if (role == 'default') {
-      l.add(_Allpages[1]);
-      l.add(_Allpages[4]);
+      l.add(_Allpages[5]);
+      l.add(_Allpages[6]);
     }
     return l;
   }
@@ -403,17 +407,17 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       l.add(allNavigationRailDestinations[0]);
       l.add(allNavigationRailDestinations[1]);
       l.add(allNavigationRailDestinations[2]);
-      l.add(allNavigationRailDestinations[3]);
-      l.add(allNavigationRailDestinations[4]);
+      l.add(allNavigationRailDestinations[5]);
+      l.add(allNavigationRailDestinations[6]);
     }
     if (role == 'data_analyst') {
-      l.add(allNavigationRailDestinations[1]);
-      l.add(allNavigationRailDestinations[3]);
-      l.add(allNavigationRailDestinations[4]);
+      l.add(allNavigationRailDestinations[2]);
+      l.add(allNavigationRailDestinations[5]);
+      l.add(allNavigationRailDestinations[6]);
     }
     if (role == 'default') {
-      l.add(allNavigationRailDestinations[1]);
-      l.add(allNavigationRailDestinations[4]);
+      l.add(allNavigationRailDestinations[5]);
+      l.add(allNavigationRailDestinations[6]);
     }
     return l;
   }

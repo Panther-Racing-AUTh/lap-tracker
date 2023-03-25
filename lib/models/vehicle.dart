@@ -18,9 +18,23 @@ class System {
   int? id;
   String name;
   String description;
-  List<Part> parts;
+  List<Subsystem> subsystems;
 
   System({
+    this.id,
+    required this.name,
+    required this.description,
+    required this.subsystems,
+  });
+}
+
+class Subsystem {
+  int? id;
+  String name;
+  String description;
+  List<Part> parts;
+
+  Subsystem({
     this.id,
     required this.name,
     required this.description,
@@ -42,7 +56,11 @@ class Vehicle {
     required this.description,
     required this.systems,
   });
-
+  Vehicle.empty()
+      : name = 'name',
+        description = 'description',
+        year = 'year',
+        systems = [];
   void printVehicle() {
     print('Vehicle name:  $name');
     print('Vehicle year:  $year');
@@ -52,15 +70,23 @@ class Vehicle {
       print('System ${i + 1} name:  ${systems[i].name}');
       print('System ${i + 1} description:  ${systems[i].description}');
       print('\\\\\\\\\\\\\\\\\\\\\\\\//////////////////////////');
-      for (int j = 0; j < systems[i].parts.length; j++) {
+      for (int j = 0; j < systems[i].subsystems.length; j++) {
         print(
-            'System ${i + 1} part ${j + 1} name:  ${systems[i].parts[j].name}');
+            'System ${i + 1} Subsystem ${j + 1} name:  ${systems[i].subsystems[j].name}');
         print(
-            'System ${i + 1} part ${j + 1} measurement unit:  ${systems[i].parts[j].measurementUnit}');
-        print(
-            'System ${i + 1} part ${j + 1} value:  ${systems[i].parts[j].value}');
+            'System ${i + 1} Subsystem ${j + 1} description:  ${systems[i].subsystems[j].description}');
+        print('----------------------------------------------------');
+        for (int k = 0; k < systems[i].subsystems[j].parts.length; k++) {
+          print(
+              'System ${i + 1} Subsystem ${j + 1} Part ${k + 1} name:  ${systems[i].subsystems[j].parts[k].name}');
+          print(
+              'System ${i + 1} Subsystem ${j + 1} Part ${k + 1} measurement unit:  ${systems[i].subsystems[j].parts[k].measurementUnit}');
+          print(
+              'System ${i + 1} Subsystem ${j + 1} Part ${k + 1} value:  ${systems[i].subsystems[j].parts[k].value}');
+          print(
+              '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+        }
       }
-      print('----------------------------');
     }
   }
 
@@ -80,7 +106,7 @@ class Vehicle {
   //  return;
   //}
 
-  Future<void> insertVehicle({required Vehicle vehicle}) async {
+  Future<void> uploadVehicle({required Vehicle vehicle}) async {
     var vehicleResponse = await supabase
         .from('vehicle')
         .insert({
@@ -104,32 +130,48 @@ class Vehicle {
           .order('created_at', ascending: false)
           .single();
       var systemId = systemResponse['id'];
-      for (int j = 0; j < vehicle.systems[i].parts.length; j++) {
-        var partResponse = await supabase
-            .from('part')
+      for (int k = 0; k < vehicle.systems[i].subsystems.length; k++) {
+        var subsystemResponse = await supabase
+            .from('subsystem')
             .insert({
-              'name': vehicle.systems[i].parts[j].name,
-              'measurement_unit': vehicle.systems[i].parts[j].measurementUnit,
+              'name': vehicle.systems[i].subsystems[k].name,
+              'description': vehicle.systems[i].subsystems[k].description,
               'system_id': systemId,
             })
             .select('id')
             .order('created_at', ascending: false)
             .single();
-        var partId = partResponse['id'];
-        var partValueResponse = await supabase
-            .from('part_values')
-            .insert({
-              'value': vehicle.systems[i].parts[j].value,
-              'part_id': partId,
-            })
-            .select('id')
-            .order('created_at', ascending: false)
-            .single();
-        var partValueId = partValueResponse['id'];
-        await supabase
-            .from('part')
-            .update({'current_value_id': partValueId}).eq('id', partId);
-        ;
+        var subsystemId = subsystemResponse['id'];
+        for (int j = 0;
+            j < vehicle.systems[i].subsystems[k].parts.length;
+            j++) {
+          var partResponse = await supabase
+              .from('part')
+              .insert({
+                'name': vehicle.systems[i].subsystems[k].parts[j].name,
+                'measurement_unit':
+                    vehicle.systems[i].subsystems[k].parts[j].measurementUnit,
+                'subsystem_id': subsystemId,
+              })
+              .select('id')
+              .order('created_at', ascending: false)
+              .single();
+          var partId = partResponse['id'];
+          var partValueResponse = await supabase
+              .from('part_values')
+              .insert({
+                'value': vehicle.systems[i].subsystems[k].parts[j].value,
+                'part_id': partId,
+              })
+              .select('id')
+              .order('created_at', ascending: false)
+              .single();
+          var partValueId = partValueResponse['id'];
+          await supabase
+              .from('part')
+              .update({'current_value_id': partValueId}).eq('id', partId);
+          ;
+        }
       }
     }
   }

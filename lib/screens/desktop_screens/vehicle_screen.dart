@@ -14,16 +14,23 @@ class VehicleScreen extends StatefulWidget {
 
 int _index = 0;
 int vehicleId = -1;
+Vehicle v = Vehicle.empty();
 
 class _VehicleScreenState extends State<VehicleScreen>
     with AutomaticKeepAliveClientMixin<VehicleScreen> {
   @override
   bool get wantKeepAlive => true;
 
-  void backFunction() {
+  void backFunction({required bool edit, required Vehicle vehicle}) {
     setState(() {
       _index = 0;
       vehicleId = -1;
+      v = Vehicle.empty();
+      if (edit) {
+        _index = 1;
+        v = vehicle;
+      }
+      ;
     });
   }
 
@@ -34,7 +41,7 @@ class _VehicleScreenState extends State<VehicleScreen>
         ? StreamBuilder<List<Vehicle>>(
             stream: getAllVehicles(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
+              if (!snapshot.hasData || snapshot.data!.length == 0) {
                 return Stack(children: [
                   Center(
                     child: Text('No vehicles found. Try creating one.'),
@@ -79,6 +86,7 @@ class _VehicleScreenState extends State<VehicleScreen>
         : (_index == 1)
             ? NewVehicleScreen(
                 backArrowPressed: backFunction,
+                v: v,
               )
             : EditVehicleSetup(backFunction, vehicleId);
   }

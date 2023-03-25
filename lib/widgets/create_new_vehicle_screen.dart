@@ -2,13 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/vehicle.dart';
 
 class NewVehicleScreen extends StatefulWidget {
-  NewVehicleScreen({required Function this.backArrowPressed});
-  Function backArrowPressed;
+  NewVehicleScreen({required this.backArrowPressed, required this.v});
+  Function({required bool edit, required Vehicle vehicle}) backArrowPressed;
+  Vehicle v;
   @override
   State<NewVehicleScreen> createState() => _NewVehicleScreenState();
 }
 
 class _NewVehicleScreenState extends State<NewVehicleScreen> {
+  late Vehicle v;
+  @override
+  void initState() {
+    v = widget.v;
+    if (v == Vehicle.empty()) systemNameControllerList = [];
+    super.initState();
+  }
+
   double screenWidth =
       MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.width;
   double screenHeight =
@@ -27,48 +36,95 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     TextEditingController(),
   ];
 
-  //part controllers
-  List<List<TextEditingController>> partNameControllerList = [
-    [TextEditingController(), TextEditingController(), TextEditingController()],
+  //subsystem controllers
+  List<List<TextEditingController>> subsystemNameControllerList = [
+    [
+      TextEditingController(),
+    ]
   ];
-  List<List<TextEditingController>> partValueControllerList = [
-    [TextEditingController(), TextEditingController(), TextEditingController()],
-  ];
-  List<List<TextEditingController>> partMeasureControllerList = [
-    [TextEditingController(), TextEditingController(), TextEditingController()],
+  List<List<TextEditingController>> subsystemDescriptionControllerList = [
+    [
+      TextEditingController(),
+    ]
   ];
 
-  late List<List<Widget>> partBoxList = [
+  //part controllers
+  List<List<List<TextEditingController>>> partNameControllerList = [
     [
-      PartBox(
-        id: 0,
-        partNameControllerList: partNameControllerList[0],
-        partMeasureControllerList: partMeasureControllerList[0],
-        partValueControllerList: partValueControllerList[0],
-        screenWidth: screenWidth,
-        screenHeight: screenHeight,
-        context: context,
-      ),
-      PartBox(
-        id: 1,
-        partNameControllerList: partNameControllerList[0],
-        partMeasureControllerList: partMeasureControllerList[0],
-        partValueControllerList: partValueControllerList[0],
-        screenWidth: screenWidth,
-        screenHeight: screenHeight,
-        context: context,
-      ),
-      PartBox(
-        id: 2,
-        partNameControllerList: partNameControllerList[0],
-        partMeasureControllerList: partMeasureControllerList[0],
-        partValueControllerList: partValueControllerList[0],
-        screenWidth: screenWidth,
-        screenHeight: screenHeight,
-        context: context,
-      ),
+      [
+        TextEditingController(),
+        TextEditingController(),
+        TextEditingController()
+      ],
     ],
   ];
+  List<List<List<TextEditingController>>> partValueControllerList = [
+    [
+      [
+        TextEditingController(text: '0'),
+        TextEditingController(text: '0'),
+        TextEditingController(text: '0')
+      ],
+    ]
+  ];
+  List<List<List<TextEditingController>>> partMeasureControllerList = [
+    [
+      [
+        TextEditingController(),
+        TextEditingController(),
+        TextEditingController()
+      ],
+    ]
+  ];
+
+  late List<List<List<Widget>>> partBoxList = [
+    [
+      [
+        PartBox(
+          id: 0,
+          partNameControllerList: partNameControllerList[0][0],
+          partMeasureControllerList: partMeasureControllerList[0][0],
+          partValueControllerList: partValueControllerList[0][0],
+          screenWidth: screenWidth,
+          screenHeight: screenHeight,
+          context: context,
+        ),
+        PartBox(
+          id: 1,
+          partNameControllerList: partNameControllerList[0][0],
+          partMeasureControllerList: partMeasureControllerList[0][0],
+          partValueControllerList: partValueControllerList[0][0],
+          screenWidth: screenWidth,
+          screenHeight: screenHeight,
+          context: context,
+        ),
+        PartBox(
+          id: 2,
+          partNameControllerList: partNameControllerList[0][0],
+          partMeasureControllerList: partMeasureControllerList[0][0],
+          partValueControllerList: partValueControllerList[0][0],
+          screenWidth: screenWidth,
+          screenHeight: screenHeight,
+          context: context,
+        ),
+      ]
+    ],
+  ];
+
+  late List<List<Widget>> subsystemBoxList = [
+    [
+      SubsystemBox(
+        id: 0,
+        systemNumber: 0,
+        subsystemNameControllerList: subsystemNameControllerList[0],
+        subsystemDescriptionControllerList:
+            subsystemDescriptionControllerList[0],
+        children: partBoxList[0][0],
+        addPartFunction: addPart,
+      ),
+    ]
+  ];
+
   late List<Widget> systemBoxList = [
     Container(
       padding: EdgeInsets.only(top: 5),
@@ -78,22 +134,32 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
         systemDescriptionControllerList: systemDescriptionControllerList,
         screenWidth: screenWidth,
         screenHeight: screenHeight,
-        children: partBoxList[0],
-        addPartFunction: addPart,
+        children: subsystemBoxList[0],
+        addSubsystemFunction: addSubsystem,
       ),
     ),
   ];
-  void addPart({required int partNumber, required int systemNumber}) {
+  void addPart({
+    required int partNumber,
+    required int subsystemNumber,
+    required int systemNumber,
+  }) {
     setState(() {
-      partNameControllerList[systemNumber].add(TextEditingController());
-      partValueControllerList[systemNumber].add(TextEditingController());
-      partMeasureControllerList[systemNumber].add(TextEditingController());
-      partBoxList[systemNumber].add(
+      partNameControllerList[systemNumber][subsystemNumber]
+          .add(TextEditingController());
+      partValueControllerList[systemNumber][subsystemNumber]
+          .add(TextEditingController(text: '0'));
+      partMeasureControllerList[systemNumber][subsystemNumber]
+          .add(TextEditingController());
+      partBoxList[systemNumber][subsystemNumber].add(
         PartBox(
           id: partNumber,
-          partNameControllerList: partNameControllerList[systemNumber],
-          partMeasureControllerList: partMeasureControllerList[systemNumber],
-          partValueControllerList: partValueControllerList[systemNumber],
+          partNameControllerList: partNameControllerList[systemNumber]
+              [subsystemNumber],
+          partMeasureControllerList: partMeasureControllerList[systemNumber]
+              [subsystemNumber],
+          partValueControllerList: partValueControllerList[systemNumber]
+              [subsystemNumber],
           screenWidth: screenWidth,
           screenHeight: screenHeight,
           context: context,
@@ -102,17 +168,57 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     });
   }
 
-  void addSystem({required int systemNumber}) {
+  void addSubsystem({required int subsystemNumber, required int systemNumber}) {
+    setState(() {
+      partNameControllerList[systemNumber].add([]);
+      partMeasureControllerList[systemNumber].add([]);
+      partValueControllerList[systemNumber].add([]);
+      subsystemNameControllerList[systemNumber].add(TextEditingController());
+      subsystemDescriptionControllerList[systemNumber]
+          .add(TextEditingController());
+      subsystemBoxList.add([]);
+      partBoxList[systemNumber].add([]);
+
+      addPart(
+        partNumber: 0,
+        subsystemNumber: subsystemNumber,
+        systemNumber: systemNumber,
+      );
+      addPart(
+        partNumber: 1,
+        subsystemNumber: subsystemNumber,
+        systemNumber: systemNumber,
+      );
+
+      subsystemBoxList[systemNumber].add(
+        SubsystemBox(
+          id: subsystemNumber,
+          systemNumber: systemNumber,
+          subsystemNameControllerList:
+              subsystemNameControllerList[systemNumber],
+          subsystemDescriptionControllerList:
+              subsystemDescriptionControllerList[systemNumber],
+          children: partBoxList[systemNumber][subsystemNumber],
+          addPartFunction: addPart,
+        ),
+      );
+    });
+  }
+
+  void addSystem() {
+    int systemNumber = systemBoxList.length;
     setState(() {
       partNameControllerList.add([]);
       partValueControllerList.add([]);
       partMeasureControllerList.add([]);
       systemNameControllerList.add(TextEditingController());
       systemDescriptionControllerList.add(TextEditingController());
+      subsystemBoxList.add([]);
+      subsystemNameControllerList.add([]);
+      subsystemDescriptionControllerList.add([]);
       partBoxList.add([]);
-      addPart(partNumber: 0, systemNumber: systemNumber);
-      addPart(partNumber: 1, systemNumber: systemNumber);
-      addPart(partNumber: 2, systemNumber: systemNumber);
+      addSubsystem(subsystemNumber: 0, systemNumber: systemNumber);
+
       systemBoxList.add(
         Container(
           padding: EdgeInsets.only(top: 5),
@@ -122,8 +228,8 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
             systemDescriptionControllerList: systemDescriptionControllerList,
             screenWidth: screenWidth,
             screenHeight: screenHeight,
-            children: partBoxList[systemNumber],
-            addPartFunction: addPart,
+            children: subsystemBoxList[systemNumber],
+            addSubsystemFunction: addSubsystem,
           ),
         ),
       );
@@ -132,26 +238,45 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
 
   void saveVehicle() {
     late Vehicle vehicle;
-    List<List<Part>> parts = [];
+    List<List<List<Part>>> parts = [];
+    List<List<Subsystem>> subsystems = [];
     List<System> systems = [];
+
     for (int i = 0; i < partBoxList.length; i++) {
       parts.add([]);
       for (int j = 0; j < partBoxList[i].length; j++) {
-        parts[i].add(
-          Part(
-            name: partNameControllerList[i][j].text,
-            measurementUnit: partMeasureControllerList[i][j].text,
-            value: int.parse(partValueControllerList[i][j].text),
+        parts[i].add([]);
+        for (int k = 0; k < partBoxList[i][j].length; k++) {
+          parts[i][j].add(
+            Part(
+              name: partNameControllerList[i][j][k].text,
+              measurementUnit: partMeasureControllerList[i][j][k].text,
+              value: int.parse(partValueControllerList[i][j][k].text),
+            ),
+          );
+        }
+      }
+    }
+
+    for (int i = 0; i < subsystemBoxList.length; i++) {
+      subsystems.add([]);
+      for (int j = 0; j < subsystemBoxList[i].length; j++) {
+        subsystems[i].add(
+          Subsystem(
+            name: subsystemNameControllerList[i][j].text,
+            description: subsystemDescriptionControllerList[i][j].text,
+            parts: parts[i][j],
           ),
         );
       }
     }
+
     for (int i = 0; i < systemBoxList.length; i++) {
       systems.add(
         System(
           name: systemNameControllerList[i].text,
           description: systemDescriptionControllerList[i].text,
-          parts: parts[i],
+          subsystems: subsystems[i],
         ),
       );
     }
@@ -161,30 +286,133 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       description: vehicleDescription.text,
       systems: systems,
     );
-    vehicle.insertVehicle(vehicle: vehicle);
-    vehicle.printVehicle();
-    widget.backArrowPressed();
+    vehicle.uploadVehicle(vehicle: vehicle);
+    //vehicle.printVehicle();
+  }
+
+  void updateVehicle() {}
+
+  bool done = false;
+  void setLists(Vehicle v) {
+    vehicleName = TextEditingController(text: v.name);
+    vehicleYear = TextEditingController(text: v.year);
+    vehicleDescription = TextEditingController(text: v.description);
+    systemNameControllerList = [];
+    systemDescriptionControllerList = [];
+    subsystemNameControllerList = [];
+    subsystemDescriptionControllerList = [];
+    partNameControllerList = [];
+    partValueControllerList = [];
+    partMeasureControllerList = [];
+    partBoxList = [];
+    subsystemBoxList = [];
+    systemBoxList = [];
+    for (int i = 0; i < v.systems.length; i++) {
+      systemNameControllerList
+          .add(TextEditingController(text: v.systems[i].name));
+      systemDescriptionControllerList
+          .add(TextEditingController(text: v.systems[i].description));
+      subsystemNameControllerList.add([]);
+      subsystemDescriptionControllerList.add([]);
+      partNameControllerList.add([]);
+      partValueControllerList.add([]);
+      partMeasureControllerList.add([]);
+      ////
+      partBoxList.add([]);
+      subsystemBoxList.add([]);
+      systemBoxList.add(
+        SystemBox(
+          id: i,
+          systemNameControllerList: systemNameControllerList,
+          systemDescriptionControllerList: systemDescriptionControllerList,
+          screenWidth: screenWidth,
+          screenHeight: screenHeight,
+          children: subsystemBoxList[i],
+          addSubsystemFunction: addSubsystem,
+        ),
+      );
+
+      ///
+      for (int j = 0; j < v.systems[i].subsystems.length; j++) {
+        partNameControllerList[i].add([]);
+        partValueControllerList[i].add([]);
+        partMeasureControllerList[i].add([]);
+        subsystemNameControllerList[i]
+            .add(TextEditingController(text: v.systems[i].subsystems[j].name));
+        subsystemDescriptionControllerList[i].add(TextEditingController(
+            text: v.systems[i].subsystems[j].description));
+        ////
+        partBoxList[i].add([]);
+        subsystemBoxList[i].add(
+          SubsystemBox(
+            id: j,
+            systemNumber: i,
+            subsystemNameControllerList: subsystemNameControllerList[i],
+            subsystemDescriptionControllerList:
+                subsystemDescriptionControllerList[i],
+            children: partBoxList[i][j],
+            addPartFunction: addPart,
+          ),
+        );
+
+        ///
+        for (int k = 0; k < v.systems[i].subsystems[j].parts.length; k++) {
+          partNameControllerList[i][j].add(TextEditingController(
+              text: v.systems[i].subsystems[j].parts[k].name));
+          partValueControllerList[i][j].add(TextEditingController(
+              text: (v.systems[i].subsystems[j].parts[k].value).toString()));
+          partMeasureControllerList[i][j].add(TextEditingController(
+              text: v.systems[i].subsystems[j].parts[k].measurementUnit));
+          //
+          partBoxList[i][j].add(
+            PartBox(
+              id: k,
+              partNameControllerList: partNameControllerList[i][j],
+              partValueControllerList: partValueControllerList[i][j],
+              partMeasureControllerList: partMeasureControllerList[i][j],
+              screenWidth: screenWidth,
+              screenHeight: screenHeight,
+              context: context,
+            ),
+          );
+        }
+      }
+    }
+    print('secret message');
+    done = true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SafeArea(
-            child: IconButton(
-              icon: Icon(Icons.arrow_back_outlined),
-              onPressed: () => setState(() {
-                widget.backArrowPressed();
-              }),
-            ),
+    widget.v.printVehicle();
+    if (!done && (v.id != null)) {
+      setLists(v);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SafeArea(
+          child: IconButton(
+            icon: Icon(Icons.arrow_back_outlined),
+            onPressed: () => setState(() {
+              widget.backArrowPressed(
+                edit: false,
+                vehicle: Vehicle(
+                  name: 'name',
+                  year: 'year',
+                  description: 'description',
+                  systems: [],
+                ),
+              );
+            }),
           ),
-          Container(
-            padding: EdgeInsets.only(left: 10, right: 10),
-            height: screenHeight,
-            width: screenWidth,
-            child: SingleChildScrollView(
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              width: screenWidth,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -199,22 +427,45 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                         screenWidth: screenWidth,
                         screenHeight: screenHeight,
                         context: context,
+                        addSystem: addSystem,
                       ),
                       Column(
                         children: [
                           TextButton(
-                            onPressed: () {
-                              setState(() {
-                                addSystem(systemNumber: systemBoxList.length);
-                              });
-                            },
-                            child: Text(
-                              'Add System',
-                              style: TextStyle(fontSize: 20),
+                            onPressed: () => showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Save Vehicle?'),
+                                  content: Text('Your setup will be saved.'),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('No')),
+                                    TextButton(
+                                        onPressed: () {
+                                          (done)
+                                              ? updateVehicle()
+                                              : saveVehicle();
+                                          widget.backArrowPressed(
+                                            edit: false,
+                                            vehicle: Vehicle(
+                                              name: 'name',
+                                              year: 'year',
+                                              description: 'description',
+                                              systems: [],
+                                            ),
+                                          );
+                                          ;
+                                        },
+                                        child: Text('OK')),
+                                  ],
+                                );
+                              },
                             ),
-                          ),
-                          TextButton(
-                            onPressed: () => saveVehicle(),
                             child: Text(
                               'Save',
                               style: TextStyle(fontSize: 20),
@@ -226,13 +477,13 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                   ),
                   SizedBox(height: 5),
                   ...systemBoxList,
-                  SizedBox(height: 5),
+                  SizedBox(height: screenHeight * 0.1)
                 ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -245,8 +496,8 @@ class SystemBox extends StatefulWidget {
     required double this.screenWidth,
     required double this.screenHeight,
     required List<Widget> this.children,
-    required Function({required int partNumber, required int systemNumber})
-        this.addPartFunction,
+    required Function({required int subsystemNumber, required int systemNumber})
+        this.addSubsystemFunction,
   });
   int id;
   List<TextEditingController> systemNameControllerList;
@@ -254,8 +505,8 @@ class SystemBox extends StatefulWidget {
   double screenWidth;
   double screenHeight;
   List<Widget> children;
-  Function({required int partNumber, required int systemNumber})
-      addPartFunction;
+  Function({required int subsystemNumber, required int systemNumber})
+      addSubsystemFunction;
   @override
   State<SystemBox> createState() => _SystemBoxState();
 }
@@ -263,83 +514,195 @@ class SystemBox extends StatefulWidget {
 class _SystemBoxState extends State<SystemBox> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        color: Theme.of(context).primaryColor.withOpacity(0.2),
-        width: calculateColumns(widget.children.length) *
-            widget.screenWidth *
-            0.26,
-        height: (widget.screenHeight * 0.15) +
-            (widget.screenHeight * 0.23) *
-                calculateRows(widget.children.length),
-        child: IntrinsicHeight(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+    return Container(
+      padding: EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+              Container(
+                width: widget.screenWidth * 0.8,
+                color: Theme.of(context).primaryColor.withOpacity(0.2),
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'System Details',
-                            style: TextStyle(fontSize: 24),
-                          ),
-                          SizedBox(height: widget.screenHeight * 0.01),
-                          Container(
-                            width: widget.screenWidth * 0.2,
-                            child: myTextField(
-                              controller:
-                                  widget.systemNameControllerList[widget.id],
-                              label: 'Name',
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'System Details',
+                        style: TextStyle(fontSize: 24),
                       ),
-                      SizedBox(width: widget.screenHeight * 0.01),
-                      Container(
-                        width: widget.screenWidth * 0.2,
-                        child: myTextField(
-                          controller:
-                              widget.systemDescriptionControllerList[widget.id],
-                          label: 'Description',
+                      TextButton(
+                        child: Text(
+                          'Add Subsystem',
+                          style: TextStyle(fontSize: 20),
                         ),
+                        onPressed: () => setState(() {
+                          widget.addSubsystemFunction(
+                            subsystemNumber: widget.children.length,
+                            systemNumber: widget.id,
+                          );
+                        }),
                       ),
                     ],
                   ),
-                  TextButton(
-                    child: Text(
-                      'Add Part',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    onPressed: () => setState(() {
-                      widget.addPartFunction(
-                        partNumber: widget.children.length,
-                        systemNumber: widget.id,
-                      );
-                    }),
-                  ),
-                ],
-              ),
-              SizedBox(height: widget.screenHeight * 0.01),
-              SizedBox(
-                child: Wrap(
-                  direction: Axis.horizontal,
-                  alignment: WrapAlignment.center,
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: widget.children,
                 ),
               ),
             ],
           ),
-        ),
+          SizedBox(height: widget.screenHeight * 0.01),
+          Row(
+            children: [
+              Container(
+                width: widget.screenWidth * 0.2,
+                child: myTextField(
+                  controller: widget.systemNameControllerList[widget.id],
+                  label: 'Name',
+                ),
+              ),
+              Container(
+                width: widget.screenWidth * 0.2,
+                child: myTextField(
+                  controller: widget.systemDescriptionControllerList[widget.id],
+                  label: 'Description',
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: widget.screenHeight * 0.02),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 27,
+                  color: Theme.of(context).primaryColor.withOpacity(0.2),
+                ),
+                Column(
+                  children: [
+                    ...widget.children,
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SubsystemBox extends StatefulWidget {
+  SubsystemBox({
+    required int this.id,
+    required int this.systemNumber,
+    required List<TextEditingController> this.subsystemNameControllerList,
+    required List<TextEditingController>
+        this.subsystemDescriptionControllerList,
+    required List<Widget> this.children,
+    required Function(
+            {required int partNumber,
+            required int subsystemNumber,
+            required int systemNumber})
+        this.addPartFunction,
+  });
+  int id;
+  int systemNumber;
+  List<TextEditingController> subsystemNameControllerList;
+  List<TextEditingController> subsystemDescriptionControllerList;
+  List<Widget> children;
+  Function(
+      {required int partNumber,
+      required int subsystemNumber,
+      required int systemNumber}) addPartFunction;
+  @override
+  State<SubsystemBox> createState() => _SubsystemBoxState();
+}
+
+class _SubsystemBoxState extends State<SubsystemBox> {
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    return Container(
+      padding: EdgeInsets.only(left: 10, right: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: screenWidth * 0.8 - 37,
+                color: Theme.of(context).primaryColor.withOpacity(0.2),
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'SubSystem Details',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                      TextButton(
+                        child: Text(
+                          'Add Part',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        onPressed: () => setState(() {
+                          widget.addPartFunction(
+                            partNumber: widget.children.length,
+                            subsystemNumber: widget.id,
+                            systemNumber: widget.systemNumber,
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: screenHeight * 0.01),
+          Row(
+            children: [
+              Container(
+                width: screenWidth * 0.2,
+                child: myTextField(
+                  controller: widget.subsystemNameControllerList[widget.id],
+                  label: 'Name',
+                ),
+              ),
+              Container(
+                width: screenWidth * 0.2,
+                child: myTextField(
+                  controller:
+                      widget.subsystemDescriptionControllerList[widget.id],
+                  label: 'Description',
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: screenHeight * 0.01),
+          Card(
+            child: Column(
+              children: [
+                Container(
+                  color: Colors.grey.withOpacity(0.1),
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Part Details', style: TextStyle(fontSize: 20)),
+                      ...widget.children
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -354,50 +717,35 @@ Widget PartBox({
   required double screenHeight,
   required BuildContext context,
 }) =>
-    Card(
-      child: Container(
-        color: Colors.grey.withOpacity(0.1),
-        padding: EdgeInsets.all(10),
-        height: screenHeight * 0.2,
-        width: screenWidth * 0.205,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Part Details',
-              style: TextStyle(fontSize: 20),
+    Container(
+      padding: EdgeInsets.only(top: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            width: screenWidth * 0.19,
+            child: myTextField(
+              controller: partNameControllerList[id],
+              label: 'Name',
             ),
-            Container(
-              width: screenWidth * 0.19,
-              child: myTextField(
-                controller: partNameControllerList[id],
-                label: 'Name',
-              ),
+          ),
+          SizedBox(width: 10),
+          Container(
+            width: screenWidth * 0.1,
+            child: myTextField(
+              controller: partMeasureControllerList[id],
+              label: 'Measurement Unit',
             ),
-            Row(
-              children: [
-                Container(
-                  width: screenWidth * 0.1,
-                  child: myTextField(
-                    controller: partMeasureControllerList[id],
-                    label: 'Measurement Unit',
-                  ),
-                ),
-                SizedBox(
-                  width: 1,
-                ),
-                Container(
-                  width: screenWidth * 0.09 - 1,
-                  child: myTextField(
-                    controller: partValueControllerList[id],
-                    label: 'Initial Value',
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
+          ),
+          SizedBox(width: 10),
+          Container(
+            width: screenWidth * 0.09 - 1,
+            child: myTextField(
+              controller: partValueControllerList[id],
+              label: 'Initial Value',
+            ),
+          ),
+        ],
       ),
     );
 
@@ -408,19 +756,32 @@ Widget VehicleBox({
   required double screenWidth,
   required double screenHeight,
   required BuildContext context,
+  required Function addSystem,
 }) =>
     Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: screenWidth * 0.59,
+            width: screenWidth * 0.8,
             color: Theme.of(context).primaryColor.withOpacity(0.2),
             child: Container(
               padding: EdgeInsets.all(5),
-              child: Text(
-                'Vehicle Details',
-                style: TextStyle(fontSize: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Vehicle Details',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  TextButton(
+                    onPressed: () => addSystem(),
+                    child: Text(
+                      'Add System',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -456,28 +817,10 @@ Widget VehicleBox({
       ),
     );
 
-int calculateRows(int numberOfElements) {
-  late int n;
-  if (numberOfElements == 0) return 1;
-  n = (numberOfElements / 4).toInt();
-  if (numberOfElements % 4 != 0) {
-    n++;
-  }
-  return n;
-}
-
-int calculateColumns(int numberOfElements) {
-  late int n;
-  if (numberOfElements == 0) return 2;
-  n = (numberOfElements / calculateRows(numberOfElements)).toInt();
-  if (numberOfElements % calculateRows(numberOfElements) != 0) {
-    n++;
-  }
-  return n;
-}
-
-TextField myTextField(
-        {required TextEditingController controller, required String label}) =>
+TextField myTextField({
+  required TextEditingController controller,
+  required String label,
+}) =>
     TextField(
       controller: controller,
       decoration: InputDecoration(
