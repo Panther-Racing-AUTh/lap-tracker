@@ -172,7 +172,6 @@ DROP TABLE IF EXISTS message;
 DROP TABLE IF EXISTS channel_users;
 DROP TABLE IF EXISTS channel;
 
-
 CREATE TABLE channel (
 	id			SERIAL		PRIMARY KEY,
 	created_at	TIMESTAMP	DEFAULT NOW(),
@@ -224,8 +223,10 @@ comment on column channel_users.created_at is 'Timestamp of the insertion of the
 comment on column channel_users.user_id is 'The reference to the user by id';
 comment on column channel_users.channel_id is 'The reference to the channel by id';
 
-
-
+-- ALTER TABLE part
+-- 	DROP CONSTRAINT fk_part_values;
+-- ALTER TABLE part_values
+-- 	DROP CONSTRAINT fk_part;
 DROP TABLE IF EXISTS part_values;
 DROP TABLE IF EXISTS part;
 DROP TABLE IF EXISTS system;
@@ -238,6 +239,12 @@ CREATE TABLE vehicle (
 	year		VARCHAR(16),
 	description	VARCHAR(250)
 );
+comment on table vehicle is 'This table stores all users within the channels and vise-versa, all channels of the user';
+comment on column vehicle.created_at is 'Timestamp of the creation of the vehicle';
+comment on column vehicle.name is 'The name of the vehicle, ex. Black Panther';
+comment on column vehicle.year is 'The year of the vehicle, ex. 2019-2021';
+comment on column vehicle.description is 'The description of the vehicle, ex. Motorcycle prototype | KTM-RC 250cc';
+
 
 CREATE TABLE system (
 	id			SERIAL		PRIMARY KEY,
@@ -250,17 +257,39 @@ CREATE TABLE system (
 		REFERENCES vehicle(id)
 		ON DELETE NO ACTION
 );
+comment on table system is 'This table stores all users within the channels and vise-versa, all channels of the user';
+comment on column system.created_at is 'Timestamp of the creation of the system';
+comment on column system.name is 'The name of the system, ex. Suspension';
+comment on column system.vehicle_id is 'The reference to the behicle, ex. id: 1';
+comment on column system.description is 'The description of the system, ex. Front and rear suspensions';
+
+CREATE TABLE subsystem (
+	id			SERIAL		PRIMARY KEY,
+	created_at	TIMESTAMP	DEFAULT NOW(),
+	name		VARCHAR(250),
+	system_id	INT,
+	description	VARCHAR(250),
+	CONSTRAINT fk_system
+		FOREIGN KEY(system_id)
+		REFERENCES system(id)
+		ON DELETE NO ACTION
+);
+comment on table system is 'This table stores all users within the channels and vise-versa, all channels of the user';
+comment on column system.created_at is 'Timestamp of the creation of the system';
+comment on column system.name is 'The name of the vehicle, ex. Black Panther';
+comment on column system.vehicle_id is 'The year of the vehicleex. 2019-2021';
+comment on column system.description is 'The description of the vehicle, ex. Motorcycle prototype | KTM-RC 250cc';
 
 CREATE TABLE part (
 	id					SERIAL		PRIMARY KEY,
 	created_at			TIMESTAMP	DEFAULT NOW(),
 	name				VARCHAR(250),
-	system_id			INT,
+	subsystem_id		INT,
 	current_value_id	INT,
 	measurement_unit	VARCHAR(250),
-	CONSTRAINT fk_vehicle
-		FOREIGN KEY(system_id)
-		REFERENCES system(id)
+	CONSTRAINT fk_subsystem
+		FOREIGN KEY(subsystem_id)
+		REFERENCES subsystem(id)
 		ON DELETE NO ACTION
 );
 
@@ -269,12 +298,22 @@ CREATE TABLE part_values (
 	created_at	TIMESTAMP	DEFAULT NOW(),
 	part_id		INT,
 	value		INT,
-	CONSTRAINT fk_vehicle
+	CONSTRAINT fk_part
 		FOREIGN KEY(part_id)
 		REFERENCES part(id)
 		ON DELETE NO ACTION
 );
 
+-- ALTER TABLE part
+-- ADD CONSTRAINT fk_part_values
+-- 		FOREIGN KEY(current_value_id)
+-- 		REFERENCES part_values(id)
+-- 		ON DELETE NO ACTION;
+----------------------------------------
+--the two essential triggers for users--
+----------------------------------------
+
+-- the function that can copy the users from auth
 create or replace function public.handle_new_user() 
 returns trigger as $$
 	begin
