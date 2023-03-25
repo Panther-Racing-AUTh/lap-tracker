@@ -14,8 +14,11 @@ class DeviceManager with ChangeNotifier {
       mode = 'desktop';
     } else if (Device.get().isTablet) {
       isTablet = true;
-      mode = 'desktop';
-    } else if (Device.get().isPhone) isPhone = true;
+      mode = 'mobile';
+    } else if (Device.get().isPhone) {
+      isPhone = true;
+      mode = 'mobile';
+    }
   }
 
   void setToDesktopMode() {
@@ -28,5 +31,10 @@ class DeviceManager with ChangeNotifier {
 
   bool isDesktopMode() {
     return (mode == 'desktop');
+  }
+
+  String getRoute() {
+    if (mode == 'desktop') return '/main-desktop';
+    return '/main-mobile';
   }
 }

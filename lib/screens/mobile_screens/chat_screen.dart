@@ -13,7 +13,7 @@ class ChatScreen extends StatelessWidget {
         text: chat,
         context: context,
       ),
-      body: ChatLandingPage(),
+      body: ChatLandingPage(() {}),
     );
   }
 }

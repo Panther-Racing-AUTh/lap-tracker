@@ -11,6 +11,8 @@ import '../supabase/chat_service.dart';
 import 'chat_bubble.dart';
 
 class ChatWidget extends StatefulWidget {
+  ChatWidget(this.function);
+  Function function;
   @override
   State<ChatWidget> createState() => _ChatWidgetState();
 }
@@ -30,6 +32,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     super.initState();
   }
 
+/*
   Future<void> pickChart({required BuildContext c, required int id}) async {
     showDialog(
       context: c,
@@ -60,20 +63,21 @@ class _ChatWidgetState extends State<ChatWidget> {
       ),
     );
   }
-
-  Future pickImage({required bool isCamera, required int id}) async {
+*/
+  Future pickImage(
+      {required bool isCamera, required int id, required int channelId}) async {
     try {
       final image = await ImagePicker().pickImage(
           source: isCamera ? ImageSource.camera : ImageSource.gallery);
       if (image == null) return;
 
-      saveImage(image: image, id: id);
+      saveImage(image: image, id: id, channelId: channelId);
     } on PlatformException catch (e) {
       print('Failed to pick image: $e');
     }
   }
 
-  Future<void> _submit(int id) async {
+  Future<void> _submit({required int userId, required int channelId}) async {
     final text = _msgController.text;
 
     if (text.isEmpty) {
@@ -83,7 +87,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      await saveMessage(content: text, id: id);
+      await saveMessage(content: text, userId: userId, channelId: channelId);
 
       _msgController.text = '';
     }
@@ -102,7 +106,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.numpadEnter): () {
-          _submit(setup.supabase_id);
+          _submit(userId: setup.supabase_id, channelId: setup.chatId);
         }
       },
       child: Focus(
@@ -112,8 +116,6 @@ class _ChatWidgetState extends State<ChatWidget> {
           stream: getMessages(
               channel_id: setup.chatId, allChannelUsersList: setup.allUsers),
           builder: (context, snapshot) {
-            print(snapshot.connectionState);
-            print(snapshot.data);
             if (snapshot.hasData) {
               final messages = snapshot.data!;
               messagesGlobal = messages;
@@ -146,6 +148,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                               ? ChatBubble(
                                   message: message,
                                   context: context,
+                                  function: widget.function,
                                 )
                               : Padding(
                                   padding:
@@ -181,6 +184,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                             ChatBubble(
                                               message: message,
                                               context: context,
+                                              function: widget.function,
                                             ),
                                             Container(
                                               padding:
@@ -201,7 +205,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                         },
                       ),
                     ),
-                    ActionBar(setup.supabase_id),
+                    ActionBar(
+                        userId: setup.supabase_id, channelId: setup.chatId),
                     const SizedBox(height: 20.0)
                   ],
                 ),
@@ -238,7 +243,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 
-  Widget ActionBar(int id) => SafeArea(
+  Widget ActionBar({required int userId, required int channelId}) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -246,7 +251,7 @@ class _ChatWidgetState extends State<ChatWidget> {
             child: TextFormField(
               controller: _msgController,
               onFieldSubmitted: (value) {
-                _submit(id);
+                _submit(userId: userId, channelId: channelId);
               },
               decoration: InputDecoration(
                   labelText: 'Message',
@@ -256,24 +261,29 @@ class _ChatWidgetState extends State<ChatWidget> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          pickChart(c: context, id: id);
+                          //pickChart(c: context, id: id);
                         },
                         icon: Icon(Icons.bar_chart),
                       ),
                       IconButton(
                         onPressed: () {
-                          pickImage(isCamera: true, id: id);
+                          pickImage(
+                              isCamera: true, id: userId, channelId: channelId);
                         },
                         icon: Icon(Icons.camera_alt_outlined),
                       ),
                       IconButton(
                         onPressed: () {
-                          pickImage(isCamera: false, id: id);
+                          pickImage(
+                              isCamera: false,
+                              id: userId,
+                              channelId: channelId);
                         },
                         icon: Icon(Icons.image_outlined),
                       ),
                       IconButton(
-                        onPressed: () => _submit(id),
+                        onPressed: () =>
+                            _submit(userId: userId, channelId: channelId),
                         icon: const Icon(
                           Icons.send_rounded,
                         ),

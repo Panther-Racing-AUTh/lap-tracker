@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/supabase/profile_functions.dart';
 import 'package:universal_io/io.dart';
 import 'package:image_picker/image_picker.dart';
@@ -47,7 +48,6 @@ Stream<List<Message>> getMessages(
           late int id;
 
           for (var element in allChannelUsersList) {
-            print(element);
             if (item['user_id'] == element['id']) {
               id = element['id'];
               image = element['profile_image'];
@@ -85,7 +85,8 @@ Future getAllUsersFromChannel({required int channelId}) async {
 }
 
 //TODO: fix handling of image upload
-Future<void> saveImage({required XFile image, required int id}) async {
+Future<void> saveImage(
+    {required XFile image, required int id, required int channelId}) async {
   final sender =
       await supabase.from('users').select('full_name').eq('id', id).single();
 
@@ -96,25 +97,30 @@ Future<void> saveImage({required XFile image, required int id}) async {
   final message = Message.createImage(
     content: '${id}/${image.name}',
     userFromId: id,
+    channelId: channelId,
   );
   await supabase.from('messages').insert({message.toMap()});
 }
 
-Future<void> saveMessage({required String content, required int id}) async {
+Future<void> saveMessage(
+    {required String content,
+    required int userId,
+    required int channelId}) async {
   final message = Message.createText(
     content: content,
-    userFromId: id,
+    userFromId: userId,
+    channelId: channelId,
   );
   await supabase.from('message').insert(message.toMap());
 }
 
-Future<void> sendChart({required List<dynamic> list, required int id}) async {
+Future<void> sendChart(
+    {required List<dynamic> list,
+    required int id,
+    required int channel_id}) async {
   final sender =
       await supabase.from('users').select('full_name').eq('id', id).single();
-  print(list.toString());
   final message = Message.createChart(
-    content: list.toString(),
-    userFromId: id,
-  );
+      content: list.toString(), userFromId: id, channelId: channel_id);
   await supabase.from('message').insert(message.toMap());
 }

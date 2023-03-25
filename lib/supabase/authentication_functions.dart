@@ -3,47 +3,34 @@ import 'package:flutter_complete_guide/supabase/chat_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../providers/app_setup.dart';
+import '../providers/device.dart';
 import '../widgets/signIn_alert_dialog.dart';
 import 'package:provider/provider.dart' as p;
 
 final supabase = Supabase.instance.client;
 
 //checks if user exists in database
-Future<bool> userExistsinDb({required String email}) async {
-  final data = await supabase.from('users').select().eq('email', email) as List;
-
-  if (data.isEmpty) {
-    return false;
-  } else
-    return true;
-}
 
 //insert user to database table
 Future<void> insertUser({
-  required String id,
   required String email,
-  String password = '',
+  required String password,
   required String provider,
 }) async {
-  bool userExists = await userExistsinDb(email: email);
-  if (!userExists) {
-    await supabase.from('users').insert({
-      'uuid': supabase.auth.currentUser!.id,
-      'email': email,
-      'password': password,
-      'provider': provider,
-    });
-    final user = await supabase
-        .from('users')
-        .select('id')
-        .eq('uuid', supabase.auth.currentUser!.id)
-        .single();
+  final user = await supabase
+      .from('users')
+      .update({'password': password, 'provider': provider})
+      .eq('email', email)
+      .select()
+      .order('created_at');
 
-    await supabase.from('user_roles').insert({
-      'user_id': user['id'],
-      'role_id': 4,
-    });
-  }
+  print('object');
+
+  print(user);
+  await supabase.from('user_roles').insert({
+    'user_id': user[0]['id'],
+    'role_id': 4,
+  });
 }
 
 //login already existing user
@@ -55,44 +42,22 @@ Future<void> userLogin({
   required final bool userExists,
 }) async {
   AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
+  DeviceManager device = p.Provider.of<DeviceManager>(context, listen: false);
   try {
     final response = await supabase.auth.signInWithPassword(
       email: email,
       password: password,
     );
 
-    final User? user = response.user;
-    bool userExists = await userExistsinDb(email: email);
-    if (userExists && user != null) a.setValuesAuto();
-    //Checks if the user does not exist
-    if (user != null) {
-      //If there's no User inserts one in supabase table
-      if (signedUp == false && !userExists) {
-        await insertUser(
-            id: supabase.auth.currentUser!.id,
-            email: email,
-            password: password,
-            provider: 'email');
-      }
-
-      await Future.value(a.setValuesAuto());
-
-      //await Future.delayed(Duration(seconds: 1));
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.of(context).pushReplacementNamed('/main');
-    }
+    await Future.value(a.setValuesAuto());
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushReplacementNamed(device.getRoute());
   } on AuthException catch (error) {
-    if (!userExists && signedUp) {
-      showSignInAlertDialog(context: context, errorMessage: user_not_found);
-    } else if (signedUp) {
-      showSignInAlertDialog(context: context, errorMessage: error.message);
-    } else {
-      showDialog(
-        barrierDismissible: false,
+    showDialog(
         context: context,
         builder: (ctx) {
           return AlertDialog(
-            title: Text(confirm_email),
+            title: Text(error.message),
             actions: [
               TextButton(
                 onPressed: () {
@@ -100,24 +65,9 @@ Future<void> userLogin({
                 },
                 child: Text(cancel),
               ),
-              TextButton(
-                onPressed: () {
-                  userLogin(
-                    context: context,
-                    password: password,
-                    signedUp: signedUp,
-                    userExists: userExists,
-                    email: email,
-                  );
-                  Navigator.of(ctx).pop();
-                },
-                child: Text('OK'),
-              )
             ],
           );
-        },
-      );
-    }
+        });
   }
 }
 
@@ -133,25 +83,13 @@ Future<void> userSignUp({
     await supabase.auth.signUp(
       email: email,
       password: password,
+      data: {'full_name': 'First Name'},
     );
-
+    insertUser(email: email, provider: 'email', password: password);
     //User? user = response.user;
 
-    if (!userExists) {
-      userLogin(
-        context: context,
-        password: password,
-        signedUp: signedUp,
-        userExists: userExists,
-        email: email,
-      );
-    } else {
-      showSignInAlertDialog(context: context, errorMessage: user_exists);
-    }
   } on AuthException catch (error) {
-    if (error.message != unconfirmed_email) {
-      showSignInAlertDialog(context: context, errorMessage: error.message);
-    }
+    showSignInAlertDialog(context: context, errorMessage: error.message);
   }
 }
 
@@ -159,11 +97,12 @@ Future<void> userSignUp({
 Future<void> signInWithOAuth(BuildContext context,
     {required Provider provider}) async {
   AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
+  DeviceManager device = p.Provider.of<DeviceManager>(context, listen: false);
   bool userExists = false;
   User user;
   if (supabase.auth.currentSession != null) {
     user = Supabase.instance.client.auth.currentSession!.user;
-    userExists = await userExistsinDb(email: user.email.toString());
+    //userExists = await userExistsinDb(password: user.email.toString());
   }
   supabase.auth
       .signInWithOAuth(provider, redirectTo: 'pantherapp://auth/v1/callback');
@@ -174,11 +113,7 @@ Future<void> signInWithOAuth(BuildContext context,
         a.setValuesAuto();
 
         if (!userExists)
-          insertUser(
-              id: supabase.auth.currentUser!.id,
-              email: supabase.auth.currentSession!.user.email.toString(),
-              provider: provider.toString());
-        Navigator.of(context).pushReplacementNamed('/main');
+          Navigator.of(context).pushReplacementNamed(device.getRoute());
       }
     }),
   );

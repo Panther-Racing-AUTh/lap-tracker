@@ -5,7 +5,7 @@ class Message {
   final bool isMine;
   final String userFromImage;
   final String type;
-
+  final int channelId;
   Message({
     required this.content,
     required this.userFromId,
@@ -13,11 +13,13 @@ class Message {
     required this.isMine,
     required this.userFromImage,
     required this.type,
+    required this.channelId,
   });
 
   Message.createText({
     required this.content,
     required this.userFromId,
+    required this.channelId,
   })  : isMine = true,
         createAt = DateTime.now(),
         userFromImage = '',
@@ -26,6 +28,7 @@ class Message {
   Message.createImage({
     required this.content,
     required this.userFromId,
+    required this.channelId,
   })  : isMine = true,
         createAt = DateTime.now(),
         userFromImage = '',
@@ -34,6 +37,7 @@ class Message {
   Message.createChart({
     required this.content,
     required this.userFromId,
+    required this.channelId,
   })  : isMine = true,
         createAt = DateTime.now(),
         userFromImage = '',
@@ -45,9 +49,15 @@ class Message {
         createAt = DateTime.parse(json['created_at']),
         isMine = json['user_id'] == senderId,
         userFromImage = senderImage,
-        type = json['type'];
+        type = json['type'],
+        channelId = json['channel_id'];
 
   Map toMap() {
-    return {'content': content, 'user_from': userFromId, 'type': type};
+    return {
+      'content': content,
+      'user_id': userFromId,
+      'type': type,
+      'channel_id': channelId
+    };
   }
 }

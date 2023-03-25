@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import '../providers/app_setup.dart';
+import '../providers/device.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -36,6 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void _playVideo() async {
     _controller.play();
     AppSetup a = Provider.of<AppSetup>(context, listen: false);
+    DeviceManager device = Provider.of<DeviceManager>(context, listen: false);
 
     if (await session) {
       await Future.value(a.setValuesAuto());
@@ -44,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 1));
 
     Navigator.of(context)
-        .pushReplacementNamed(await session ? '/main' : '/signin');
+        .pushReplacementNamed(await session ? device.getRoute() : '/signin');
   }
 
   @override

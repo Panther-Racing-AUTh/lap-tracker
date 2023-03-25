@@ -8,8 +8,8 @@ import '../supabase/authentication_functions.dart';
 import '../supabase/chat_service.dart';
 
 class ChatLandingPage extends StatefulWidget {
-  const ChatLandingPage({super.key});
-
+  ChatLandingPage(Function this.function);
+  Function function;
   @override
   State<ChatLandingPage> createState() => _ChatLandingPageState();
 }
@@ -49,7 +49,7 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                         onTap: () async {
                           setup.allUsers = await getAllUsersFromChannel(
                               channelId: channels[index]['id']);
-                          print(setup.allUsers);
+
                           setState(() {
                             setup.chatId = channels[index]['id'];
                           });
@@ -108,6 +108,6 @@ class _ChatLandingPageState extends State<ChatLandingPage>
               return Center(child: CircularProgressIndicator());
             },
           )
-        : ChatWidget();
+        : ChatWidget(widget.function);
   }
 }

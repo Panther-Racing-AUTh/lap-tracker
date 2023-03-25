@@ -48,9 +48,6 @@ class LoginState extends State<Login> {
       showSignInAlertDialog(
           context: context, errorMessage: passwords_not_matching);
     } else {
-      userExists = await userExistsinDb(
-          email: emailController
-              .text); //calls function to determine if user is already registered
       !signedUp
           ? userSignUp(
               //signs up user by contacting supabase
@@ -308,11 +305,12 @@ class LoginState extends State<Login> {
                       child: Text('Admin',
                           style: TextStyle(fontSize: 28, color: Colors.orange)),
                       onPressed: () {
-                        a.role = 'admin';
-                        Navigator.of(context).pushReplacementNamed(
-                            device.isDesktopMode()
-                                ? '/main-desktop'
-                                : '/main-mobile');
+                        userLogin(
+                            email: 'pantheradm1n1@gmail.com',
+                            password: 'pantheradmin123',
+                            signedUp: true,
+                            context: context,
+                            userExists: true);
                       },
                     ),
                     TextButton(

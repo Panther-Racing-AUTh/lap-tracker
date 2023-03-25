@@ -1,5 +1,8 @@
 import 'package:flutter_complete_guide/models/setupChange.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:syncfusion_flutter_core/core.dart';
+
+import '../models/vehicle.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -56,4 +59,83 @@ Stream<List<SetupChange>> getSetupChanges() {
           return SetupChange.fromJson(item);
         }).toList(),
       );
+}
+
+Stream<List<Vehicle>> getAllVehicles() {
+  return supabase.from('vehicle').stream(primaryKey: ['id']).map(
+    (maps) => maps.map((item) {
+      return Vehicle.fromJson(
+        item,
+      );
+    }).toList(),
+  );
+}
+
+//for(var item in systems){
+//    systemsList.add(System(id: item['id'],name: item['name'], description: item['description'], parts: parts))
+//  }
+Future<Vehicle> getVehicle(int id) async {
+  List<System> systemsList = [];
+  List<List<Part>> partsList = [];
+  final vehicle = await supabase.from('vehicle').select().eq('id', id).single();
+  print('object');
+  final systems =
+      await supabase.from('system').select().eq('vehicle_id', vehicle['id']);
+  print('object');
+
+  final systemIds = [];
+  for (var item in systems) {
+    systemIds.add(item['id']);
+  }
+
+  final parts =
+      await supabase.from('part').select().in_('system_id', systemIds);
+  final partIds = [];
+  for (var item in parts) {
+    partIds.add(item['id']);
+  }
+  final values =
+      await supabase.from('part_values').select().in_('part_id', partIds);
+  //assign value in current_value_id key temporarily
+  for (int i = 0; i < parts.length; i++) {
+    for (int j = 0; j < values.length; j++) {
+      if (parts[i]['current_value_id'] == values[j]['id']) {
+        parts[i]['current_value_id'] = values[j]['value'];
+        break;
+      }
+    }
+  }
+
+  for (int i = 0; i < systems.length; i++) {
+    partsList.add([]);
+    for (int j = 0; j < parts.length; j++) {
+      if (systems[i]['id'] == parts[j]['system_id']) {
+        partsList[i].add(
+          Part(
+            name: parts[j]['name'],
+            measurementUnit: parts[j]['measurement_unit'],
+            value: parts[j]['current_value_id'],
+          ),
+        );
+      }
+    }
+  }
+
+  for (int i = 0; i < systems.length; i++) {
+    systemsList.add(
+      System(
+        name: systems[i]['name'],
+        description: systems[i]['description'],
+        parts: partsList[i],
+        id: systems[i]['id'],
+      ),
+    );
+  }
+
+  return Vehicle(
+    name: vehicle['name'],
+    year: vehicle['year'],
+    description: vehicle['description'],
+    systems: systemsList,
+  );
 }

@@ -22,10 +22,18 @@ class _EchartsPageState extends State<EchartsPage> {
     finalList = newfinalList;
   }
 
+  void trigger() async {
+    AppSetup a = Provider.of<AppSetup>(context, listen: false);
+    dataList = await getDataFromList(a.chartList.skip(2).toList());
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     AppSetup a = Provider.of<AppSetup>(context, listen: false);
+
     finalList = a.chartList;
+    if (a.mainScreenDesktopIndex == 3 && a.chatId != -1) trigger();
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       child: Row(
@@ -52,8 +60,40 @@ class _EchartsPageState extends State<EchartsPage> {
                   )),
               if (finalList.length > 1)
                 TextButton(
-                  onPressed: () =>
-                      sendChart(list: finalList, id: a.supabase_id),
+                  onPressed: () async {
+                    final channels =
+                        await getAllChannelsForUser(id: a.supabase_id);
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Choose Group:'),
+                          content: Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: channels.length,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  child: ListTile(
+                                    leading: Text((index + 1).toString()),
+                                    title: Text(channels[index]['name']),
+                                    onTap: () {
+                                      sendChart(
+                                          list: finalList,
+                                          id: a.supabase_id,
+                                          channel_id: channels[index]['id']);
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                   child: Text(
                     'Send to Chat',
                     style: TextStyle(fontSize: 20),

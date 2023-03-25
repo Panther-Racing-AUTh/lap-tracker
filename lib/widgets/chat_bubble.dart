@@ -1,15 +1,23 @@
 //import 'package:chat_app/mark_as_read.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/widgets/echarts_widget.dart';
+import 'package:flutter_complete_guide/widgets/graph.dart';
 import 'package:provider/provider.dart';
 import '../models/message.dart';
+import '../models/telemetry.dart';
 import '../providers/app_setup.dart';
+import '../supabase/data_functions.dart';
 
 class ChatBubble extends StatelessWidget {
   final Message message;
   final BuildContext context;
-  const ChatBubble({Key? key, required this.message, required this.context})
-      : super(key: key);
+  final Function function;
+  const ChatBubble({
+    Key? key,
+    required this.message,
+    required this.context,
+    required this.function,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +26,7 @@ class ChatBubble extends StatelessWidget {
         : MediaQuery.of(context).size.width * 0.5;
 
     AppSetup setup = Provider.of<AppSetup>(context);
+
     var chatContents = [
       const SizedBox(width: 12.0),
       Column(
@@ -58,11 +67,24 @@ class ChatBubble extends StatelessWidget {
                           : GestureDetector(
                               child: Stack(
                                 children: [
-                                  EchartsWidget(
-                                    isMessage: true,
-                                    finalList:
-                                        chartStringToList(message.content),
-                                    showDetails: false,
+                                  FutureBuilder(
+                                    future: getDataFromList(
+                                        chartStringToList(message.content)
+                                            .skip(2)
+                                            .toList()),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState !=
+                                              ConnectionState.done ||
+                                          !snapshot.hasData)
+                                        return CircularProgressIndicator();
+                                      dynamic dataList;
+                                      dataList = snapshot.data;
+                                      return Graph(
+                                        isMessage: true,
+                                        list: dataList,
+                                        showDetails: false,
+                                      );
+                                    },
                                   ),
                                   Container(
                                     color: Colors.transparent,
@@ -85,24 +107,50 @@ class ChatBubble extends StatelessWidget {
                                                       context: ctx,
                                                       builder: (c) {
                                                         return AlertDialog(
-                                                            content: Container(
-                                                          height: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .height *
-                                                              0.8,
-                                                          width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width *
-                                                              0.8,
-                                                          child: EchartsWidget(
-                                                            finalList:
-                                                                chartStringToList(
-                                                                    message
-                                                                        .content),
+                                                          content: Container(
+                                                            height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.8,
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.8,
+                                                            child:
+                                                                FutureBuilder(
+                                                              future: getDataFromList(
+                                                                  chartStringToList(
+                                                                          message
+                                                                              .content)
+                                                                      .skip(2)
+                                                                      .toList()),
+                                                              builder: (context,
+                                                                  snapshot) {
+                                                                if (snapshot.connectionState !=
+                                                                        ConnectionState
+                                                                            .done ||
+                                                                    !snapshot
+                                                                        .hasData)
+                                                                  return CircularProgressIndicator();
+                                                                dynamic
+                                                                    dataList;
+                                                                dataList =
+                                                                    snapshot
+                                                                        .data;
+                                                                return Graph(
+                                                                  isMessage:
+                                                                      true,
+                                                                  list:
+                                                                      dataList,
+                                                                  showDetails:
+                                                                      false,
+                                                                );
+                                                              },
+                                                            ),
                                                           ),
-                                                        ));
+                                                        );
                                                       });
                                                 }),
                                           ),
@@ -111,12 +159,10 @@ class ChatBubble extends StatelessWidget {
                                               title: Text(
                                                   'Open in \'Chart\' page'),
                                               onTap: () {
+                                                function();
                                                 setup.setListFull(
-                                                  chartStringToList(
-                                                      message.content),
-                                                );
-
-                                                setup.setIndex(4);
+                                                    chartStringToList(
+                                                        message.content));
                                                 Navigator.of(context).pop();
                                               },
                                             ),
@@ -162,7 +208,7 @@ List<dynamic> chartStringToList(String t) {
   List<dynamic> l = [], u = [];
   u = t.replaceFirst('[', '').replaceFirst(']', '').split(',').toList();
 
-  l.add(u[0]);
+  l.add(DateTime.parse(u[0]));
   l.add(u[1].replaceFirst(' ', ''));
 
   for (int i = 2; i < u.length; i++) {

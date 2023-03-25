@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/new_data_screen.dart';
+import 'package:flutter_complete_guide/screens/desktop_screens/vehicle_screen.dart';
 import 'package:flutter_complete_guide/widgets/chat_widget.dart';
 import 'package:flutter_complete_guide/widgets/chats_total.dart';
 import 'package:flutter_complete_guide/widgets/create_new_vehicle_screen.dart';
@@ -18,7 +19,7 @@ import '../../widgets/desktop_widgets/charts_desktop_widget.dart';
 import '../../widgets/desktop_widgets/panther_desktop_widget.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
 import '../../widgets/diagram_comparison_button.dart';
-import '../../widgets/motorcycle_setup.dart';
+import 'vehicle_setup_screen.dart';
 import 'package:intl/intl.dart';
 
 class MainScreenDesktop extends StatefulWidget {
@@ -30,7 +31,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
   bool showSidebar = true;
   bool showWeather = true;
   bool showDriverBoard = true;
-  late List<Widget> _pages;
+  late List<Widget> _Allpages;
   late PageController _pageController;
 
   @override
@@ -49,6 +50,14 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     super.dispose();
   }
 
+  void openChartInPage() {
+    AppSetup setup = Provider.of<AppSetup>(context, listen: false);
+    setState(() {
+      setup.setIndex(3);
+      _pageController.jumpToPage(3);
+    });
+  }
+
   double _calculateAvailableWidthOfScreen(double deviceScreenWidth) {
     if (showSidebar) {
       if (deviceScreenWidth > 1000) {
@@ -65,14 +74,16 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     var height = MediaQuery.of(context).size.height;
     var width =
         _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
-    _pages = [
+    _Allpages = [
       DashBoardDesktop(width),
       SingleChildScrollView(child: ProfileDesktop()),
-      ChatLandingPage(),
+      ChatLandingPage(openChartInPage),
       NewDataScreen(),
       Settings(),
+      VehicleScreen(),
       AdminPanel(),
     ];
+
     /*
     Widget buildPages(double height) {
       switch (allNavigationRailDestinations.indexWhere((element) =>
@@ -111,8 +122,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
     return Scaffold(
       appBar: AppBar(
-        title: //button for panel collapse
-            Row(
+        title: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -143,15 +153,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         //title: Text('Panther Racing AUTh'),
         actions: [
-          if (setup.role == 'admin')
-            IconButton(
-                icon: Icon(Icons.cake_rounded),
-                onPressed: () => showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(content: NewVehicleScreen());
-                      },
-                    )),
           IconButton(
             onPressed: () {
               setState(() {
@@ -161,12 +162,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             icon: Icon(Icons.screen_search_desktop_rounded),
           ),
           SizedBox(width: 10),
-          IconButton(
-            onPressed: () => motorcycleSetup(context: context),
-            icon: Icon(
-              Icons.motorcycle,
-            ),
-          ),
+
           SizedBox(width: 10),
           IconButton(
             icon: Icon(Icons.download),
@@ -286,7 +282,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
           Expanded(
             child: PageView(
-              children: _pages,
+              children: _pagesCustom(setup.role),
               controller: _pageController,
               physics: NeverScrollableScrollPhysics(),
             ),
@@ -352,11 +348,44 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     ),
     _widget(
       5,
+      icon: Icon(Icons.cake_outlined),
+      text: 'Vehicle Setup',
+      selectedIcon: Icon(Icons.cake),
+    ),
+    _widget(
+      6,
       icon: Icon(Icons.admin_panel_settings_outlined),
       text: 'Admin Panel',
       selectedIcon: Icon(Icons.admin_panel_settings),
     )
   ];
+
+  List<Widget> _pagesCustom(String role) {
+    List<Widget> l = [];
+    if (role == 'admin') {
+      l = [..._Allpages];
+    }
+
+    if (role == 'engineer') {
+      l.add(_Allpages[0]);
+      l.add(_Allpages[1]);
+      l.add(_Allpages[2]);
+      l.add(_Allpages[3]);
+      l.add(_Allpages[4]);
+    }
+
+    if (role == 'data_analyst') {
+      l.add(_Allpages[1]);
+      l.add(_Allpages[3]);
+      l.add(_Allpages[4]);
+    }
+
+    if (role == 'default') {
+      l.add(_Allpages[1]);
+      l.add(_Allpages[4]);
+    }
+    return l;
+  }
 
   List<NavigationRailDestination> dynamicList(String role) {
     List<NavigationRailDestination> l = [];
@@ -368,6 +397,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       l.add(allNavigationRailDestinations[3]);
       l.add(allNavigationRailDestinations[4]);
       l.add(allNavigationRailDestinations[5]);
+      l.add(allNavigationRailDestinations[6]);
     }
     if (role == 'engineer') {
       l.add(allNavigationRailDestinations[0]);

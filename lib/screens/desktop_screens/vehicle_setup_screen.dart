@@ -3,132 +3,173 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_complete_guide/models/setupChange.dart';
 import 'package:flutter_complete_guide/supabase/motorcycle_setup_functions.dart';
 
-var _selectedIndex = 0;
-void motorcycleSetup({required BuildContext context}) {
-  showDialog(
-    context: context,
-    builder: (ctx) => StatefulBuilder(
-      builder: (context, setState) {
-        List<Widget> _pages = [
-          SetupPage(
-            ctx: context,
-            titles: ['Front Swingarm', 'Rear Single Shock Absorber'],
-            settings: [
-              [
-                'Front pre-load',
-                'Oil quantity',
-                'Front spring hardness',
-                'Front swingarm compression',
-                'Front swingarm extension'
-              ],
-              [
-                'Rear pre-load',
-                'Swingarm connector',
-                'Single shock absorber compression',
-                'Single shock absorber extension'
-              ]
-            ],
-          ),
-          SetupPage(
-            ctx: context,
-            titles: ['Vehicle Geometry'],
-            settings: [
-              [
-                'Steering head inclination',
-                'Trail',
-                'Steering plate position',
-                'Rear swingarm length',
-              ]
-            ],
-          ),
-          SetupPage(
-            ctx: context,
-            titles: [
-              'Gear Ratio',
-              'Pinion - Crown',
-              'Clutch',
-            ],
-            settings: [
-              ['1st Gear', '2nd Gear', '3rd Gear', '4th Gear', '6th Gear'],
-              ['Final ratio'],
-              ['Slipper Clutch'],
-            ],
-          ),
-          SetupPage(
-            ctx: context,
-            titles: ['Electronic Control Unit'],
-            settings: [
-              ['Traction Control', 'Engine Break', 'Power mapping'],
-            ],
-          ),
-        ];
-        return AlertDialog(
-          //backgroundColor: Colors.grey.shade400,
-          title: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.8,
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  NavigationRail(
-                    //backgroundColor: Colors.grey.shade400,
-                    destinations: navigationRailDestinations,
-                    selectedIndex: _selectedIndex,
-                    groupAlignment: 0,
-                    onDestinationSelected: (value) {
-                      setState(() {
-                        _selectedIndex = value;
-                      });
-                    },
-                    labelType: NavigationRailLabelType.all,
-                  ),
-                  VerticalDivider(
-                    width: 1,
-                    thickness: 1,
-                    color: Colors.black,
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Container(
-                        height: MediaQuery.of(context).size.height * 0.8,
-                        child: _pages[_selectedIndex]),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    ),
-  );
-}
+import '../../models/vehicle.dart';
 
-final List<NavigationRailDestination> navigationRailDestinations = [
-  NavigationRailDestination(
-    icon: Icon(Icons.abc),
-    label: Text('SUSPENSION'),
+var _selectedIndex = 0;
+late final Future<Vehicle> myFuture;
+final List<Widget> _pages = [];
+
+void buildPages(Vehicle vehicle) {}
+
+/*
+ List<SetupPage> _pages = [
+  SetupPage(
+    titles: ['Front Swingarm', 'Rear Single Shock Absorber'],
+    settings: [
+      [
+        'Front pre-load',
+        'Oil quantity',
+        'Front spring hardness',
+        'Front swingarm compression',
+        'Front swingarm extension'
+      ],
+      [
+        'Rear pre-load',
+        'Swingarm connector',
+        'Single shock absorber compression',
+        'Single shock absorber extension'
+      ]
+    ],
   ),
-  NavigationRailDestination(
-    icon: Icon(Icons.wheelchair_pickup),
-    label: Text('VEHICLE GEOMETRY'),
+  SetupPage(
+    titles: ['Vehicle Geometry'],
+    settings: [
+      [
+        'Steering head inclination',
+        'Trail',
+        'Steering plate position',
+        'Rear swingarm length',
+      ]
+    ],
   ),
-  NavigationRailDestination(
-    icon: Icon(Icons.wheelchair_pickup),
-    label: Text('TRANSMISSION'),
+  SetupPage(
+    titles: [
+      'Gear Ratio',
+      'Pinion - Crown',
+      'Clutch',
+    ],
+    settings: [
+      ['1st Gear', '2nd Gear', '3rd Gear', '4th Gear', '6th Gear'],
+      ['Final ratio'],
+      ['Slipper Clutch'],
+    ],
   ),
-  NavigationRailDestination(
-    icon: Icon(Icons.wheelchair_pickup),
-    label: Text('ECU'),
+  SetupPage(
+    titles: ['Electronic Control Unit'],
+    settings: [
+      ['Traction Control', 'Engine Break', 'Power mapping'],
+    ],
   ),
 ];
+*/
+class EditVehicleSetup extends StatefulWidget {
+  EditVehicleSetup(this.backFunction, this.vehicleId);
+  Function backFunction;
+  int vehicleId;
+  @override
+  State<EditVehicleSetup> createState() => _EditVehicleSetupState();
+}
+
+class _EditVehicleSetupState extends State<EditVehicleSetup> {
+  @override
+  void initState() {
+    myFuture = getVehicle(widget.vehicleId);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    return FutureBuilder<Vehicle>(
+      future: myFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          print(snapshot.data);
+          Vehicle v = snapshot.data!;
+          v.printVehicle();
+          List<NavigationRailDestination> navigationRailDestinations = [];
+          for (int i = 0; i < v.systems.length; i++) {
+            navigationRailDestinations.add(
+              NavigationRailDestination(
+                icon: Icon(Icons.wheelchair_pickup),
+                label: Text(v.systems[i].name),
+              ),
+            );
+          }
+          buildPages(v);
+          for (int i = 0; i < v.systems.length; i++) {
+            _pages.add(
+              SetupPage(
+                parts: v.systems[i].parts,
+              ),
+            );
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: screenHeight * 0.05,
+                child: Stack(
+                  children: [
+                    BackButton(
+                      onPressed: () => widget.backFunction(),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(v.name, style: TextStyle(fontSize: 20)),
+                        SizedBox(width: screenHeight * 0.02),
+                        Text(v.year, style: TextStyle(fontSize: 20)),
+                        SizedBox(width: screenHeight * 0.02),
+                        Text(v.description, style: TextStyle(fontSize: 20)),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              SingleChildScrollView(
+                child: Container(
+                  height: screenHeight * 0.85,
+                  width: screenWidth,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      NavigationRail(
+                        destinations: navigationRailDestinations,
+                        selectedIndex: _selectedIndex,
+                        groupAlignment: 0,
+                        onDestinationSelected: (value) {
+                          setState(() {
+                            _selectedIndex = value;
+                          });
+                        },
+                        labelType: NavigationRailLabelType.all,
+                      ),
+                      VerticalDivider(
+                        width: 1,
+                        thickness: 1,
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 10),
+                      Container(child: _pages[_selectedIndex]),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+}
 
 class SetupPage extends StatefulWidget {
-  SetupPage({required this.titles, required this.settings, required this.ctx});
-  List titles;
-  List settings;
-  BuildContext ctx;
+  SetupPage({required this.parts});
+  List<Part> parts;
   @override
   State<SetupPage> createState() => _SetupPageState();
 }
@@ -136,25 +177,76 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        for (int i = 0; i < widget.titles.length; i++)
-          Column(
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: widget.parts.length,
+        itemBuilder: (context, index) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 40),
-              ListviewFromTitle(
-                  widget.titles[i], widget.settings[i], widget.ctx)
+              Text(widget.parts[index].name,
+                  style: TextStyle(color: Colors.black, fontSize: 26)),
+              Card(
+                elevation: 1,
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            widget.parts[index].measurementUnit,
+                            style: TextStyle(color: Colors.black, fontSize: 16),
+                          ),
+                          SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.5),
+                          InkWell(
+                            onTap: () {},
+                            child: Icon(
+                              Icons.remove,
+                              size: 16,
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 3),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 3, vertical: 2),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: Colors.white),
+                            child: Text(
+                              widget.parts[index].value.toString(),
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {},
+                            child: Icon(
+                              Icons.add,
+                              size: 16,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ],
-          )
-      ],
+          );
+        },
+      ),
     );
   }
 }
-
-ListviewFromTitle(String title, List data, BuildContext ctx) {
+/*
+ListviewFromTitle(Part part) {
   return ListView.builder(
     physics: NeverScrollableScrollPhysics(),
+    scrollDirection: Axis.vertical,
     shrinkWrap: true,
     itemCount: data.length + 1,
     itemBuilder: (context, index) {
@@ -177,17 +269,7 @@ ListviewFromTitle(String title, List data, BuildContext ctx) {
             Card(
               elevation: 1,
               child: Container(
-                width: MediaQuery.of(ctx).size.width * 0.7,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.grey.shade300,
-                      Colors.grey.shade200,
-                    ],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                ),
+                decoration: BoxDecoration(),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -235,6 +317,7 @@ ListviewFromTitle(String title, List data, BuildContext ctx) {
     },
   );
 }
+*/
 /*
 bool frontSuspensionVisibility = false;
 bool brakeVisibility = false;

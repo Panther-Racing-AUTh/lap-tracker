@@ -19,7 +19,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void initState() {
-    AppSetup appSetup = provider.Provider.of<AppSetup>(context);
+    AppSetup appSetup = provider.Provider.of<AppSetup>(context, listen: false);
     super.initState();
     dataFuture = getUserProfile(id: appSetup.supabase_id);
   }
@@ -38,13 +38,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     Person? currentProfile;
-
+    AppSetup a = provider.Provider.of<AppSetup>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(edit_profile),
         actions: [
           IconButton(
-            onPressed: _saveForm,
+            onPressed: () => _saveForm(id: a.supabase_id),
             icon: Icon(Icons.save),
           ),
         ],
@@ -111,7 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _title(about),
                       _aboutForm(currentProfile!),
                       SizedBox(height: 60),
-                      _saveButton(),
+                      _saveButton(id: a.supabase_id),
                     ],
                   ),
                 ),
@@ -139,7 +139,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _saveButton() {
+  Widget _saveButton({required int id}) {
     return Container(
       alignment: Alignment.bottomCenter,
       child: OutlinedButton(
@@ -156,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
         ),
-        onPressed: _saveForm,
+        onPressed: () => _saveForm(id: id),
       ),
     );
   }
@@ -212,11 +212,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  void _saveForm() {
+  void _saveForm({required int id}) {
     final isValid = _globalKey.currentState!.validate();
     if (isValid) {
       _globalKey.currentState!.save();
-      saveProfile(newProfile);
+      saveProfile(p: newProfile, id: id);
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

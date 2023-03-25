@@ -7,6 +7,7 @@ import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
 import '../supabase/data_functions.dart';
 
 class AppSetup extends ChangeNotifier {
+  AppSetup();
   //TODO: store settings and preferences locally on the device
 
   int raceSelectorIndex = 0;
@@ -17,7 +18,7 @@ class AppSetup extends ChangeNotifier {
   var loadedData;
   String role = 'a';
   int supabase_id = -1;
-  AppSetup();
+
   int mainScreenDesktopIndex = 0;
   int chatId = -1;
   bool isOverview = false;

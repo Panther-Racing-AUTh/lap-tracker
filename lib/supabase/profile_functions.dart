@@ -1,3 +1,4 @@
+import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_complete_guide/models/person.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,7 +14,7 @@ Future<List> getUserProfile({required int id}) async {
   var image = supabase.storage
       .from('users')
       .getPublicUrl(supabase.auth.currentUser!.id + '.jpeg');
-
+  print(await validateImage(image));
   final dept_image = supabase.storage
       .from('departments')
       .getPublicUrl(data['department'] + '.jpeg');
@@ -37,9 +38,9 @@ Future<List> getUserProfile({required int id}) async {
   ];
 }
 
-Future<void> saveProfile(Person p) async {
+Future<void> saveProfile({required int id, required Person p}) async {
   await supabase.from('users').update(Person.toMap(p)).match({
-    'id': supabase.auth.currentUser!.id,
+    'id': id,
   });
 }
 
@@ -57,7 +58,10 @@ Future<bool> validateImage(String imageUrl) async {
 }
 
 bool checkIfImage(String param) {
-  if (param == 'image/jpeg' || param == 'image/png' || param == 'image/gif') {
+  if (param == 'image/jpeg' ||
+      param == 'image/png' ||
+      param == 'image/gif' ||
+      param == 'image/webp') {
     return true;
   }
   return false;

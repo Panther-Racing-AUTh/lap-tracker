@@ -30,6 +30,13 @@ class _NewDataScreenState extends State<NewDataScreen>
     super.initState();
   }
 
+  void openChartInPage() {
+    setState(() {
+      isLoadingChart = false;
+      fetchedData = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -37,7 +44,8 @@ class _NewDataScreenState extends State<NewDataScreen>
     double screenWidth = MediaQuery.of(context).size.width;
     AppSetup setup = Provider.of<AppSetup>(context);
     dateController.text = DateFormat('dd/MM/yyyy').format(setup.date);
-
+    if (setup.mainScreenDesktopIndex == 3 && setup.chatId != -1)
+      openChartInPage();
     showLapDialog({
       required BuildContext context,
       required Map session,
@@ -336,7 +344,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                 )
               ],
             ),
-            if (!isLoadingChart && fetchedData == true) EchartsPage()
+            if (fetchedData && !isLoadingChart) EchartsPage()
           ],
         ),
       ],

@@ -80,86 +80,87 @@ class _GraphState extends State<Graph> {
     return (widget.list.length > 0)
         ? Container(
             child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                height: screenHeight * 0.65,
-                child: SfCartesianChart(
-                  //backgroundColor: Colors.pink,
-                  plotAreaBackgroundColor: Colors.yellow,
-                  plotAreaBorderWidth: 0,
-                  primaryXAxis: DateTimeAxis(
-                    visibleMaximum: _rangeController.end,
-                    visibleMinimum: _rangeController.start,
-                    rangeController: _rangeController,
-                    dateFormat: DateFormat.Hms(),
-                  ),
-                  primaryYAxis: NumericAxis(isVisible: true),
-                  legend: Legend(isVisible: widget.showDetails),
-                  //tooltipBehavior: TooltipBehavior(enable: true),
-                  zoomPanBehavior: _zoomPanBehavior,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  height: screenHeight * 0.65,
+                  child: SfCartesianChart(
+                    //backgroundColor: Colors.pink,
+                    plotAreaBackgroundColor: Colors.yellow,
+                    plotAreaBorderWidth: 0,
+                    primaryXAxis: DateTimeAxis(
+                      visibleMaximum: _rangeController.end,
+                      visibleMinimum: _rangeController.start,
+                      rangeController: _rangeController,
+                      dateFormat: DateFormat.Hms(),
+                    ),
+                    primaryYAxis: NumericAxis(isVisible: true),
+                    legend: Legend(isVisible: widget.showDetails),
+                    //tooltipBehavior: TooltipBehavior(enable: true),
+                    zoomPanBehavior: _zoomPanBehavior,
 
-                  series: <FastLineSeries<dynamic, dynamic>>[
-                    for (int i = 0; i < points.length; i++)
-                      FastLineSeries(
-                        width: 0.6,
-                        animationDuration: 0,
-                        dataSource: points[i],
-                        xValueMapper: (element, _) {
-                          return DateTime.parse(
-                              '2023-03-02 ' + element.timestamp);
-                        },
-                        yValueMapper: (element, _) {
-                          return element.value;
-                        },
-                        name: points[i][i].canbusId,
-                        dataLabelSettings: DataLabelSettings(),
-                      )
-                  ],
+                    series: <FastLineSeries<dynamic, dynamic>>[
+                      for (int i = 0; i < points.length; i++)
+                        FastLineSeries(
+                          width: 0.6,
+                          animationDuration: 0,
+                          dataSource: points[i],
+                          xValueMapper: (element, _) {
+                            return DateTime.parse(
+                                '2023-03-02 ' + element.timestamp);
+                          },
+                          yValueMapper: (element, _) {
+                            return element.value;
+                          },
+                          name: points[i][i].canbusId,
+                          dataLabelSettings: DataLabelSettings(),
+                        )
+                    ],
+                  ),
                 ),
-              ),
-              if (widget.showDetails)
-                SfRangeSelector(
-                  dragMode: SliderDragMode.both,
-                  showLabels: true,
-                  showTicks: true,
-                  dateIntervalType: DateIntervalType.seconds,
-                  min: minimum,
-                  max: maximum,
-                  dateFormat: DateFormat.Hms(),
-                  controller: _rangeController,
-                  child: Container(
-                    height: screenHeight * 0.1,
-                    child: SfCartesianChart(
-                      primaryXAxis: DateTimeAxis(
-                        minimum: minimum,
-                        maximum: maximum,
-                        isVisible: false,
+                if (widget.showDetails)
+                  SfRangeSelector(
+                    dragMode: SliderDragMode.both,
+                    showLabels: true,
+                    showTicks: true,
+                    dateIntervalType: DateIntervalType.seconds,
+                    min: minimum,
+                    max: maximum,
+                    dateFormat: DateFormat.Hms(),
+                    controller: _rangeController,
+                    child: Container(
+                      height: screenHeight * 0.1,
+                      child: SfCartesianChart(
+                        primaryXAxis: DateTimeAxis(
+                          minimum: minimum,
+                          maximum: maximum,
+                          isVisible: false,
+                        ),
+                        primaryYAxis: NumericAxis(isVisible: false),
+                        plotAreaBorderWidth: 0,
+                        series: <FastLineSeries<dynamic, dynamic>>[
+                          for (int i = 0; i < points.length; i++)
+                            FastLineSeries(
+                              width: 0.5,
+                              animationDuration: 0,
+                              dataSource: points[i],
+                              xValueMapper: (element, _) {
+                                return (_ % 4 == 0)
+                                    ? DateTime.parse(
+                                        '2023-03-02 ' + element.timestamp)
+                                    : null;
+                              },
+                              yValueMapper: (element, _) {
+                                return (_ % 2 == 0) ? element.value : null;
+                              },
+                            )
+                        ],
                       ),
-                      primaryYAxis: NumericAxis(isVisible: false),
-                      plotAreaBorderWidth: 0,
-                      series: <FastLineSeries<dynamic, dynamic>>[
-                        for (int i = 0; i < points.length; i++)
-                          FastLineSeries(
-                            width: 0.5,
-                            animationDuration: 0,
-                            dataSource: points[i],
-                            xValueMapper: (element, _) {
-                              return (_ % 4 == 0)
-                                  ? DateTime.parse(
-                                      '2023-03-02 ' + element.timestamp)
-                                  : null;
-                            },
-                            yValueMapper: (element, _) {
-                              return (_ % 2 == 0) ? element.value : null;
-                            },
-                          )
-                      ],
                     ),
                   ),
-                ),
-            ],
-          ))
+              ],
+            ),
+          )
         : Container();
   }
 }
