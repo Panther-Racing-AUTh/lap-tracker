@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/vehicle.dart';
 
+import '../supabase/motorcycle_setup_functions.dart';
+
 class NewVehicleScreen extends StatefulWidget {
   NewVehicleScreen({required this.backArrowPressed, required this.v});
   Function({required bool edit, required Vehicle vehicle}) backArrowPressed;
@@ -236,7 +238,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     });
   }
 
-  void saveVehicle() {
+  Vehicle saveVehicle() {
     late Vehicle vehicle;
     List<List<List<Part>>> parts = [];
     List<List<Subsystem>> subsystems = [];
@@ -249,6 +251,13 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
         for (int k = 0; k < partBoxList[i][j].length; k++) {
           parts[i][j].add(
             Part(
+              id: (v.systems.length - 1 < i)
+                  ? null
+                  : (v.systems[i].subsystems.length - 1 < j)
+                      ? null
+                      : (v.systems[i].subsystems[j].parts.length - 1 < k)
+                          ? null
+                          : v.systems[i].subsystems[j].parts[k].id,
               name: partNameControllerList[i][j][k].text,
               measurementUnit: partMeasureControllerList[i][j][k].text,
               value: int.parse(partValueControllerList[i][j][k].text),
@@ -257,12 +266,19 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
         }
       }
     }
-
+    print(parts);
     for (int i = 0; i < subsystemBoxList.length; i++) {
+      print('object' + i.toString());
       subsystems.add([]);
       for (int j = 0; j < subsystemBoxList[i].length; j++) {
+        print('object' + j.toString());
         subsystems[i].add(
           Subsystem(
+            id: (v.systems.length - 1 < i)
+                ? null
+                : (v.systems[i].subsystems.length - 1 < j)
+                    ? null
+                    : v.systems[i].subsystems[j].id,
             name: subsystemNameControllerList[i][j].text,
             description: subsystemDescriptionControllerList[i][j].text,
             parts: parts[i][j],
@@ -272,8 +288,10 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     }
 
     for (int i = 0; i < systemBoxList.length; i++) {
+      print('object');
       systems.add(
         System(
+          id: (v.systems.length - 1 < i) ? null : v.systems[i].id,
           name: systemNameControllerList[i].text,
           description: systemDescriptionControllerList[i].text,
           subsystems: subsystems[i],
@@ -281,16 +299,17 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       );
     }
     vehicle = Vehicle(
+      id: done ? v.id : null,
       name: vehicleName.text,
       year: vehicleYear.text,
       description: vehicleDescription.text,
       systems: systems,
     );
-    vehicle.uploadVehicle(vehicle: vehicle);
+    vehicle.printVehicle();
+    return vehicle;
+
     //vehicle.printVehicle();
   }
-
-  void updateVehicle() {}
 
   bool done = false;
   void setLists(Vehicle v) {
@@ -448,18 +467,14 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                                     TextButton(
                                         onPressed: () {
                                           (done)
-                                              ? updateVehicle()
-                                              : saveVehicle();
+                                              ? updateVehicleinDb(
+                                                  vehicle: saveVehicle())
+                                              : uploadVehicle(
+                                                  vehicle: saveVehicle());
+                                          Navigator.of(context).pop();
                                           widget.backArrowPressed(
-                                            edit: false,
-                                            vehicle: Vehicle(
-                                              name: 'name',
-                                              year: 'year',
-                                              description: 'description',
-                                              systems: [],
-                                            ),
-                                          );
-                                          ;
+                                              edit: false,
+                                              vehicle: Vehicle.empty());
                                         },
                                         child: Text('OK')),
                                   ],
@@ -561,6 +576,7 @@ class _SystemBoxState extends State<SystemBox> {
                   label: 'Name',
                 ),
               ),
+              SizedBox(width: widget.screenWidth * 0.01),
               Container(
                 width: widget.screenWidth * 0.2,
                 child: myTextField(
@@ -674,6 +690,7 @@ class _SubsystemBoxState extends State<SubsystemBox> {
                   label: 'Name',
                 ),
               ),
+              SizedBox(width: screenWidth * 0.01),
               Container(
                 width: screenWidth * 0.2,
                 child: myTextField(

@@ -175,3 +175,184 @@ Future<Vehicle> getVehicle(int id) async {
     systems: systemsList,
   );
 }
+
+Future<void> uploadVehicle({required Vehicle vehicle}) async {
+  var vehicleResponse = await supabase
+      .from('vehicle')
+      .insert({
+        'name': vehicle.name,
+        'year': vehicle.year,
+        'description': vehicle.description,
+      })
+      .select('id')
+      .order('created_at', ascending: false)
+      .single();
+  var vehicleId = vehicleResponse['id'];
+  for (int i = 0; i < vehicle.systems.length; i++) {
+    var systemResponse = await supabase
+        .from('system')
+        .insert({
+          'name': vehicle.systems[i].name,
+          'description': vehicle.systems[i].description,
+          'vehicle_id': vehicleId,
+        })
+        .select('id')
+        .order('created_at', ascending: false)
+        .single();
+    var systemId = systemResponse['id'];
+    for (int k = 0; k < vehicle.systems[i].subsystems.length; k++) {
+      var subsystemResponse = await supabase
+          .from('subsystem')
+          .insert({
+            'name': vehicle.systems[i].subsystems[k].name,
+            'description': vehicle.systems[i].subsystems[k].description,
+            'system_id': systemId,
+          })
+          .select('id')
+          .order('created_at', ascending: false)
+          .single();
+      var subsystemId = subsystemResponse['id'];
+      for (int j = 0; j < vehicle.systems[i].subsystems[k].parts.length; j++) {
+        var partResponse = await supabase
+            .from('part')
+            .insert({
+              'name': vehicle.systems[i].subsystems[k].parts[j].name,
+              'measurement_unit':
+                  vehicle.systems[i].subsystems[k].parts[j].measurementUnit,
+              'subsystem_id': subsystemId,
+            })
+            .select('id')
+            .order('created_at', ascending: false)
+            .single();
+        var partId = partResponse['id'];
+        var partValueResponse = await supabase
+            .from('part_values')
+            .insert({
+              'value': vehicle.systems[i].subsystems[k].parts[j].value,
+              'part_id': partId,
+            })
+            .select('id')
+            .order('created_at', ascending: false)
+            .single();
+        var partValueId = partValueResponse['id'];
+        await supabase
+            .from('part')
+            .update({'current_value_id': partValueId}).eq('id', partId);
+        ;
+      }
+    }
+  }
+}
+
+Future<void> updateVehicleinDb({required Vehicle vehicle}) async {
+  print('vehicle id:  ' + vehicle.id.toString());
+  vehicle.printVehicle();
+  await supabase.from('vehicle').update({
+    'name': vehicle.name,
+    'description': vehicle.description,
+    'year': vehicle.year
+  }).eq('id', vehicle.id);
+  for (int i = 0; i < vehicle.systems.length; i++) {
+    var system = vehicle.systems[i];
+    var systemResponse = (system.id == null)
+        ? await supabase
+            .from('system')
+            .insert({
+              'name': system.name,
+              'description': system.description,
+              'vehicle_id': vehicle.id
+            })
+            .select('id')
+            .order('created_at', ascending: false)
+            .single()
+        : await supabase
+            .from('system')
+            .update({
+              'name': system.name,
+              'description': system.description,
+              'vehicle_id': vehicle.id
+            })
+            .eq('id', system.id)
+            .select('id')
+            .single();
+    var systemId = systemResponse['id'];
+    for (int j = 0; j < vehicle.systems[i].subsystems.length; j++) {
+      var subsystem = vehicle.systems[i].subsystems[j];
+
+      var subsystemResponse = (subsystem.id == null)
+          ? await supabase
+              .from('subsystem')
+              .insert({
+                'name': subsystem.name,
+                'description': subsystem.description,
+                'system_id': systemId
+              })
+              .select('id')
+              .order('created_at', ascending: false)
+              .single()
+          : await supabase
+              .from('subsystem')
+              .update({
+                'name': subsystem.name,
+                'description': subsystem.description,
+                'system_id': systemId
+              })
+              .eq('id', subsystem.id)
+              .select('id')
+              .single();
+      var subsystemId = subsystemResponse['id'];
+      for (int k = 0; k < vehicle.systems[i].subsystems[j].parts.length; k++) {
+        var part = vehicle.systems[i].subsystems[j].parts[k];
+
+        var partResponse = (part.id == null)
+            ? await supabase
+                .from('part')
+                .insert({
+                  'name': part.name,
+                  'measurement_unit': part.measurementUnit,
+                  'subsystem_id': subsystemId
+                })
+                .select('id')
+                .order('created_at', ascending: false)
+                .single()
+            : await supabase
+                .from('part')
+                .update({
+                  'name': part.name,
+                  'measurement_unit': part.measurementUnit,
+                  'subsystem_id': subsystemId
+                })
+                .eq('id', part.id)
+                .select('id')
+                .single();
+
+        var partId = partResponse['id'];
+        var partValueResponse = (part.id == null)
+            ? await supabase
+                .from('part_values')
+                .insert({
+                  'value': part.value,
+                  'part_id': partId,
+                })
+                .select('id')
+                .order('created_at', ascending: false)
+                .single()
+            : await supabase
+                .from('part_values')
+                .update({
+                  'value': part.value,
+                  'part_id': partId,
+                })
+                .eq('part_id', part.id)
+                .select('id')
+                .single();
+
+        var partValueId = partValueResponse['id'];
+        await supabase
+            .from('part')
+            .update({'current_value_id': partValueId}).eq('id', partId);
+      }
+    }
+  }
+  print('success');
+}

@@ -5,60 +5,6 @@ import 'package:flutter_complete_guide/supabase/motorcycle_setup_functions.dart'
 
 import '../../models/vehicle.dart';
 
-var _selectedIndex = 0;
-List<Widget> _pages = [];
-
-/*
- List<SetupPage> _pages = [
-  SetupPage(
-    titles: ['Front Swingarm', 'Rear Single Shock Absorber'],
-    settings: [
-      [
-        'Front pre-load',
-        'Oil quantity',
-        'Front spring hardness',
-        'Front swingarm compression',
-        'Front swingarm extension'
-      ],
-      [
-        'Rear pre-load',
-        'Swingarm connector',
-        'Single shock absorber compression',
-        'Single shock absorber extension'
-      ]
-    ],
-  ),
-  SetupPage(
-    titles: ['Vehicle Geometry'],
-    settings: [
-      [
-        'Steering head inclination',
-        'Trail',
-        'Steering plate position',
-        'Rear swingarm length',
-      ]
-    ],
-  ),
-  SetupPage(
-    titles: [
-      'Gear Ratio',
-      'Pinion - Crown',
-      'Clutch',
-    ],
-    settings: [
-      ['1st Gear', '2nd Gear', '3rd Gear', '4th Gear', '6th Gear'],
-      ['Final ratio'],
-      ['Slipper Clutch'],
-    ],
-  ),
-  SetupPage(
-    titles: ['Electronic Control Unit'],
-    settings: [
-      ['Traction Control', 'Engine Break', 'Power mapping'],
-    ],
-  ),
-];
-*/
 class EditVehicleSetup extends StatefulWidget {
   EditVehicleSetup(this.backFunction, this.vehicleId);
   Function({required bool edit, required Vehicle vehicle}) backFunction;
@@ -68,17 +14,25 @@ class EditVehicleSetup extends StatefulWidget {
 }
 
 class _EditVehicleSetupState extends State<EditVehicleSetup> {
+  late Future<Vehicle> myFuture;
+  var _selectedIndex = 0;
+  List<Widget> _pages = [];
+  @override
+  void initState() {
+    myFuture = getVehicle(widget.vehicleId);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
     return FutureBuilder<Vehicle>(
-      future: getVehicle(widget.vehicleId),
+      future: myFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           Vehicle v = snapshot.data!;
-          //v.printVehicle();
 
           List<NavigationRailDestination> navigationRailDestinations = [];
           for (int i = 0; i < v.systems.length; i++) {
@@ -89,7 +43,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
               ),
             );
           }
-          _pages = [];
+
           for (int i = 0; i < v.systems.length; i++) {
             _pages.add(
               SetupPage(
@@ -138,7 +92,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (v.systems.length > 2)
+                      if (v.systems.length >= 2)
                         NavigationRail(
                           destinations: navigationRailDestinations,
                           selectedIndex: _selectedIndex,
@@ -150,7 +104,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
                           },
                           labelType: NavigationRailLabelType.all,
                         ),
-                      if (v.systems.length > 2)
+                      if (v.systems.length >= 2)
                         VerticalDivider(
                           width: 1,
                           thickness: 1,
@@ -183,6 +137,7 @@ class _SetupPageState extends State<SetupPage> {
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
         itemCount: widget.subsystems.length,
@@ -195,6 +150,7 @@ class _SetupPageState extends State<SetupPage> {
                 style: TextStyle(color: Colors.black, fontSize: 26),
               ),
               ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: widget.subsystems[index].parts.length,
                 itemBuilder: ((context, index1) {
@@ -207,14 +163,27 @@ class _SetupPageState extends State<SetupPage> {
                           Row(
                             children: [
                               Text(
-                                widget.subsystems[index].parts[index1]
-                                    .measurementUnit,
+                                widget.subsystems[index].parts[index1].name,
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 16),
+                              ),
+                              Text(
+                                '(' +
+                                    widget.subsystems[index].parts[index1]
+                                        .measurementUnit +
+                                    ')',
                                 style: TextStyle(
                                     color: Colors.black, fontSize: 16),
                               ),
                               SizedBox(
                                   width:
                                       MediaQuery.of(context).size.width * 0.5),
+                              Text(
+                                widget.subsystems[index].parts[index1].value
+                                    .toString(),
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 16),
+                              ),
                             ],
                           )
                         ],

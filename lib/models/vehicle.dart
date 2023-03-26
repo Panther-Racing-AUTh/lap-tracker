@@ -61,6 +61,7 @@ class Vehicle {
         description = 'description',
         year = 'year',
         systems = [];
+
   void printVehicle() {
     print('Vehicle name:  $name');
     print('Vehicle year:  $year');
@@ -106,73 +107,4 @@ class Vehicle {
   //  return;
   //}
 
-  Future<void> uploadVehicle({required Vehicle vehicle}) async {
-    var vehicleResponse = await supabase
-        .from('vehicle')
-        .insert({
-          'name': vehicle.name,
-          'year': vehicle.year,
-          'description': vehicle.description,
-        })
-        .select('id')
-        .order('created_at', ascending: false)
-        .single();
-    var vehicleId = vehicleResponse['id'];
-    for (int i = 0; i < vehicle.systems.length; i++) {
-      var systemResponse = await supabase
-          .from('system')
-          .insert({
-            'name': vehicle.systems[i].name,
-            'description': vehicle.systems[i].description,
-            'vehicle_id': vehicleId,
-          })
-          .select('id')
-          .order('created_at', ascending: false)
-          .single();
-      var systemId = systemResponse['id'];
-      for (int k = 0; k < vehicle.systems[i].subsystems.length; k++) {
-        var subsystemResponse = await supabase
-            .from('subsystem')
-            .insert({
-              'name': vehicle.systems[i].subsystems[k].name,
-              'description': vehicle.systems[i].subsystems[k].description,
-              'system_id': systemId,
-            })
-            .select('id')
-            .order('created_at', ascending: false)
-            .single();
-        var subsystemId = subsystemResponse['id'];
-        for (int j = 0;
-            j < vehicle.systems[i].subsystems[k].parts.length;
-            j++) {
-          var partResponse = await supabase
-              .from('part')
-              .insert({
-                'name': vehicle.systems[i].subsystems[k].parts[j].name,
-                'measurement_unit':
-                    vehicle.systems[i].subsystems[k].parts[j].measurementUnit,
-                'subsystem_id': subsystemId,
-              })
-              .select('id')
-              .order('created_at', ascending: false)
-              .single();
-          var partId = partResponse['id'];
-          var partValueResponse = await supabase
-              .from('part_values')
-              .insert({
-                'value': vehicle.systems[i].subsystems[k].parts[j].value,
-                'part_id': partId,
-              })
-              .select('id')
-              .order('created_at', ascending: false)
-              .single();
-          var partValueId = partValueResponse['id'];
-          await supabase
-              .from('part')
-              .update({'current_value_id': partValueId}).eq('id', partId);
-          ;
-        }
-      }
-    }
-  }
 }
