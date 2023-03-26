@@ -1,16 +1,39 @@
+----------------------------------------
+--	creation of the Database Tables	  --
+----------------------------------------
+
+-- ALTER TABLE part
+-- 	DROP CONSTRAINT fk_part_values;
+-- ALTER TABLE part_values
+-- 	DROP CONSTRAINT fk_part;
+
 -- DROP ALL TABLES BEFORE CREATION
 DROP TABLE IF EXISTS canbus_data;
 DROP TABLE IF EXISTS canbus_timeline;
 DROP TABLE IF EXISTS lap;
 DROP TABLE IF EXISTS season;
+
+DROP TABLE IF EXISTS part_values;
+
+DROP TABLE IF EXISTS proposal_state;
+DROP TABLE IF EXISTS proposal;
+DROP TABLE IF EXISTS proposal_pool;
+
+DROP TABLE IF EXISTS part;
+DROP TABLE IF EXISTS subsystem;
+DROP TABLE IF EXISTS system;
+DROP TABLE IF EXISTS vehicle;
+
 DROP TABLE IF EXISTS session;
 DROP TABLE IF EXISTS event_date;
 DROP TABLE IF EXISTS racetrack;
 
+DROP TABLE IF EXISTS channel_users;
 DROP TABLE IF EXISTS message;
+DROP TABLE IF EXISTS channel;
 DROP TABLE IF EXISTS user_roles;
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE season (
 	id				SERIAL			PRIMARY KEY,
@@ -167,11 +190,6 @@ comment on table user_roles is 'This table is to assign roles, it connects the e
 comment on column user_roles.user_id is 'The reference to the user by id';
 comment on column user_roles.role_id is 'The reference to the role by id';
 
-
-DROP TABLE IF EXISTS message;
-DROP TABLE IF EXISTS channel_users;
-DROP TABLE IF EXISTS channel;
-
 CREATE TABLE channel (
 	id			SERIAL		PRIMARY KEY,
 	created_at	TIMESTAMP	DEFAULT NOW(),
@@ -188,7 +206,7 @@ CREATE TABLE message (
 	user_id		INT,
 	channel_id	INT,
 	type		TEXT,
-	CONSTRAINT fk_users
+	CONSTRAINT fk_message_users
 		FOREIGN KEY(user_id)
 		REFERENCES users(id)
 		ON DELETE NO ACTION,
@@ -209,11 +227,11 @@ CREATE TABLE channel_users (
 	created_at	TIMESTAMP	DEFAULT NOW(),
 	user_id		INT,
 	channel_id	INT,
-	CONSTRAINT fk_users
+	CONSTRAINT fk_channel_users_users
 		FOREIGN KEY(user_id)
 		REFERENCES users(id)
 		ON DELETE NO ACTION,
-	CONSTRAINT fk_channel
+	CONSTRAINT fk_channel_users_channel
 		FOREIGN KEY(channel_id)
 		REFERENCES channel(id)
 		ON DELETE NO ACTION
@@ -222,15 +240,6 @@ comment on table channel_users is 'This table stores all users within the channe
 comment on column channel_users.created_at is 'Timestamp of the insertion of the user at the channel';
 comment on column channel_users.user_id is 'The reference to the user by id';
 comment on column channel_users.channel_id is 'The reference to the channel by id';
-
--- ALTER TABLE part
--- 	DROP CONSTRAINT fk_part_values;
--- ALTER TABLE part_values
--- 	DROP CONSTRAINT fk_part;
-DROP TABLE IF EXISTS part_values;
-DROP TABLE IF EXISTS part;
-DROP TABLE IF EXISTS system;
-DROP TABLE IF EXISTS vehicle;
 
 CREATE TABLE vehicle (
 	id			SERIAL		PRIMARY KEY,
@@ -245,7 +254,6 @@ comment on column vehicle.name is 'The name of the vehicle, ex. Black Panther';
 comment on column vehicle.year is 'The year of the vehicle, ex. 2019-2021';
 comment on column vehicle.description is 'The description of the vehicle, ex. Motorcycle prototype | KTM-RC 250cc';
 
-
 CREATE TABLE system (
 	id			SERIAL		PRIMARY KEY,
 	created_at	TIMESTAMP	DEFAULT NOW(),
@@ -257,10 +265,10 @@ CREATE TABLE system (
 		REFERENCES vehicle(id)
 		ON DELETE NO ACTION
 );
-comment on table system is 'This table stores all users within the channels and vise-versa, all channels of the user';
+comment on table system is 'The system of the vehicle';
 comment on column system.created_at is 'Timestamp of the creation of the system';
 comment on column system.name is 'The name of the system, ex. Suspension';
-comment on column system.vehicle_id is 'The reference to the behicle, ex. id: 1';
+comment on column system.vehicle_id is 'The reference to the vehicle, ex. id: 1';
 comment on column system.description is 'The description of the system, ex. Front and rear suspensions';
 
 CREATE TABLE subsystem (
@@ -274,11 +282,11 @@ CREATE TABLE subsystem (
 		REFERENCES system(id)
 		ON DELETE NO ACTION
 );
-comment on table system is 'This table stores all users within the channels and vise-versa, all channels of the user';
-comment on column system.created_at is 'Timestamp of the creation of the system';
-comment on column system.name is 'The name of the vehicle, ex. Black Panther';
-comment on column system.vehicle_id is 'The year of the vehicleex. 2019-2021';
-comment on column system.description is 'The description of the vehicle, ex. Motorcycle prototype | KTM-RC 250cc';
+comment on table subsystem is 'The subsystem of the system';
+comment on column subsystem.created_at is 'Timestamp of the creation of the subsystem';
+comment on column subsystem.name is 'The name of the subsystem, ex. Front Suspension';
+comment on column subsystem.system_id is 'The reference to the system, ex. id: 5';
+comment on column subsystem.description is 'The description of the system, ex. Front suspension | Adriani';
 
 CREATE TABLE part (
 	id					SERIAL		PRIMARY KEY,
@@ -292,6 +300,12 @@ CREATE TABLE part (
 		REFERENCES subsystem(id)
 		ON DELETE NO ACTION
 );
+comment on table part is 'The subsystem of the system';
+comment on column part.created_at is 'Timestamp of the creation of the part';
+comment on column part.name is 'The name of the part, ex. compression';
+comment on column part.subsystem_id is 'The reference to the subsystem, ex. id: 16';
+comment on column part.current_value_id is 'The reference to the part_values, ex. id: 62';
+comment on column part.measurement_unit is 'The measurement unit of the part, ex. Newtons (N)';
 
 CREATE TABLE part_values (
 	id			SERIAL		PRIMARY KEY,
@@ -303,67 +317,83 @@ CREATE TABLE part_values (
 		REFERENCES part(id)
 		ON DELETE NO ACTION
 );
+comment on table part_values is 'The subsystem of the system';
+comment on column part_values.created_at is 'Timestamp of the creation of the value';
+comment on column part_values.part_id is 'The reference to the part, ex. id: 54';
+comment on column part_values.value is 'The value setted, ex. 1270 (Newtons)';
 
--- ALTER TABLE part
--- ADD CONSTRAINT fk_part_values
--- 		FOREIGN KEY(current_value_id)
--- 		REFERENCES part_values(id)
--- 		ON DELETE NO ACTION;
-----------------------------------------
---the two essential triggers for users--
-----------------------------------------
+CREATE TABLE proposal_pool (
+	id			SERIAL		PRIMARY KEY,
+	created_at	TIMESTAMP	DEFAULT NOW(),
+	session_id	INT			DEFAULT NULL,
+	vehicle_id	INT,
+	ended		BOOLEAN		DEFAULT FALSE,
+	CONSTRAINT fk_proposal_pool_session
+		FOREIGN KEY(session_id) 
+		REFERENCES session(id)
+		ON DELETE CASCADE,
+	CONSTRAINT fk_vehicle
+		FOREIGN KEY(vehicle_id)
+		REFERENCES vehicle(id)
+		ON DELETE NO ACTION
+);
+comment on table proposal_pool is 'The subsystem of the system';
+comment on column proposal_pool.created_at is 'Timestamp of the creation of the proposal_pool';
+comment on column proposal_pool.session_id is 'The reference to the session id, ex. id: 25';
+comment on column proposal_pool.vehicle_id is 'The reference to the vehicle id, ex. id: 4';
+comment on column proposal_pool.ended is 'A boolean so the team will know when this  proposal pool closed';
 
--- the function that can copy the users from auth
-create or replace function public.handle_new_user() 
-returns trigger as $$
-	begin
-		insert into public.users (uuid, email, full_name)
-		values (new.id, new.email, new.raw_user_meta_data->>'full_name');
-		return new;
-	end;
-$$ language plpgsql security definer;
+CREATE TABLE proposal (
+	id					SERIAL		PRIMARY KEY,
+	created_at			TIMESTAMP	DEFAULT NOW(),
+	proposal_pool_id	INT			DEFAULT NULL,
+	part_id				INT			DEFAULT NULL,
+	user_id				INT,
+	title				VARCHAR(250),
+	description			TEXT,
+	reason				TEXT,
+	json_data			JSON,
+	part_value_from		VARCHAR(250),
+	part_value_to		VARCHAR(250),
+	CONSTRAINT fk_proposal_proposal_pool
+		FOREIGN KEY(proposal_pool_id) 
+		REFERENCES proposal_pool(id)
+		ON DELETE CASCADE,
+	CONSTRAINT fk_proposal_users
+		FOREIGN KEY(user_id)
+		REFERENCES users(id)
+		ON DELETE NO ACTION,
+	CONSTRAINT fk_proposal_part
+		FOREIGN KEY(part_id)
+		REFERENCES part(id)
+		ON DELETE NO ACTION
+);
+comment on table proposal is 'The subsystem of the system';
+comment on column proposal.created_at is 'Timestamp of the creation of the proposal';
+comment on column proposal.proposal_pool_id is 'The reference to the proposal_pool, ex. id: 265';
+comment on column proposal.user_id is 'The reference to the user by id';
+comment on column proposal.title is 'The title of the proposal, ex. Front Fork 3 turns';
+comment on column proposal.description is 'The description of the proposal (if needed), ex. FIRST remove this THEN do that';
+comment on column proposal.reason is 'The reason of the proposal, ex. lap 5 turn 2 seemed unstable and wombled';
+comment on column proposal.json_data is 'All the extra data passed as json, ex. {canbusData: [{canbusTimelineFromId: 25835, canbusTimelineToId: 53210, sessionId: 592},{filters: {showonly:[tire_pressure,tire_temperature,FR_SUS]}}]}';
 
--- trigger the function every time a user is created
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
-
-
-----------------------------------------
--- initialization of the Database Data--
-----------------------------------------
-
-INSERT INTO roles(role, description)
-VALUES 
-('admin', 'This is the admin role. An admin has access to all users and their roles and all features of the application.'),
-('engineer','This is the engineer role. It is the standard role and unlocks all features of the application.'),
-('data_analyst','This is the data analyst role. This role has only access to data from previous sessions.'),
-('default','This is the default role. This role has no rights in the application.');
-
--- set the default user as the default id at user creation at user_roles
-ALTER TABLE user_roles
-ALTER COLUMN role_id SET DEFAULT 4;
-
-INSERT INTO users (uuid, email, password, provider, created_at, full_name, about, role, department, active)
-VALUES (null, 'admin', 'admin', 'panther', NOW(), 'administrator', 'Panther s Administrator', 'Engineer','electronics', true),
-(null, 'engineer', 'engineer', 'panther', NOW(), 'engineer', 'Panther s engineer', 'Engineer','electronics', true),
-(null, 'data', 'data', 'data_analyst', NOW(), 'data_analyst', 'Panther s Data Analyst', 'Engineer','frame', true),
-(null, 'default', 'default', 'default', NOW(), 'default', 'Panther s Default User', 'No role','department', true);
-
-INSERT INTO user_roles (user_id, role_id)
-VALUES (1, 1),
-(2,2),
-(3,3),
-(4,4);
-
-INSERT INTO event_date(date, description)
-VALUES (NOW(), 'Finals');
-INSERT INTO racetrack(name, country, country_code)
-VALUES ('Aragon', 'Spain', 'es');
-INSERT INTO session(racetrack_id, session_order, type, event_date_id)
-VALUES (1, '1', 'practice', 1);
-INSERT INTO lap(session_id, lap_order)
-VALUES (1, 1);
-
-
-
+CREATE TABLE proposal_state (
+	id					SERIAL		PRIMARY KEY,
+	created_at			TIMESTAMP	DEFAULT NOW(),
+	proposal_id			INT			DEFAULT NULL,
+	changed_by_user_id	INT,
+	state				VARCHAR(20) DEFAULT 'NEW',
+	CONSTRAINT fk_proposal_state_proposal
+		FOREIGN KEY(proposal_id) 
+		REFERENCES proposal(id)
+		ON DELETE CASCADE,
+	CONSTRAINT fk_proposal_users
+		FOREIGN KEY(changed_by_user_id)
+		REFERENCES users(id)
+		ON DELETE NO ACTION
+);
+comment on table proposal_state is 'The subsystem of the system';
+comment on column proposal_state.created_at is 'Timestamp of the creation of the proposal';
+comment on column proposal_state.proposal_id is 'The reference to the proposal, ex. id: 354';
+comment on column proposal_state.changed_by_user_id is 'The reference to the user by id';
+comment on column proposal_state.state is 'The state has to be a distinct value between: NEW, APPROVED, DECNLINED, DONE';
