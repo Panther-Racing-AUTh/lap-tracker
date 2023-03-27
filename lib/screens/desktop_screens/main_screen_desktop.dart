@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/new_data_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/vehicle_screen.dart';
+import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
 import 'package:flutter_complete_guide/widgets/chat_widget.dart';
 import 'package:flutter_complete_guide/widgets/chats_total.dart';
 import 'package:flutter_complete_guide/widgets/create_new_vehicle_screen.dart';
@@ -165,7 +166,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             ),
           SizedBox(width: 10),
 
-          SizedBox(width: 10),
           IconButton(
             icon: Icon(Icons.download),
             onPressed: () {
@@ -174,7 +174,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           ),
           SizedBox(width: 10),
           //RaceTrackSelector(),
-          SizedBox(width: 10),
+
           //dark theme toggle button
           IconButton(
               onPressed: () {
@@ -224,6 +224,8 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                 );
               },
               icon: Icon(Icons.info)),
+          IconButton(
+              onPressed: () => signOut(context), icon: Icon(Icons.exit_to_app)),
           SizedBox(width: 5),
         ],
       ),

@@ -273,10 +273,6 @@ class EchartsWidget extends StatefulWidget {
 }
 
 class _EchartsWidgetState extends State<EchartsWidget> {
-  final stream = supabase
-      .from('can_data')
-      .stream(primaryKey: ['id']).order('timestamp', ascending: true);
-
   @override
   Widget build(BuildContext context) {
     AppSetup appSetup = provider.Provider.of<AppSetup>(context);

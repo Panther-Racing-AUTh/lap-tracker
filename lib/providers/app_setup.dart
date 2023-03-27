@@ -21,7 +21,7 @@ class AppSetup extends ChangeNotifier {
 
   int mainScreenDesktopIndex = 0;
   int chatId = -1;
-  bool isOverview = false;
+  bool isOverview = true;
   late List allUsers;
   late List<RaceTrack> races2023;
   String username = '';

@@ -37,6 +37,20 @@ Future<List> getAllChannelsForUser({required int id}) async {
 
 Stream<List<Message>> getMessages(
     {required int channel_id, required List allChannelUsersList}) {
+  int x = 0;
+
+//final data = await supabase
+//  .rpc('hello_world');
+
+  supabase.channel('public:v_proposals').on(
+    RealtimeListenTypes.postgresChanges,
+    ChannelFilter(event: '*', schema: 'public', table: 'v_proposals'),
+    (payload, [ref]) {
+      print('Change received: ${payload.toString()}');
+      print(x);
+    },
+  ).subscribe();
+
   return supabase
       .from('message')
       .stream(primaryKey: ['id'])

@@ -56,7 +56,7 @@ Future<dynamic> getDataFromLap(int id) async {
 Future<dynamic> getData() async {
   final List<Data> l = [];
   final List data = await supabase
-      .from('can_data')
+      .from('v_can_data')
       .select()
       .eq('canbus_id_name', 'APPS1_Raw');
 
@@ -85,8 +85,10 @@ Future<dynamic> getDataFromList(List list) async {
   List<List<Data>> dataList = [];
   for (int i = 0; i < list.length; i++) {
     dataList.add([]);
-    final data =
-        await supabase.from('can_data').select().eq('canbus_id_name', list[i]);
+    final data = await supabase
+        .from('v_can_data')
+        .select()
+        .eq('canbus_id_name', list[i]);
     data.forEach((data) {
       DateTime dt = DateTime.parse(data['timestamp']);
       int hour = dt.hour;
