@@ -387,7 +387,7 @@ CREATE TABLE proposal_state (
 		FOREIGN KEY(proposal_id) 
 		REFERENCES proposal(id)
 		ON DELETE CASCADE,
-	CONSTRAINT fk_proposal_users
+	CONSTRAINT fk_proposal_state_users
 		FOREIGN KEY(changed_by_user_id)
 		REFERENCES users(id)
 		ON DELETE NO ACTION
@@ -396,4 +396,4 @@ comment on table proposal_state is 'The subsystem of the system';
 comment on column proposal_state.created_at is 'Timestamp of the creation of the proposal';
 comment on column proposal_state.proposal_id is 'The reference to the proposal, ex. id: 354';
 comment on column proposal_state.changed_by_user_id is 'The reference to the user by id';
-comment on column proposal_state.state is 'The state has to be a distinct value between: NEW, APPROVED, DECNLINED, DONE';
+comment on column proposal_state.state is 'The state has to be a distinct value between: NEW, APPROVED, DECLINED, DONE';
