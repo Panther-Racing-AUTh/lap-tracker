@@ -397,3 +397,54 @@ comment on column proposal_state.created_at is 'Timestamp of the creation of the
 comment on column proposal_state.proposal_id is 'The reference to the proposal, ex. id: 354';
 comment on column proposal_state.changed_by_user_id is 'The reference to the user by id';
 comment on column proposal_state.state is 'The state has to be a distinct value between: NEW, APPROVED, DECLINED, DONE';
+
+
+
+
+
+----------------------------------------------
+-- create helper table until we sort it out --
+----------------------------------------------
+-- this table is needed because table is the only way to stream data,
+-- supabase/flutter doesn't support yet having joins at stream
+-- neither it supports views for streaming
+-- the only way was to create triggers and replicate a view
+-- through a table so it can run smoothly and easy
+CREATE TABLE t_v_proposals (
+  PROPOSAL__id                        INT PRIMARY KEY,
+  PROPOSAL__created_at                TIMESTAMP,
+  PROPOSAL__proposal_pool_id          INT,
+  PROPOSAL__part_id                   INT,
+  PROPOSAL__user_id                   INT,
+  PROPOSAL__title                     VARCHAR(250),
+  PROPOSAL__description               TEXT,
+  PROPOSAL__reason                    TEXT,
+  PROPOSAL__json_data                 JSON,
+  PROPOSAL__part_value_from           VARCHAR(250),
+  PROPOSAL__part_value_to             VARCHAR(250),
+  PROPOSAL_POOL__id                   INT,
+  PROPOSAL_POOL__created_at           TIMESTAMP,
+  PROPOSAL_POOL__session_id           INT,
+  PROPOSAL_POOL__vehicle_id           INT,
+  PROPOSAL_POOL__ended                BOOLEAN,
+  PROPOSAL_STATE__id                  INT,
+  PROPOSAL_STATE__created_at          TIMESTAMP,
+  PROPOSAL_STATE__proposal_id         INT,
+  PROPOSAL_STATE__changed_by_user_id  INT,
+  PROPOSAL_STATE__state               VARCHAR(20),
+  PART__id                            INT,
+  PART__created_at                    TIMESTAMP,
+  PART__name                          VARCHAR(250),
+  PART__subsystem_id                  INT,
+  PART__current_value_id              INT,
+  PART__measurement_unit              VARCHAR(250),
+  PART_VALUES__id                     INT,
+  PART_VALUES__created_at             TIMESTAMP,
+  PART_VALUES__part_id                INT,
+  PART_VALUES__value                  INT,
+  USER__id                            INT,
+  USER__uuid                          UUID,
+  USER__full_name                     TEXT,
+  USER__role                          TEXT,
+  USER__department                    TEXT
+);
