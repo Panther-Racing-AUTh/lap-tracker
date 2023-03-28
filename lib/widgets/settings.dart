@@ -80,11 +80,6 @@ class _SettingsState extends State<Settings>
             ),
             onPressed: () async {
               signOut(context);
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              Navigator.of(context).pushReplacementNamed('/signin');
-              await Future.delayed(Duration(seconds: 2));
-              a.setIndex(0);
-              a.role = '';
             },
           ),
           SizedBox(

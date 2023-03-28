@@ -76,13 +76,12 @@ class _OverviewState extends State<Overview> {
                 manageState,
               ),
             ];
-            print('object');
+
             return (_selected == 0)
                 ? Container(
                     width: widget.width,
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        print('object');
                         return Column(
                           children: [
                             Row(

@@ -38,7 +38,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
           for (int i = 0; i < v.systems.length; i++) {
             navigationRailDestinations.add(
               NavigationRailDestination(
-                icon: Icon(Icons.wheelchair_pickup),
+                icon: Icon(Icons.source),
                 label: Text(v.systems[i].name),
               ),
             );

@@ -6,6 +6,7 @@ import 'package:flutter_complete_guide/widgets/drivers_grid.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/app_setup.dart';
+import '../../screens/desktop_screens/proposal_screen.dart';
 import '../../supabase/authentication_functions.dart';
 import '../overview.dart';
 
@@ -78,7 +79,7 @@ class DashBoardDesktop extends StatefulWidget {
 class _DashBoardDesktopState extends State<DashBoardDesktop>
     with AutomaticKeepAliveClientMixin<DashBoardDesktop> {
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +92,9 @@ class _DashBoardDesktopState extends State<DashBoardDesktop>
       future: getCurrentUserIdInt(),
       builder: (context, snapshot) {
         return setup.isOverview
-            ? Overview(widget.width)
+            ? (setup.role == 'engineer')
+                ? ProposalPage()
+                : Overview(widget.width)
             : CustomMultiChildLayout(
                 delegate: _MyDelegate(
                     position: Offset.zero,

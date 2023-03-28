@@ -237,7 +237,7 @@ class LoginState extends State<Login> {
                   ? CircularProgressIndicator(
                       color: Colors.white,
                     )
-                  : Text(login),
+                  : Text(signedUp ? 'Login' : 'Sign Up'),
               onPressed: (() {
                 if (!isLoading) {
                   _loginPressed(context);
@@ -315,11 +315,12 @@ class LoginState extends State<Login> {
                     ),
                     TextButton(
                       onPressed: () {
-                        a.role = 'engineer';
-                        Navigator.of(context).pushReplacementNamed(
-                            device.isDesktopMode()
-                                ? '/main-desktop'
-                                : '/main-mobile');
+                        userLogin(
+                            email: 'engineer@mailinator.com',
+                            password: '123456',
+                            signedUp: true,
+                            context: context,
+                            userExists: true);
                       },
                       child: Text('Engineer',
                           style: TextStyle(fontSize: 28, color: Colors.orange)),

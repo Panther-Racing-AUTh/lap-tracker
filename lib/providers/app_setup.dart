@@ -94,11 +94,11 @@ class AppSetup extends ChangeNotifier {
 
   Future<bool> setValuesAuto() async {
     Map l = await getCurrentUserIdInt();
-    print(l);
+
     supabase_id = l['id'];
     role = await getUserRole(id: supabase_id);
     races2023 = await getRaceTracks();
-
+    print(role + 'from setValuesAuto');
     username = l['full_name'];
     userEmail = l['email'];
     userDepartment = l['department'];

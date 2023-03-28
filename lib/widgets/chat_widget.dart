@@ -114,7 +114,9 @@ class _ChatWidgetState extends State<ChatWidget> {
         child: StreamBuilder<List<Message>>(
           initialData: messagesGlobal,
           stream: getMessages(
-              channel_id: setup.chatId, allChannelUsersList: setup.allUsers),
+              channel_id: setup.chatId,
+              allChannelUsersList: setup.allUsers,
+              currentUserId: setup.supabase_id),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final messages = snapshot.data!;
@@ -126,15 +128,41 @@ class _ChatWidgetState extends State<ChatWidget> {
                   children: [
                     Stack(
                       children: [
-                        Container(
-                          height: 45,
-                          child: IconButton(
-                            iconSize: 30,
-                            icon: Icon(Icons.arrow_back),
-                            onPressed: () {
-                              setup.setChatId(-1);
-                            },
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 45,
+                              child: IconButton(
+                                iconSize: 25,
+                                icon: Icon(Icons.arrow_back),
+                                onPressed: () {
+                                  setup.setChatId(-1);
+                                },
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  onPressed: (() {
+                                    addUserToChat(
+                                        context: context,
+                                        channelId: setup.chatId,
+                                        allUsersOfChannel: setup.allUsers);
+                                  }),
+                                  icon: Icon(Icons.group_add_rounded),
+                                ),
+                                IconButton(
+                                  onPressed: (() {
+                                    showChannelUsers(
+                                        channelId: setup.chatId,
+                                        context: context);
+                                  }),
+                                  icon: Icon(Icons.more_vert),
+                                ),
+                              ],
+                            )
+                          ],
                         ),
                       ],
                     ),
@@ -144,6 +172,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                         itemCount: messages.length,
                         itemBuilder: (context, index) {
                           final message = messages[index];
+
                           return (message.isMine)
                               ? ChatBubble(
                                   message: message,

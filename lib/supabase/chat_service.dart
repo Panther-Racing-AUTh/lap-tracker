@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/supabase/profile_functions.dart';
 import 'package:universal_io/io.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/message.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart' as p;
 
 final supabase = Supabase.instance.client;
 
 Future<List> getAllUsers() async {
-  final users =
-      await supabase.from('users').select('id, uuid, full_name, role');
+  final users = await supabase
+      .from('users')
+      .select('id, uuid, full_name, role, department');
 
   for (var element in users) {
     var image = supabase.storage.from('users').getPublicUrl(
@@ -36,21 +39,9 @@ Future<List> getAllChannelsForUser({required int id}) async {
 }
 
 Stream<List<Message>> getMessages(
-    {required int channel_id, required List allChannelUsersList}) {
-  int x = 0;
-
-//final data = await supabase
-//  .rpc('hello_world');
-
-  supabase.channel('public:v_proposals').on(
-    RealtimeListenTypes.postgresChanges,
-    ChannelFilter(event: '*', schema: 'public', table: 'v_proposals'),
-    (payload, [ref]) {
-      print('Change received: ${payload.toString()}');
-      print(x);
-    },
-  ).subscribe();
-
+    {required int channel_id,
+    required List allChannelUsersList,
+    required currentUserId}) {
   return supabase
       .from('message')
       .stream(primaryKey: ['id'])
@@ -70,7 +61,7 @@ Stream<List<Message>> getMessages(
           }
           return Message.fromJson(
             item,
-            id,
+            id == currentUserId,
             image,
           );
         }).toList(),
@@ -137,4 +128,278 @@ Future<void> sendChart(
   final message = Message.createChart(
       content: list.toString(), userFromId: id, channelId: channel_id);
   await supabase.from('message').insert(message.toMap());
+}
+
+Future addUserToChat(
+    {required BuildContext context,
+    required int channelId,
+    required List allUsersOfChannel}) async {
+  List selectedUsers = [];
+  List<bool> selectedUsersValues = [];
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return FutureBuilder<List>(
+        future: getAllUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List allUsers = snapshot.data!;
+            allUsers.forEach((element) {
+              bool exists = false;
+              for (int j = 0; j < allUsersOfChannel.length; j++) {
+                if (element['id'] == allUsersOfChannel[j]['id']) {
+                  exists = true;
+                }
+              }
+              if (!exists) selectedUsers.add(element);
+            });
+            for (int i = 0; i < selectedUsers.length; i++) {
+              selectedUsersValues.add(false);
+            }
+            return StatefulBuilder(
+              builder: (context, setState) {
+                return Container(
+                  child: AlertDialog(
+                    title: Text('Add User'),
+                    content: Container(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: selectedUsers.length,
+                        itemBuilder: (context, index) {
+                          return CheckboxListTile(
+                            title: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 22,
+                                  backgroundImage: NetworkImage(
+                                      selectedUsers[index]['profile_image']),
+                                ),
+                                SizedBox(width: 15),
+                                Text(selectedUsers[index]['full_name']),
+                                SizedBox(width: 15),
+                                Text(selectedUsers[index]['department']),
+                                SizedBox(width: 15),
+                                Text(selectedUsers[index]['role'])
+                              ],
+                            ),
+                            controlAffinity: ListTileControlAffinity.leading,
+                            value: selectedUsersValues[index],
+                            onChanged: (value) {
+                              setState(
+                                () {
+                                  selectedUsersValues[index] =
+                                      !selectedUsersValues[index];
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          for (int i = 0; i < selectedUsersValues.length; i++) {
+                            if (selectedUsersValues[i])
+                              await supabase.from('channel_users').insert({
+                                'user_id': selectedUsers[i]['id'],
+                                'channel_id': channelId
+                              });
+                          }
+
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        },
+      );
+    },
+  );
+}
+
+void showChannelUsers({required BuildContext context, required int channelId}) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return FutureBuilder(
+        future: getAllUsersFromChannel(channelId: channelId),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            List channelUsers = snapshot.data as List;
+            return Container(
+              child: AlertDialog(
+                title: Text('Users in this chat'),
+                content: Container(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: channelUsers.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundImage: NetworkImage(
+                                  channelUsers[index]['profile_image']),
+                            ),
+                            SizedBox(width: 15),
+                            Text(channelUsers[index]['full_name']),
+                            SizedBox(width: 15),
+                            Text(channelUsers[index]['department']),
+                            SizedBox(width: 15),
+                            Text(channelUsers[index]['role'])
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        },
+      );
+    },
+  );
+}
+
+Future addChat(
+    {required BuildContext context,
+    required int currentUserId,
+    required Function refresh}) async {
+  List<bool> allUsersValues = [];
+
+  TextEditingController channelName = TextEditingController();
+  showDialog(
+    context: context,
+    builder: (context) {
+      return FutureBuilder<List>(
+        future: getAllUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            print(snapshot.data);
+            List allUsers = snapshot.data!;
+
+            allUsers.removeWhere(
+              (element) => element['id'] == currentUserId,
+            );
+            print('snapshot.data');
+            for (int i = 0; i < allUsers.length; i++) {
+              allUsersValues.add(false);
+            }
+            return StatefulBuilder(
+              builder: (context, setState) {
+                return Container(
+                  child: AlertDialog(
+                    title: Text('Create group'),
+                    content: Container(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      child: Column(
+                        children: [
+                          Container(
+                              width: MediaQuery.of(context).size.width * 0.4,
+                              child: TextField(controller: channelName)),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: allUsers.length,
+                            itemBuilder: (context, index) {
+                              return CheckboxListTile(
+                                title: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 22,
+                                      backgroundImage: NetworkImage(
+                                          allUsers[index]['profile_image']),
+                                    ),
+                                    SizedBox(width: 15),
+                                    Text(allUsers[index]['full_name']),
+                                    SizedBox(width: 15),
+                                    Text(allUsers[index]['department']),
+                                    SizedBox(width: 15),
+                                    Text(allUsers[index]['role'])
+                                  ],
+                                ),
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                value: allUsersValues[index],
+                                onChanged: (value) {
+                                  setState(
+                                    () {
+                                      allUsersValues[index] =
+                                          !allUsersValues[index];
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          final channelResponse = await supabase
+                              .from('channel')
+                              .insert({'name': channelName.text})
+                              .select()
+                              .order('created_at') as List;
+                          final newChannelId = channelResponse.first['id'];
+                          for (int i = 0; i < allUsersValues.length; i++) {
+                            if (allUsersValues[i])
+                              await supabase.from('channel_users').insert({
+                                'user_id': allUsers[i]['id'],
+                                'channel_id': newChannelId
+                              });
+                          }
+                          await supabase.from('channel_users').insert({
+                            'user_id': currentUserId,
+                            'channel_id': newChannelId
+                          });
+                          Navigator.of(context).pop();
+                          refresh();
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        },
+      );
+    },
+  );
 }

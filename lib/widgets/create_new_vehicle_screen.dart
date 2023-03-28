@@ -288,7 +288,6 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     }
 
     for (int i = 0; i < systemBoxList.length; i++) {
-      print('object');
       systems.add(
         System(
           id: (v.systems.length - 1 < i) ? null : v.systems[i].id,

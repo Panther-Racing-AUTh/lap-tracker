@@ -43,11 +43,11 @@ class Message {
         userFromImage = '',
         type = 'chart';
 
-  Message.fromJson(Map<String, dynamic> json, int senderId, String senderImage)
+  Message.fromJson(Map<String, dynamic> json, bool isMine, String senderImage)
       : content = json['content'],
         userFromId = json['user_id'],
         createAt = DateTime.parse(json['created_at']),
-        isMine = json['user_id'] == senderId,
+        isMine = isMine,
         userFromImage = senderImage,
         type = json['type'],
         channelId = json['channel_id'];

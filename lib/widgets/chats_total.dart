@@ -29,6 +29,12 @@ class _ChatLandingPageState extends State<ChatLandingPage>
     dataFuture = getAllChannelsForUser(id: setup.supabase_id);
   }
 
+  Future<void> setStateFunction() async {
+    setState(() {
+      print('reached set state');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -42,67 +48,91 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                 List channels = [...snapshot.data!];
                 //setup.allUsers = [...snapshot.data!];
 
-                return ListView.builder(
-                  itemCount: channels.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                        onTap: () async {
-                          setup.allUsers = await getAllUsersFromChannel(
-                              channelId: channels[index]['id']);
+                return RefreshIndicator(
+                  onRefresh: () => setStateFunction(),
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      ListView.builder(
+                        itemCount: channels.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                              onTap: () async {
+                                setup.allUsers = await getAllUsersFromChannel(
+                                    channelId: channels[index]['id']);
 
-                          setState(() {
-                            setup.chatId = channels[index]['id'];
-                          });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(
-                              top: 5.0, bottom: 5.0, right: 20.0),
-                          padding: EdgeInsets.only(
-                              left: 10.0, right: 20.0, top: 10.0, bottom: 10.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20.0),
-                                bottomRight: Radius.circular(20.0)),
-                          ),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor: Colors.black,
-                                      radius: 35.0,
-                                      backgroundImage: NetworkImage(
-                                        'https://png.pngtree.com/png-vector/20190330/ourmid/pngtree-vector-leader-of-group-icon-png-image_894944.jpg',
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10.0,
-                                    ),
-                                    Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.45,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                setState(() {
+                                  setup.chatId = channels[index]['id'];
+                                });
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(
+                                    top: 5.0, bottom: 5.0, right: 20.0),
+                                padding: EdgeInsets.only(
+                                    left: 10.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(20.0),
+                                      bottomRight: Radius.circular(20.0)),
+                                ),
+                                child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
                                         children: [
-                                          Text(channels[index]['name'],
-                                              style: TextStyle(
-                                                fontSize: 20.0,
-                                                fontWeight: FontWeight.bold,
-                                              )),
+                                          CircleAvatar(
+                                            backgroundColor: Colors.black,
+                                            radius: 35.0,
+                                            backgroundImage: NetworkImage(
+                                              'https://png.pngtree.com/png-vector/20190330/ourmid/pngtree-vector-leader-of-group-icon-png-image_894944.jpg',
+                                            ),
+                                          ),
                                           SizedBox(
-                                            height: 5.0,
+                                            width: 10.0,
+                                          ),
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.45,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(channels[index]['name'],
+                                                    style: TextStyle(
+                                                      fontSize: 20.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    )),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ]),
-                        ));
-                  },
+                                    ]),
+                              ));
+                        },
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        child: IconButton(
+                            onPressed: () => addChat(
+                                context: context,
+                                currentUserId: setup.supabase_id,
+                                refresh: setStateFunction),
+                            icon: Icon(Icons.add, size: 30)),
+                      ),
+                    ],
+                  ),
                 );
               }
               return Center(child: CircularProgressIndicator());

@@ -47,7 +47,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
   @override
   void dispose() {
     _pageController.dispose();
-
     super.dispose();
   }
 
@@ -84,42 +83,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       SingleChildScrollView(child: ProfileDesktop()),
       Settings(),
     ];
-
-    /*
-    Widget buildPages(double height) {
-      switch (allNavigationRailDestinations.indexWhere((element) =>
-          element == dynamicList(setup.role)[setup.mainScreenDesktopIndex])) {
-        case 0:
-          return DashBoardDesktop(
-            showWeather: showWeather,
-            showDriverBoard: showDriverBoard,
-            screenHeight: height,
-            screenWidth: width,
-          );
-        case 1:
-          return SingleChildScrollView(child: ProfileDesktop());
-        case 2:
-          return ChatLandingPage();
-
-        case 3:
-          return NewDataScreen();
-        case 4:
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                  minHeight:
-                      MediaQuery.of(context).size.height - kToolbarHeight),
-              child: IntrinsicHeight(
-                child: Settings(),
-              ),
-            ),
-          );
-        case 5:
-          return AdminPanel();
-      }
-      return CircularProgressIndicator();
-    }
-    */
 
     return Scaffold(
       appBar: AppBar(
@@ -342,9 +305,9 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
     _widget(
       3,
-      icon: Icon(Icons.cake_outlined),
+      icon: Icon(Icons.build),
       text: 'Vehicle Setup',
-      selectedIcon: Icon(Icons.cake),
+      selectedIcon: Icon(Icons.build),
     ),
     _widget(
       4,

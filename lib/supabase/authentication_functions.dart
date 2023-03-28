@@ -24,8 +24,6 @@ Future<void> insertUser({
       .select()
       .order('created_at');
 
-  print('object');
-
   print(user);
   await supabase.from('user_roles').insert({
     'user_id': user[0]['id'],
@@ -149,7 +147,29 @@ Future<bool> checkSession(BuildContext context) async {
 }
 
 Future<void> signOut(BuildContext context) async {
+  AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
   await supabase.auth.signOut();
+  Navigator.of(context).popUntil((route) => route.isFirst);
+  Navigator.of(context).pushReplacementNamed('/signin');
+  BuildContext? dcontext;
+  showDialog(
+    barrierDismissible: false,
+    builder: (ctx) {
+      dcontext = ctx;
+      return Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      );
+    },
+    context: context,
+  );
+
+  await Future.delayed(Duration(milliseconds: 500));
+  a.setIndex(0);
+  a.role = '';
+  await Future.delayed(Duration(milliseconds: 500));
+  Navigator.of(dcontext!, rootNavigator: true).pop();
 }
 
 Future<Map> getCurrentUserIdInt() async {
