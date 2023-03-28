@@ -55,7 +55,7 @@ class _EchartsPageState extends State<EchartsPage> {
                     setState(() {});
                   },
                   child: Text(
-                    'Search',
+                    'Fetch Data',
                     style: TextStyle(fontSize: 20),
                   )),
               if (finalList.length > 1)

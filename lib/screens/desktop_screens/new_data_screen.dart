@@ -330,7 +330,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                         }));
                   },
                   child: Text(
-                    'Search',
+                    'Search Lap',
                     style: TextStyle(fontSize: 19),
                   ),
                 ),
