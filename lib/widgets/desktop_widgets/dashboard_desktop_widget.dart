@@ -4,6 +4,7 @@ import 'package:flutter_complete_guide/supabase/select_race_track_functions.dart
 import 'package:flutter_complete_guide/widgets/create_new_vehicle_screen.dart';
 import 'package:flutter_complete_guide/widgets/drivers_grid.dart';
 import 'package:provider/provider.dart';
+import 'package:timelines/timelines.dart';
 
 import '../../providers/app_setup.dart';
 import '../../screens/desktop_screens/proposal_screen.dart';
@@ -95,45 +96,66 @@ class _DashBoardDesktopState extends State<DashBoardDesktop>
             ? (setup.role == 'engineer')
                 ? ProposalPage()
                 : Overview(widget.width)
-            : CustomMultiChildLayout(
-                delegate: _MyDelegate(
-                    position: Offset.zero,
-                    screenHeight: screenHeight,
-                    screenWidth: screenWidth),
-                children: [
-                  //LayoutId(
-                  //  id: 1,
-                  //  child: Container(
-                  //    height: screenHeight * 0.5,
-                  //    width: screenWidth * 0.8,
-                  //    child: DriversDataWidget(),
-                  //  ),
-                  //),
-                  LayoutId(
-                    id: 2,
-                    child: (snapshot.data == null)
-                        ? CircularProgressIndicator()
-                        : Container(
-                            //color: Colors.red,
-                            height: screenHeight * 0.4,
-                            width: screenWidth * 0.35,
-                            child: Container()
-                            //Image.network(
-                            //  snapshot.data!,
-                            //  fit: BoxFit.contain,
-                            //),
-                            ),
+            : SizedBox(
+                height: 80.0,
+                child: FixedTimeline.tileBuilder(
+                  //direction: Axis.horizontal,
+                  builder: TimelineTileBuilder.connectedFromStyle(
+                    contentsAlign: ContentsAlign.alternating,
+                    oppositeContentsBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('opposite\ncontents'),
+                    ),
+                    contentsBuilder: (context, index) => Container(
+                      height: 10,
+                      color: Colors.pink,
+                    ),
+                    connectorStyleBuilder: (context, index) =>
+                        ConnectorStyle.solidLine,
+                    indicatorStyleBuilder: (context, index) =>
+                        IndicatorStyle.dot,
+                    itemCount: 9,
                   ),
-                  LayoutId(
-                    id: 3,
-                    child: Container(
-                        height: 300,
-                        width: 450,
-                        child: Container() //Overview(),
-                        ),
-                  ),
-                ],
-              );
+                ));
+        // : CustomMultiChildLayout(
+        //     delegate: _MyDelegate(
+        //         position: Offset.zero,
+        //         screenHeight: screenHeight,
+        //         screenWidth: screenWidth),
+        //     children: [
+        //       //LayoutId(
+        //       //  id: 1,
+        //       //  child: Container(
+        //       //    height: screenHeight * 0.5,
+        //       //    width: screenWidth * 0.8,
+        //       //    child: DriversDataWidget(),
+        //       //  ),
+        //       //),
+        //       LayoutId(
+        //         id: 2,
+        //         child: (snapshot.data == null)
+        //             ? CircularProgressIndicator()
+        //             : Container(
+        //                 //color: Colors.red,
+        //                 height: screenHeight * 0.4,
+        //                 width: screenWidth * 0.35,
+        //                 child: Container()
+        //                 //Image.network(
+        //                 //  snapshot.data!,
+        //                 //  fit: BoxFit.contain,
+        //                 //),
+        //                 ),
+        //       ),
+        //       LayoutId(
+        //         id: 3,
+        //         child: Container(
+        //             height: 300,
+        //             width: 450,
+        //             child: Container() //Overview(),
+        //             ),
+        //       ),
+        //     ],
+        //   );
       },
     );
   }
