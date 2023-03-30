@@ -76,7 +76,12 @@ class _GraphState extends State<Graph> {
       maximum = DateTime.parse('2023-03-02 ' + points[0].last.timestamp);
       _rangeController.start = minimum;
       _rangeController.end = maximum;
+      print(points[0][0].canbusId);
+      print(points[0][0].canbusIdName);
+      print(points[0][0].unit);
+      print(points[0][0].canbusTimelineId);
     }
+
     return (widget.list.length > 0)
         ? Container(
             child: Column(

@@ -46,6 +46,7 @@ Future<void> userLogin({
       email: email,
       password: password,
     );
+    print(response);
 
     await Future.value(a.setValuesAuto());
     Navigator.of(context).popUntil((route) => route.isFirst);

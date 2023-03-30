@@ -101,7 +101,7 @@ Future<dynamic> getDataFromList(List list) async {
           canbusId: data['canbus_id'],
           timestamp: st,
           value: data['value'],
-          canbusIdName: '',
+          canbusIdName: data['canbus_id_name'],
           canbusTimelineId: '',
           unit: ''));
     });

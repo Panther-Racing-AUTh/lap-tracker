@@ -321,10 +321,21 @@ Future addChat(
                       height: MediaQuery.of(context).size.height * 0.7,
                       width: MediaQuery.of(context).size.width * 0.7,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                              width: MediaQuery.of(context).size.width * 0.4,
-                              child: TextField(controller: channelName)),
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            child: TextField(
+                              controller: channelName,
+                              decoration: InputDecoration(
+                                labelText: 'Group Name',
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(width: 1, color: Colors.black),
+                                ),
+                              ),
+                            ),
+                          ),
                           ListView.builder(
                             shrinkWrap: true,
                             itemCount: allUsers.length,
@@ -365,7 +376,7 @@ Future addChat(
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: Text('Cancel'),
+                        child: Text('Cancel', style: TextStyle(fontSize: 20)),
                       ),
                       TextButton(
                         onPressed: () async {
@@ -389,7 +400,7 @@ Future addChat(
                           Navigator.of(context).pop();
                           refresh();
                         },
-                        child: Text('OK'),
+                        child: Text('OK', style: TextStyle(fontSize: 20)),
                       ),
                     ],
                   ),

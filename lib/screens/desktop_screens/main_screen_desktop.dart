@@ -107,7 +107,9 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                 screenWidth: width,
               ),
             SizedBox(width: width * 0.1),
-            if (width > 620)
+            if (width > 620 &&
+                setup.role != 'default' &&
+                setup.role != 'data_analyst')
               StreamBuilder(
                 stream: Stream.periodic(const Duration(seconds: 1)),
                 builder: (context, snapshot) {

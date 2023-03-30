@@ -127,10 +127,6 @@ class CheckedBoxWidget extends StatelessWidget {
             )
             .toList(),
         Container(
-          child: Text('Control X Axis variable'),
-          padding: EdgeInsets.all(10),
-        ),
-        Container(
           padding: EdgeInsets.all(10),
           child: DropdownButton(
             alignment: Alignment.centerLeft,
@@ -180,11 +176,12 @@ final allChecked =
 
 final checkboxList = [
   CheckBoxClass(title: 'Time', supabaseTitle: ''),
-  CheckBoxClass(title: 'SUSP_FL', supabaseTitle: 'rpm'),
-  CheckBoxClass(title: 'SUSP_FR', supabaseTitle: 'oil_pressure'),
-  CheckBoxClass(title: 'Strai_Gauge_FR', supabaseTitle: 'air_intake_pressure'),
+  CheckBoxClass(title: 'Tire Temperature', supabaseTitle: 'rpm'),
+  CheckBoxClass(title: 'Oil Pressure', supabaseTitle: 'oil_pressure'),
   CheckBoxClass(
-      title: 'Strain_Gauge_FLn', supabaseTitle: 'air_intake_temperature'),
-  CheckBoxClass(title: 'Vdc', supabaseTitle: 'throttle_position'),
-  CheckBoxClass(title: 'APPS1_Raw', supabaseTitle: 'fuel_temperature'),
+      title: 'Air Intake Pressure', supabaseTitle: 'air_intake_pressure'),
+  CheckBoxClass(
+      title: 'Air Intake Temperature', supabaseTitle: 'air_intake_temperature'),
+  CheckBoxClass(title: 'RPM', supabaseTitle: 'throttle_position'),
+  CheckBoxClass(title: 'Suspension', supabaseTitle: 'fuel_temperature'),
 ];

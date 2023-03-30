@@ -327,22 +327,24 @@ class LoginState extends State<Login> {
                     ),
                     TextButton(
                       onPressed: () {
-                        a.role = 'data_analyst';
-                        Navigator.of(context).pushReplacementNamed(
-                            device.isDesktopMode()
-                                ? '/main-desktop'
-                                : '/main-mobile');
+                        userLogin(
+                            email: 'data_analyst@mailinator.com',
+                            password: '123456',
+                            signedUp: true,
+                            context: context,
+                            userExists: true);
                       },
                       child: Text('Data Analyst',
                           style: TextStyle(fontSize: 28, color: Colors.orange)),
                     ),
                     TextButton(
                       onPressed: () {
-                        a.role = 'default';
-                        Navigator.of(context).pushReplacementNamed(
-                            device.isDesktopMode()
-                                ? '/main-desktop'
-                                : '/main-mobile');
+                        userLogin(
+                            email: 'default@mailinator.com',
+                            password: '123456',
+                            signedUp: true,
+                            context: context,
+                            userExists: true);
                       },
                       child: Text('Default',
                           style: TextStyle(fontSize: 28, color: Colors.orange)),
@@ -357,6 +359,18 @@ class LoginState extends State<Login> {
                             userExists: true);
                       },
                       child: Text('Hands On Engineer',
+                          style: TextStyle(fontSize: 28, color: Colors.orange)),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        userLogin(
+                            email: 'chief_engineer@mailinator.com',
+                            password: '123456',
+                            signedUp: true,
+                            context: context,
+                            userExists: true);
+                      },
+                      child: Text('Chief Engineer',
                           style: TextStyle(fontSize: 28, color: Colors.orange)),
                     ),
                   ],

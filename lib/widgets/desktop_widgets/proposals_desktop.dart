@@ -31,6 +31,8 @@ class _DashBoardDesktopState extends State<DashBoardDesktop>
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
 
-    return (setup.role == 'admin') ? Overview(widget.width) : HandsOnScreen();
+    return (setup.role == 'admin' || setup.role == 'chief_engineer')
+        ? Overview(widget.width)
+        : HandsOnScreen();
   }
 }

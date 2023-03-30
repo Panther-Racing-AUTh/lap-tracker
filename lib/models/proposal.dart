@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Proposal {
   int? id;
   int? poolId;
@@ -20,6 +22,20 @@ class Proposal {
   String partValueFrom;
   String partValueTo;
   ProposalState? state;
+
+  Proposal.empty()
+      : description = '',
+        partId = 0,
+        partMeasurementUnit = '',
+        partName = '',
+        partValueFrom = '',
+        partValueTo = '',
+        reason = '',
+        title = '',
+        userDepartment = '',
+        userId = 0,
+        userRole = '',
+        state = ProposalState.empty();
 
   Proposal({
     this.id,
@@ -96,6 +112,11 @@ class ProposalState {
     required this.changedByUserId,
     required this.state,
   });
+
+  ProposalState.empty()
+      : changedByUserId = 0,
+        proposalId = 0,
+        state = 'default state';
 
   ProposalState.fromJson(Map json)
       : id = json['proposal_state__id'],

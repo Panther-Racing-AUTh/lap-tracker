@@ -17,20 +17,27 @@ class Overview extends StatefulWidget {
 int _selected = 0;
 
 class _OverviewState extends State<Overview> {
-  final _stream = getProposals();
+  late final _stream;
   void manageState() {
     setState(() {});
   }
 
   @override
+  void initState() {
+    _stream = getProposals();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+
     return StreamBuilder<Map<String, Proposal>>(
         stream: _stream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final proposals = snapshot.data!;
-            print(proposals['electronics']!.state!.state);
+
             late List<Widget> windows = [
               Section(
                 title: 'Powertrain',
@@ -160,6 +167,7 @@ class _SectionState extends State<Section> {
   int count = 0;
   @override
   Widget build(BuildContext context) {
+    bool hands = widget.id == 6;
     AppSetup setup = Provider.of<AppSetup>(context);
     // print(widget.title);
     // print(widget.id);
@@ -183,7 +191,9 @@ class _SectionState extends State<Section> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           (widget.proposal == null)
-                              ? 'Waiting for proposal'
+                              ? (hands)
+                                  ? 'Waiting for response'
+                                  : 'Waiting for proposal'
                               : widget.proposal!.state!.state,
                           style: TextStyle(
                             fontSize: 30,
@@ -201,39 +211,43 @@ class _SectionState extends State<Section> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          if (widget.proposal != null)
+                          if (widget.proposal != null && !hands)
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green),
                               child: Text('APPROVE',
                                   style: TextStyle(fontSize: 35)),
-                              onPressed: () {
-                                changeProposalState(
-                                  newState: ProposalState(
-                                    id: widget.proposal!.state!.id,
-                                    proposalId: widget.proposal!.id!,
-                                    changedByUserId: setup.supabase_id,
-                                    state: 'APPROVED',
-                                  ),
-                                );
-                              },
+                              onPressed: (widget.proposal!.state == 'DONE')
+                                  ? null
+                                  : () {
+                                      changeProposalState(
+                                        newState: ProposalState(
+                                          id: widget.proposal!.state!.id,
+                                          proposalId: widget.proposal!.id!,
+                                          changedByUserId: setup.supabase_id,
+                                          state: 'APPROVED',
+                                        ),
+                                      );
+                                    },
                             ),
-                          if (widget.proposal != null)
+                          if (widget.proposal != null && !hands)
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red),
                               child: Text('REJECT',
                                   style: TextStyle(fontSize: 35)),
-                              onPressed: () {
-                                changeProposalState(
-                                  newState: ProposalState(
-                                    id: widget.proposal!.state!.id,
-                                    proposalId: widget.proposal!.id!,
-                                    changedByUserId: setup.supabase_id,
-                                    state: 'DECLINED',
-                                  ),
-                                );
-                              },
+                              onPressed: (widget.proposal!.state == 'DONE')
+                                  ? null
+                                  : () {
+                                      changeProposalState(
+                                        newState: ProposalState(
+                                          id: widget.proposal!.state!.id,
+                                          proposalId: widget.proposal!.id!,
+                                          changedByUserId: setup.supabase_id,
+                                          state: 'DECLINED',
+                                        ),
+                                      );
+                                    },
                             ),
                         ],
                       ),
@@ -249,7 +263,8 @@ class _SectionState extends State<Section> {
                         color: Theme.of(context).selectedRowColor),
                   ),
                 ),
-                if (widget.proposal == null) Text('No proposal yet'),
+                if (widget.proposal == null)
+                  Text((hands) ? 'No Response yet' : 'No proposal yet'),
                 if (widget.proposal != null)
                   Column(
                     children: [
@@ -259,27 +274,33 @@ class _SectionState extends State<Section> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'Change Proposal',
+                              (hands) ? 'Checks Completed' : 'Change Proposal',
                               style: TextStyle(
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).selectedRowColor),
                             ),
                             SizedBox(height: 5),
-                            Text(
-                              (widget.proposal!.title.length < 35 ||
-                                      _selected == widget.id)
-                                  ? widget.proposal!.title
-                                  : widget.proposal!.title
-                                      .replaceRange(35, null, '...'),
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  color: Theme.of(context).selectedRowColor),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Center(
+                                child: Text(
+                                  (widget.proposal!.title.length < 35 ||
+                                          _selected == widget.id)
+                                      ? widget.proposal!.title
+                                      : widget.proposal!.title
+                                          .replaceRange(30, null, '...'),
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      color:
+                                          Theme.of(context).selectedRowColor),
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      if (_selected == widget.id)
+                      if (_selected == widget.id && !hands)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -342,32 +363,33 @@ class _SectionState extends State<Section> {
                             //customText(widget.proposal!.)
                           ],
                         ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Reason',
-                              style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).selectedRowColor),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              (widget.proposal!.reason.length < 35 ||
-                                      _selected == widget.id)
-                                  ? widget.proposal!.reason
-                                  : widget.proposal!.reason
-                                      .replaceRange(35, null, '...'),
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Theme.of(context).selectedRowColor),
-                            ),
-                          ],
+                      if (!hands)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Reason',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).selectedRowColor),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                (widget.proposal!.reason.length < 35 ||
+                                        _selected == widget.id)
+                                    ? widget.proposal!.reason
+                                    : widget.proposal!.reason
+                                        .replaceRange(35, null, '...'),
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Theme.of(context).selectedRowColor),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   ),
               ],
