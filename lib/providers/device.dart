@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'dart:html';
 import 'package:flutter_device_type/flutter_device_type.dart';
 
 class DeviceManager with ChangeNotifier {
@@ -9,8 +8,6 @@ class DeviceManager with ChangeNotifier {
   bool isDesktop = false;
 
   DeviceManager() {
-      window.console.log("defaultTargetPlatform: ${defaultTargetPlatform}");
-      window.console.log("===============");
     if (defaultTargetPlatform != TargetPlatform.android &&
         defaultTargetPlatform != TargetPlatform.iOS) {
       isDesktop = true;
