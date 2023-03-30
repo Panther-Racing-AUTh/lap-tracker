@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/vehicle.dart';
 
-import '../supabase/motorcycle_setup_functions.dart';
+import '../../../supabase/motorcycle_setup_functions.dart';
 
 class NewVehicleScreen extends StatefulWidget {
   NewVehicleScreen({required this.backArrowPressed, required this.v});

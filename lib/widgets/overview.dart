@@ -17,8 +17,7 @@ class Overview extends StatefulWidget {
 int _selected = 0;
 
 class _OverviewState extends State<Overview> {
-  late StreamBuilder<Map<String, Proposal>> myFuture;
-
+  final _stream = getProposals();
   void manageState() {
     setState(() {});
   }
@@ -27,11 +26,11 @@ class _OverviewState extends State<Overview> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     return StreamBuilder<Map<String, Proposal>>(
-        stream: getProposals(),
+        stream: _stream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            Map<String, Proposal> proposals = snapshot.data!;
-
+            final proposals = snapshot.data!;
+            print(proposals['electronics']!.state!.state);
             late List<Widget> windows = [
               Section(
                 title: 'Powertrain',
@@ -185,14 +184,14 @@ class _SectionState extends State<Section> {
                         child: Text(
                           (widget.proposal == null)
                               ? 'Waiting for proposal'
-                              : widget.proposal!.state.state,
+                              : widget.proposal!.state!.state,
                           style: TextStyle(
                             fontSize: 30,
                             color: (widget.proposal == null)
                                 ? Theme.of(context).selectedRowColor
-                                : (widget.proposal!.state.state == 'APPROVED')
+                                : (widget.proposal!.state!.state == 'APPROVED')
                                     ? Colors.green
-                                    : (widget.proposal!.state.state == 'NEW')
+                                    : (widget.proposal!.state!.state == 'NEW')
                                         ? Colors.blue
                                         : Colors.red,
                             fontWeight: FontWeight.bold,
@@ -211,8 +210,8 @@ class _SectionState extends State<Section> {
                               onPressed: () {
                                 changeProposalState(
                                   newState: ProposalState(
-                                    id: widget.proposal!.state.id,
-                                    proposalId: widget.proposal!.id,
+                                    id: widget.proposal!.state!.id,
+                                    proposalId: widget.proposal!.id!,
                                     changedByUserId: setup.supabase_id,
                                     state: 'APPROVED',
                                   ),
@@ -228,8 +227,8 @@ class _SectionState extends State<Section> {
                               onPressed: () {
                                 changeProposalState(
                                   newState: ProposalState(
-                                    id: widget.proposal!.state.id,
-                                    proposalId: widget.proposal!.id,
+                                    id: widget.proposal!.state!.id,
+                                    proposalId: widget.proposal!.id!,
                                     changedByUserId: setup.supabase_id,
                                     state: 'DECLINED',
                                   ),
@@ -385,39 +384,3 @@ class _SectionState extends State<Section> {
     );
   }
 }
-
-Stack customText(String text,
-        {double size: 14, bold: false, color: Colors.black}) =>
-    Stack(
-      children: <Widget>[
-        // Stroked text as border.
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: size,
-            foreground: Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 6
-              ..color = Colors.white,
-          ),
-        ),
-        // Solid text as fill.
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: size,
-            color: color,
-          ),
-        ),
-      ],
-    );
-TextStyle style(double size, {bold: false}) => TextStyle(
-      //backgroundColor: Colors.white,
-      //color: Colors.white,
-      fontSize: size,
-      fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-      foreground: Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 6
-        ..color = Colors.white,
-    );

@@ -44,7 +44,8 @@ class _NewDataScreenState extends State<NewDataScreen>
     double screenWidth = MediaQuery.of(context).size.width;
     AppSetup setup = Provider.of<AppSetup>(context);
     dateController.text = DateFormat('dd/MM/yyyy').format(setup.date);
-    if (setup.mainScreenDesktopIndex == 3 && setup.chatId != -1)
+
+    if (setup.mainScreenDesktopIndex == 2 && setup.chatId != -1)
       openChartInPage();
     showLapDialog({
       required BuildContext context,

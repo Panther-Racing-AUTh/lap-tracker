@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/race.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
+import 'package:flutter_complete_guide/supabase/motorcycle_setup_functions.dart';
 
+import '../models/vehicle.dart';
 import '../supabase/data_functions.dart';
 
 class AppSetup extends ChangeNotifier {
@@ -18,7 +20,7 @@ class AppSetup extends ChangeNotifier {
   var loadedData;
   String role = 'a';
   int supabase_id = -1;
-
+  Vehicle proposalVehicle = Vehicle.empty();
   int mainScreenDesktopIndex = 0;
   int chatId = -1;
   bool isOverview = true;
@@ -27,6 +29,11 @@ class AppSetup extends ChangeNotifier {
   String username = '';
   String userEmail = '';
   String userDepartment = '';
+
+  String proposalTitle = '';
+  String proposalDescription = '';
+  String proposalReason = '';
+
   get chartPreferences => chartList;
   get mainScreenDesktopInd => mainScreenDesktopIndex;
   get date => chartList[0];
@@ -94,7 +101,7 @@ class AppSetup extends ChangeNotifier {
 
   Future<bool> setValuesAuto() async {
     Map l = await getCurrentUserIdInt();
-
+    proposalVehicle = await getVehicle(11);
     supabase_id = l['id'];
     role = await getUserRole(id: supabase_id);
     races2023 = await getRaceTracks();

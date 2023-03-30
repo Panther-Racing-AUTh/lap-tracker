@@ -33,7 +33,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           Vehicle v = snapshot.data!;
-
+          print(v.systems.length);
           List<NavigationRailDestination> navigationRailDestinations = [];
           for (int i = 0; i < v.systems.length; i++) {
             navigationRailDestinations.add(
@@ -56,7 +56,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: screenHeight * 0.05,
+                //height: screenHeight * 0.1,
                 child: Stack(
                   children: [
                     Row(
@@ -72,22 +72,27 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
                             icon: Icon(Icons.edit)),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(v.name, style: TextStyle(fontSize: 20)),
-                        SizedBox(width: screenHeight * 0.02),
-                        Text(v.year, style: TextStyle(fontSize: 20)),
-                        SizedBox(width: screenHeight * 0.02),
-                        Text(v.description, style: TextStyle(fontSize: 20)),
-                      ],
+                    Center(
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(v.name, style: TextStyle(fontSize: 20)),
+                              SizedBox(width: 50),
+                              Text(v.year, style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                          Text(v.description, style: TextStyle(fontSize: 20)),
+                        ],
+                      ),
                     )
                   ],
                 ),
               ),
               SingleChildScrollView(
                 child: Container(
-                  height: screenHeight * 0.85,
+                  height: screenHeight * 0.87,
                   width: screenWidth,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,64 +140,82 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.5,
       child: ListView.builder(
         physics: NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.vertical,
         shrinkWrap: true,
         itemCount: widget.subsystems.length,
         itemBuilder: (context, index) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.subsystems[index].name,
-                style: TextStyle(color: Colors.black, fontSize: 26),
-              ),
-              ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: widget.subsystems[index].parts.length,
-                itemBuilder: ((context, index1) {
-                  return Card(
-                    elevation: 1,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                widget.subsystems[index].parts[index1].name,
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 16),
+          return Padding(
+            padding: const EdgeInsets.only(top: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.subsystems[index].name,
+                  style: TextStyle(color: Colors.black, fontSize: 26),
+                ),
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: widget.subsystems[index].parts.length,
+                  itemBuilder: ((context, index1) {
+                    return Card(
+                      elevation: 1,
+                      child: Container(
+                        constraints: BoxConstraints(maxWidth: 500),
+                        width: 500,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            IntrinsicWidth(
+                              stepWidth:
+                                  MediaQuery.of(context).size.width * 0.5,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        widget.subsystems[index].parts[index1]
+                                            .name,
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 20),
+                                      ),
+                                      Text(
+                                        '(' +
+                                            widget.subsystems[index]
+                                                .parts[index1].measurementUnit +
+                                            ')',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 10),
+                                    child: Text(
+                                      widget
+                                          .subsystems[index].parts[index1].value
+                                          .toString(),
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 20),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                '(' +
-                                    widget.subsystems[index].parts[index1]
-                                        .measurementUnit +
-                                    ')',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 16),
-                              ),
-                              SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5),
-                              Text(
-                                widget.subsystems[index].parts[index1].value
-                                    .toString(),
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 16),
-                              ),
-                            ],
-                          )
-                        ],
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }),
-              ),
-            ],
+                    );
+                  }),
+                ),
+              ],
+            ),
           );
         },
       ),

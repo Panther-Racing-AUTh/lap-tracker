@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/new_data_screen.dart';
+import 'package:flutter_complete_guide/screens/desktop_screens/proposal_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/vehicle_screen.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
 import 'package:flutter_complete_guide/widgets/chat_widget.dart';
 import 'package:flutter_complete_guide/widgets/chats_total.dart';
-import 'package:flutter_complete_guide/widgets/create_new_vehicle_screen.dart';
+import 'package:flutter_complete_guide/screens/desktop_screens/create_new_vehicle_screen.dart';
 import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
-import 'package:flutter_complete_guide/widgets/desktop_widgets/dashboard_desktop_widget.dart';
+import 'package:flutter_complete_guide/widgets/desktop_widgets/proposals_desktop.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/data_desktop_widget.dart';
 import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_complete_guide/widgets/weather_widget.dart';
 import 'package:provider/provider.dart';
 import '../../names.dart' as names;
 import '../../providers/app_setup.dart';
+import '../../supabase/proposal_functions.dart';
 import '../../widgets/desktop_widgets/charts_desktop_widget.dart';
 import '../../widgets/desktop_widgets/panther_desktop_widget.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
@@ -115,28 +117,18 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
               ),
           ],
         ),
+
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         //title: Text('Panther Racing AUTh'),
         actions: [
-          if (setup.role != 'default' && setup.role != 'data_analyst')
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  setup.setOverview(!setup.isOverview);
-                });
-              },
-              icon: Icon(Icons.screen_search_desktop_rounded),
-            ),
+          if (setup.role == 'engineer')
+            TextButton(
+                onPressed: () => showProposal(context: context),
+                child: Text(
+                  'OPEN PROPOSAL',
+                  style: TextStyle(color: Colors.white),
+                )),
           SizedBox(width: 10),
-
-          IconButton(
-            icon: Icon(Icons.download),
-            onPressed: () {
-              setup.setValuesAuto();
-            },
-          ),
-          SizedBox(width: 10),
-          //RaceTrackSelector(),
 
           //dark theme toggle button
           IconButton(
@@ -280,7 +272,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     _widget(
       0,
       icon: Icon(Icons.dashboard_outlined),
-      text: names.dashboard,
+      text: 'Proposals',
       selectedIcon: Icon(Icons.dashboard),
     ),
 
@@ -336,7 +328,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     }
 
     if (role == 'engineer') {
-      l.add(_Allpages[0]);
       l.add(_Allpages[1]);
       l.add(_Allpages[2]);
       l.add(_Allpages[5]);
@@ -350,6 +341,23 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     }
 
     if (role == 'default') {
+      l.add(_Allpages[5]);
+      l.add(_Allpages[6]);
+    }
+
+    if (role == 'hands_on_engineer') {
+      l.add(_Allpages[0]);
+      l.add(_Allpages[1]);
+      l.add(_Allpages[2]);
+      l.add(_Allpages[5]);
+      l.add(_Allpages[6]);
+    }
+
+    if (role == 'chief_engineer') {
+      l.add(_Allpages[0]);
+      l.add(_Allpages[1]);
+      l.add(_Allpages[2]);
+      l.add(_Allpages[3]);
       l.add(_Allpages[5]);
       l.add(_Allpages[6]);
     }
@@ -369,7 +377,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       l.add(allNavigationRailDestinations[6]);
     }
     if (role == 'engineer') {
-      l.add(allNavigationRailDestinations[0]);
       l.add(allNavigationRailDestinations[1]);
       l.add(allNavigationRailDestinations[2]);
       l.add(allNavigationRailDestinations[5]);
@@ -384,6 +391,22 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       l.add(allNavigationRailDestinations[5]);
       l.add(allNavigationRailDestinations[6]);
     }
+    if (role == 'hands_on_engineer') {
+      l.add(allNavigationRailDestinations[0]);
+      l.add(allNavigationRailDestinations[1]);
+      l.add(allNavigationRailDestinations[2]);
+      l.add(allNavigationRailDestinations[5]);
+      l.add(allNavigationRailDestinations[6]);
+    }
+    if (role == 'chief_engineer') {
+      l.add(allNavigationRailDestinations[0]);
+      l.add(allNavigationRailDestinations[1]);
+      l.add(allNavigationRailDestinations[2]);
+      l.add(allNavigationRailDestinations[3]);
+      l.add(allNavigationRailDestinations[5]);
+      l.add(allNavigationRailDestinations[6]);
+    }
+
     return l;
   }
 }

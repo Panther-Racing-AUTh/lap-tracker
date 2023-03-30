@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/widgets/create_new_vehicle_screen.dart';
+import 'package:flutter_complete_guide/screens/desktop_screens/create_new_vehicle_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/vehicle_setup_screen.dart';
 
 import '../../models/vehicle.dart';

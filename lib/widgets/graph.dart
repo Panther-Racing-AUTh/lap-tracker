@@ -94,7 +94,7 @@ class _GraphState extends State<Graph> {
                       dateFormat: DateFormat.Hms(),
                     ),
                     primaryYAxis: NumericAxis(isVisible: true),
-                    legend: Legend(isVisible: widget.showDetails),
+                    legend: Legend(isVisible: true),
                     //tooltipBehavior: TooltipBehavior(enable: true),
                     zoomPanBehavior: _zoomPanBehavior,
 
@@ -111,7 +111,7 @@ class _GraphState extends State<Graph> {
                           yValueMapper: (element, _) {
                             return element.value;
                           },
-                          name: points[i][i].canbusId,
+                          name: m[points[i][i].canbusIdName],
                           dataLabelSettings: DataLabelSettings(),
                         )
                     ],

@@ -76,7 +76,8 @@ class ChatBubble extends StatelessWidget {
                                       if (snapshot.connectionState !=
                                               ConnectionState.done ||
                                           !snapshot.hasData)
-                                        return CircularProgressIndicator();
+                                        return Center(
+                                            child: CircularProgressIndicator());
                                       dynamic dataList;
                                       dataList = snapshot.data;
                                       return Graph(
@@ -112,7 +113,7 @@ class ChatBubble extends StatelessWidget {
                                                                         context)
                                                                     .size
                                                                     .height *
-                                                                0.8,
+                                                                0.9,
                                                             width: MediaQuery.of(
                                                                         context)
                                                                     .size
@@ -133,7 +134,9 @@ class ChatBubble extends StatelessWidget {
                                                                             .done ||
                                                                     !snapshot
                                                                         .hasData)
-                                                                  return CircularProgressIndicator();
+                                                                  return Center(
+                                                                      child:
+                                                                          CircularProgressIndicator());
                                                                 dynamic
                                                                     dataList;
                                                                 dataList =
@@ -145,7 +148,7 @@ class ChatBubble extends StatelessWidget {
                                                                   list:
                                                                       dataList,
                                                                   showDetails:
-                                                                      false,
+                                                                      true,
                                                                 );
                                                               },
                                                             ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:flutter_complete_guide/supabase/chat_service.dart';
@@ -22,9 +24,11 @@ class _EchartsPageState extends State<EchartsPage> {
     finalList = newfinalList;
   }
 
+  bool triggered = false;
   void trigger() async {
     AppSetup a = Provider.of<AppSetup>(context, listen: false);
     dataList = await getDataFromList(a.chartList.skip(2).toList());
+    triggered = true;
     setState(() {});
   }
 
@@ -33,7 +37,8 @@ class _EchartsPageState extends State<EchartsPage> {
     AppSetup a = Provider.of<AppSetup>(context, listen: false);
 
     finalList = a.chartList;
-    if (a.mainScreenDesktopIndex == 3 && a.chatId != -1) trigger();
+    if (a.mainScreenDesktopIndex == 2 && a.chatId != -1 && !triggered)
+      trigger();
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       child: Row(

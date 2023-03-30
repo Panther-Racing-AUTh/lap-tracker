@@ -347,6 +347,18 @@ class LoginState extends State<Login> {
                       child: Text('Default',
                           style: TextStyle(fontSize: 28, color: Colors.orange)),
                     ),
+                    TextButton(
+                      onPressed: () {
+                        userLogin(
+                            email: 'hands_on_engineer@mailinator.com',
+                            password: '123456',
+                            signedUp: true,
+                            context: context,
+                            userExists: true);
+                      },
+                      child: Text('Hands On Engineer',
+                          style: TextStyle(fontSize: 28, color: Colors.orange)),
+                    ),
                   ],
                 ),
               ],

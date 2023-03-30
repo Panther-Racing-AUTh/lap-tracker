@@ -18,10 +18,10 @@ class Data {
 }
 
 Map<String, String> m = {
-  'SUSP_FL': 'SUSP_FL',
-  'SUSP_FR': 'SUSP_FR',
-  'Strai_Gauge_FR': 'Strai_Gauge_FR',
-  'Strain_Gauge_FL': 'Strain_Gauge_FLn',
-  'Vdc': 'Vdc',
-  'APPS1_Raw': 'APPS1_Raw'
+  'SUSP_FL': 'Tire Temperature',
+  'SUSP_FR': 'Oil Pressure',
+  'Strai_Gauge_FR': 'Air Intake Pressure',
+  'Strain_Gauge_FL': 'Air Intake Temperature',
+  'Vdc': 'RPM',
+  'APPS1_Raw': 'Suspension'
 };

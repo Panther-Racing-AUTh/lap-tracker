@@ -1,16 +1,16 @@
 class Proposal {
-  int id;
-  int poolId;
+  int? id;
+  int? poolId;
   int partId;
   String partName;
-  int partSubsystemId;
-  int partCurrentValueId;
+  int? partSubsystemId;
+  int? partCurrentValueId;
   String partMeasurementUnit;
-  int partValuesId;
-  int partValuesPartId;
-  int partValuesValue;
+  int? partValuesId;
+  int? partValuesPartId;
+  int? partValuesValue;
   int userId;
-  String userFullName;
+  String? userFullName;
   String? userUuid;
   String userRole;
   String userDepartment;
@@ -19,29 +19,29 @@ class Proposal {
   String reason;
   String partValueFrom;
   String partValueTo;
-  ProposalState state;
+  ProposalState? state;
 
   Proposal({
-    required this.id,
-    required this.poolId,
+    this.id,
+    this.poolId,
     required this.partId,
     required this.partName,
-    required this.partSubsystemId,
-    required this.partCurrentValueId,
+    this.partSubsystemId,
+    this.partCurrentValueId,
     required this.partMeasurementUnit,
-    required this.partValuesId,
-    required this.partValuesPartId,
-    required this.partValuesValue,
+    this.partValuesId,
+    this.partValuesPartId,
+    this.partValuesValue,
     required this.userId,
-    required this.userFullName,
-    required this.userUuid,
+    this.userFullName,
+    this.userUuid,
     required this.userRole,
     required this.userDepartment,
     required this.title,
     required this.description,
     required this.reason,
     required this.partValueFrom,
-    required this.state,
+    this.state,
     required this.partValueTo,
   });
 
@@ -51,8 +51,11 @@ class Proposal {
         partId = json['proposal__part_id'],
         userId = json['proposal__user_id'],
         title = json['proposal__title'],
-        description = json['proposal__description'],
-        reason = json['proposal__reason'],
+        description = json['proposal__description'] == null
+            ? ''
+            : json['proposal__description'],
+        reason =
+            json['proposal__reason'] == null ? '' : json['proposal__reason'],
         partValueFrom = json['proposal__part_value_from'],
         partValueTo = json['proposal__part_value_to'],
         userFullName = json['user__full_name'],
@@ -66,6 +69,19 @@ class Proposal {
         partValuesId = json['part_values__id'],
         partValuesPartId = json['part_values__part_id'],
         partValuesValue = json['part_values__value'];
+
+  Map toJson() {
+    return {
+      'proposal_pool_id': 1,
+      'part_id': partId,
+      'user_id': userId,
+      'title': title,
+      'description': description,
+      'reason': reason,
+      'part_value_from': partValueFrom,
+      'part_value_to': partValueTo
+    };
+  }
 }
 
 class ProposalState {
