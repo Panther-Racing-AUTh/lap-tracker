@@ -18,29 +18,12 @@ String global = '';
 
 class _HandsOnScreenState extends State<HandsOnScreen> {
   void checked(ProposalState newState) {
+    // print('checked');
+    // print('newState.state : ' + newState.state);
     setState(() {
       changeProposalState(newState: newState);
     });
-  }
 
-  void sendTaskComplete() {
-    setState(() {
-      sendProposal(
-        proposal: Proposal(
-          partId: 103,
-          partName: 'partName',
-          partMeasurementUnit: 'partMeasurementUnit',
-          userId: Provider.of<AppSetup>(context, listen: false).supabase_id,
-          userRole: 'userRole',
-          userDepartment: 'Hands-On',
-          title: global,
-          description: 'description',
-          reason: 'reason',
-          partValueFrom: 'partValueFrom',
-          partValueTo: 'partValueTo',
-        ),
-      );
-    });
   }
 
   final _handsOnStream = handsOnStream();
@@ -49,27 +32,101 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
     return StreamBuilder<List<Proposal>>(
       stream: _handsOnStream,
       builder: (context, snapshot) {
+        // print('snapshot.hasData : ' + snapshot.hasData.toString());
+        // initialize tasks before each build 
+        // task is an external global variable that has to be set
+        // to its initial value every time the builder is called
+        //List<Map<proposal__id(65), Map<id(201), proposalDescription.randomString>>>
+
+        tasks =  [];
+
+        String tabs = '\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}';
         if (snapshot.hasData) {
-          late Proposal proposal;
-          if (snapshot.data!.isNotEmpty)
-            proposal = snapshot.data![0];
-          else
-            proposal = Proposal.empty();
-          if (!tasks.contains(proposal.description) && proposal.title != '')
-            tasks.insert(0, proposal.title);
+          List<Proposal> incomingProposals = snapshot.data ?? [];
+          // late Proposal proposal;
+          // // print('snapshot.data' + snapshot.data.toString());
+          incomingProposals.forEach((prop) {
+            // print('\nprop.Id:\t\t' + prop.id.toString());
+            // print('prop.proposalId:\t' + prop.proposalId.toString());
+            MapEntry<int, MapEntry<int, String>> oldTask = MapEntry<int, MapEntry<int, String>>(0, MapEntry<int, String>(0,''));
+
+            bool existingProposal = tasks.any((task) => task.key == prop.proposalId);
+
+            try {
+              if (existingProposal) {
+                oldTask = tasks.firstWhere((p) => p.key == prop.proposalId);
+                // print('\toldTask:\t' + oldTask.toString());
+              }
+            } catch (e) {
+              // print(e);
+            }
+
+            if(existingProposal && oldTask.key < (prop.proposalId ?? 0)) {
+              // print('\tupdate existing task with id: ' + oldTask.key.toString() + '\tto: ' + prop.proposalId.toString());
+              int indexToUpdate = tasks.indexWhere((task) => task.key == prop.proposalId);
+
+              tasks[indexToUpdate] = 
+                    MapEntry(
+                      prop.proposalId ?? -1, 
+                      MapEntry(
+                        prop.id ?? -1,
+                        prop.title + tabs + (prop.description)
+                      )
+                    );
+              // // print('\ttasks[indexToUpdate]' + tasks[indexToUpdate].toString());
+              // if old task has the same  id OR smaller do not update
+              // if (oldTask.key.compareTo(prop.proposalId.toString()) < 0) {
+
+              // }
+            } else if (!existingProposal) {
+              // // print('\tinsert new task with id: ' + prop.proposalId.toString());
+              tasks.insert(0, 
+                MapEntry(
+                  prop.proposalId ?? 0, 
+                  MapEntry(
+                      prop.id ?? -1,
+                      prop.title + tabs + (prop.description)
+                    )
+                )
+              );
+            } else {
+              // // print('\tNo updates at all');
+            }
+
+          });
+
+          // print('\n\n\n\n\ntasks');
+          // print(tasks);
+
+          // // print('\n\n\ttasks:'+ tasks[0].key.toString() + "\t" +  tasks[0].value.toString());
 
           for (int i = 0; i < tasks.length; i++) {
             checks.add(false);
           }
+          // // print('tasks.length : ' + tasks.length.toString());
+          // // print('proposal : ' + tasks.toString());
+          
           return ListView.builder(
               itemCount: tasks.length,
               itemBuilder: ((context, index) {
+                Proposal prop = incomingProposals[index];
+                prop.proposalId = tasks[index].key;
+                prop.state!.proposalId = tasks[index].key;
+
+                // // print('\nindex');
+                // // print(index);
+                // // print(tasks[index].value.value);
+                // // print(prop.toJson());
+                // // print('\n');
+                // // print(incomingProposals[index].toJson());
+                // // print('\n');
+
                 return customListTile(
                     id: index + 1,
-                    task: tasks[index],
+                    task: tasks[index].value.value,
                     completed: checked,
-                    p: proposal,
-                    sendTaskComplete: sendTaskComplete);
+                    proposal: prop);
+                    // sendTaskComplete: sendTaskComplete);
               }));
         }
         return Center(child: CircularProgressIndicator());
@@ -82,30 +139,38 @@ Widget customListTile({
   required int id,
   required String task,
   required Function(ProposalState) completed,
-  required Proposal p,
-  required Function sendTaskComplete,
+  required Proposal? proposal,
+  // required Function sendTaskComplete,
 }) =>
     ListTile(
-      tileColor: checks[id - 1] ? Colors.green : Colors.white,
+      tileColor: proposal!.state!.state == 'DONE' ? Colors.green : Colors.white,
+      // tileColor: checks[id -1] ? Colors.green : Colors.white,
       leading: Text(id.toString()),
-      title: Text(task),
+      title: RichText(text: TextSpan(
+          text: task
+          +'\tt_v_proposal.id: '
+          + proposal.id.toString()
+          +'\tproposal.id'
+          + proposal.proposalId.toString()
+          + '\tSTATE: '
+          + proposal.state!.state.toString(), 
+        style: TextStyle(fontSize: 20))),
       trailing: ElevatedButton(
           onPressed: () {
-            checks[id - 1] = true;
-            (id == 0 && tasks.length > 1)
-                ? completed(
+            print('ListTile - onPressed\n');
+            print(proposal.state!.state);
+            print(proposal.state!.toJson());
+            completed(
                     ProposalState(
-                      id: p.state!.id,
-                      proposalId: p.id!,
-                      changedByUserId: 1,
+                      proposalId: proposal.proposalId,
+                      changedByUserId: 26, //hands on team id
                       state: 'DONE',
-                    ),
-                  )
-                : sendTaskComplete();
+                    )
+            );
           },
           child: Text('DONE')),
     );
 
-List tasks = [
-  'All Standard checks completed successfully',
-];
+
+//List<Map<proposal__id(65), Map<id(201), proposalDescription.randomString>>>
+List<MapEntry<int, MapEntry<int, String>>> tasks = [];
