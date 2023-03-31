@@ -146,10 +146,10 @@ Widget customListTile({
       tileColor: proposal!.state!.state == 'DONE' ? Colors.green : Colors.white,
       // tileColor: checks[id -1] ? Colors.green : Colors.white,
       leading: Text(id.toString()),
-      title: RichText(text:
-              TextSpan(
+      title: RichText(
+              text: TextSpan(
                 text: task,
-                style: TextStyle(fontSize: 20)
+                style: TextStyle(fontSize: 20, color: Colors.black)
               )
             ),
       trailing: ElevatedButton(
