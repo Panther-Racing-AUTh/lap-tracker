@@ -53,16 +53,17 @@ Stream<List<Proposal>> handsOnStream() {
             t_v_proposalds.add(element['id']);
 
             print('proposal_state__state:\t' + element['proposal_state__state']);
-            if(
-              element['proposal_state__state'] == 'DONE' 
-              || element['proposal_state__state'] == 'APPROVED' )
-              print('\tIF');
-              print(element);
-              m.add(Proposal.fromJson(element, ProposalState.fromJson(element)));
-              print('\tEND IF');
-            print('new proposal:\0t' + Proposal.fromJson(element, ProposalState.fromJson(element)).toJson().toString());
+            if(element['proposal_state__state'] == 'DONE' 
+              || element['proposal_state__state'] == 'APPROVED' ) {
+                print('\tIF');
+                print(element);
+                m.add(Proposal.fromJson(element, ProposalState.fromJson(element)));
+                print('\tEND IF');
+                print('new proposal:\0t' + m.last.toJson().toString());
+              }
           });
           print('\n\n\n m size : \t' + m.length.toString());
+          print(m);
           return m;
         },
       );
@@ -76,9 +77,14 @@ Future getproposals() async {
 
 Future changeProposalState({required ProposalState newState}) async {
   print('changeProposalState: proposal_state\t' + newState.toJson().toString());
-
+  Map<String, dynamic> stateReq = {
+         'proposal_id': newState.proposalId,
+         'changed_by_user_id': newState.changedByUserId,
+         'state': newState.state,
+  };
+  print(stateReq);
   var proposalState =
-      await supabase.from('proposal_state').insert(newState.toJson()).select();
+      await supabase.from('proposal_state').insert(stateReq).select();
 }
 
 Future sendProposal({required Proposal proposal}) async {

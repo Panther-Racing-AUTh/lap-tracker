@@ -18,8 +18,8 @@ String global = '';
 
 class _HandsOnScreenState extends State<HandsOnScreen> {
   void checked(ProposalState newState) {
-    // print('checked');
-    // print('newState.state : ' + newState.state);
+    // // print('checked');
+    // // print('newState.state : ' + newState.state);
     setState(() {
       changeProposalState(newState: newState);
     });
@@ -32,7 +32,7 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
     return StreamBuilder<List<Proposal>>(
       stream: _handsOnStream,
       builder: (context, snapshot) {
-        // print('snapshot.hasData : ' + snapshot.hasData.toString());
+        // // print('snapshot.hasData : ' + snapshot.hasData.toString());
         // initialize tasks before each build 
         // task is an external global variable that has to be set
         // to its initial value every time the builder is called
@@ -44,13 +44,15 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
         if (snapshot.hasData) {
           List<Proposal> incomingProposals = snapshot.data ?? [];
           // late Proposal proposal;
-          // // print('snapshot.data' + snapshot.data.toString());
+          // // // print('snapshot.data' + snapshot.data.toString());
           incomingProposals.forEach((prop) {
-            // print('\nprop.Id:\t\t' + prop.id.toString());
-            // print('prop.proposalId:\t' + prop.proposalId.toString());
+            // // print('\nprop.Id:\t\t' + prop.id.toString());
+            // // print('prop.proposalId:\t' + prop.proposalId.toString());
             MapEntry<int, MapEntry<int, String>> oldTask = MapEntry<int, MapEntry<int, String>>(0, MapEntry<int, String>(0,''));
 
+            // print('prop.proposalId' + prop.proposalId.toString());
             bool existingProposal = tasks.any((task) => task.key == prop.proposalId);
+            // print('existingProposal' + existingProposal.toString());
 
             try {
               if (existingProposal) {
@@ -58,7 +60,7 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
                 // print('\toldTask:\t' + oldTask.toString());
               }
             } catch (e) {
-              // print(e);
+              // // print(e);
             }
 
             if(existingProposal && oldTask.key < (prop.proposalId ?? 0)) {
@@ -73,13 +75,11 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
                         prop.title + tabs + (prop.description)
                       )
                     );
-              // // print('\ttasks[indexToUpdate]' + tasks[indexToUpdate].toString());
+              // print('\ttasks[indexToUpdate]' + tasks[indexToUpdate].toString());
               // if old task has the same  id OR smaller do not update
-              // if (oldTask.key.compareTo(prop.proposalId.toString()) < 0) {
-
-              // }
+              
             } else if (!existingProposal) {
-              // // print('\tinsert new task with id: ' + prop.proposalId.toString());
+              // print('\tinsert new task with id: ' + prop.proposalId.toString());
               tasks.insert(0, 
                 MapEntry(
                   prop.proposalId ?? 0, 
@@ -90,7 +90,7 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
                 )
               );
             } else {
-              // // print('\tNo updates at all');
+              // print('\tNo updates at all');
             }
 
           });
@@ -98,13 +98,13 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
           // print('\n\n\n\n\ntasks');
           // print(tasks);
 
-          // // print('\n\n\ttasks:'+ tasks[0].key.toString() + "\t" +  tasks[0].value.toString());
+          // // // print('\n\n\ttasks:'+ tasks[0].key.toString() + "\t" +  tasks[0].value.toString());
 
-          for (int i = 0; i < tasks.length; i++) {
-            checks.add(false);
-          }
-          // // print('tasks.length : ' + tasks.length.toString());
-          // // print('proposal : ' + tasks.toString());
+          // for (int i = 0; i < tasks.length; i++) {
+          //   checks.add(false);
+          // }
+          // // // print('tasks.length : ' + tasks.length.toString());
+          // // // print('proposal : ' + tasks.toString());
           
           return ListView.builder(
               itemCount: tasks.length,
@@ -113,13 +113,13 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
                 prop.proposalId = tasks[index].key;
                 prop.state!.proposalId = tasks[index].key;
 
-                // // print('\nindex');
-                // // print(index);
-                // // print(tasks[index].value.value);
-                // // print(prop.toJson());
-                // // print('\n');
-                // // print(incomingProposals[index].toJson());
-                // // print('\n');
+                // // // print('\nindex');
+                // // // print(index);
+                // // // print(tasks[index].value.value);
+                // // // print(prop.toJson());
+                // // // print('\n');
+                // // // print(incomingProposals[index].toJson());
+                // // // print('\n');
 
                 return customListTile(
                     id: index + 1,
@@ -146,20 +146,17 @@ Widget customListTile({
       tileColor: proposal!.state!.state == 'DONE' ? Colors.green : Colors.white,
       // tileColor: checks[id -1] ? Colors.green : Colors.white,
       leading: Text(id.toString()),
-      title: RichText(text: TextSpan(
-          text: task
-          +'\tt_v_proposal.id: '
-          + proposal.id.toString()
-          +'\tproposal.id'
-          + proposal.proposalId.toString()
-          + '\tSTATE: '
-          + proposal.state!.state.toString(), 
-        style: TextStyle(fontSize: 20))),
+      title: RichText(text:
+              TextSpan(
+                text: task,
+                style: TextStyle(fontSize: 20)
+              )
+            ),
       trailing: ElevatedButton(
           onPressed: () {
-            print('ListTile - onPressed\n');
-            print(proposal.state!.state);
-            print(proposal.state!.toJson());
+            // print('ListTile - onPressed\n');
+            // print(proposal.state!.state);
+            // print(proposal.state!.toJson());
             completed(
                     ProposalState(
                       proposalId: proposal.proposalId,

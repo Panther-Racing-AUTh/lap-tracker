@@ -85,6 +85,7 @@ class Proposal {
   Proposal.fromJson(Map json, ProposalState this.state)
       : id = json['id'], // 201 -> 202
         proposalId = json['proposal__id'], //65
+        proposalCreatedAt = json['proposal__created_at'], //65
         poolId = json['proposal__proposal_pool_id'],
         partId = json['proposal__part_id'],
         userId = json['proposal__user_id'],
@@ -110,21 +111,29 @@ class Proposal {
 
   Map toJson() {
     return {
-      'proposal_pool_id': 2,
-      'part_id': partId,
-      'user_id': userId,
+      'id': id,
+      'proposalId': proposalId,
+      'proposalCreatedAt': proposalCreatedAt,
+      'poolId': poolId,
+      'partId': partId,
+      'userId': userId,
       'title': title,
       'description': description,
-      'proposalId': proposalId,
       'reason': reason,
-      // 'part_value_from': partValueFrom,
-      // 'proposalCreatedAt': proposalCreatedAt,
-      // 'proposalProposalPoolId': proposalProposalPoolId,
-      // 'proposalPartId': proposalPartId,
-      // 'proposalUserId': proposalUserId,
-      'proposalTitle': proposalTitle,
+      'partValueFrom': partValueFrom,
+      'partValueTo': partValueTo,
+      'userFullName': userFullName,
+      'userRole': userRole,
+      'userDepartment': userDepartment,
+      'userUuid': userUuid,
+      'partName': partName,
+      'partSubsystemId': partSubsystemId,
+      'partCurrentValueId': partCurrentValueId,
+      'partMeasurementUnit': partMeasurementUnit,
+      'partValuesId': partValuesId,
+      'partValuesPartId': partValuesPartId,
+      'partValuesValue': partValuesValue,
       'state': state!.toJson(),
-      'part_value_to': partValueTo
     };
   }
 }
@@ -155,8 +164,8 @@ class ProposalState {
 
   Map toJson() {
     return {
-      'proposal_id': proposalId,
-      'changed_by_user_id': changedByUserId,
+      'proposalId': proposalId,
+      'changedByUserId': changedByUserId,
       'state': state,
     };
   }
