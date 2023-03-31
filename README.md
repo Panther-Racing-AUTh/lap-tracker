@@ -36,6 +36,23 @@ Inside the `configs` you should have
 - `key.properties`
 - `panther-keystore.jks`
 
+## Build the project
+Depending on your machine and your installation, you can build the project for `web` and `android`. Consider run `flutter clean && flutter pub get` before building the project.
+- build for `web`
+```bash
+flutter build web --web-renderer html
+```
+- build for `android`
+```bash 
+# to extract apk
+flutter build apk
+# to extract app bundle 
+flutter build appbundle
+```
+<br>
+<br>
+
+# Extras
 ### Details
 1. Create `supabase_credentials.dart` under `lib/configs` directory and paste the following snippet:
 ```dart
