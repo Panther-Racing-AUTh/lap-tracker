@@ -116,7 +116,8 @@ class _GraphState extends State<Graph> {
                           yValueMapper: (element, _) {
                             return element.value;
                           },
-                          name: m[points[i][i].canbusIdName],
+                          name: loggerNamesToPrintedNames[
+                              points[i][i].canbusIdName],
                           dataLabelSettings: DataLabelSettings(),
                         )
                     ],

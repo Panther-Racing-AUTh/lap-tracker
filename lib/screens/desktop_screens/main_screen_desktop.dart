@@ -131,8 +131,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                   style: TextStyle(color: Colors.white),
                 )),
           SizedBox(width: 10),
-
-          //dark theme toggle button
           IconButton(
               onPressed: () {
                 showDialog(

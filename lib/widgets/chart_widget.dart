@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:flutter_complete_guide/supabase/chat_service.dart';
@@ -8,7 +6,6 @@ import 'package:flutter_complete_guide/widgets/graph.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_setup.dart';
 import './checked_boxes_widget.dart';
-import 'echarts_widget.dart';
 
 class EchartsPage extends StatefulWidget {
   EchartsPage({Key? key}) : super(key: key);
@@ -18,27 +15,31 @@ class EchartsPage extends StatefulWidget {
 }
 
 class _EchartsPageState extends State<EchartsPage> {
+  //Initializing the lists
   List<dynamic> finalList = [];
   List<List<Data>> dataList = [];
-  refresh(newfinalList) {
+  bool triggered = false;
+
+  void refresh(newfinalList) {
     finalList = newfinalList;
   }
 
-  bool triggered = false;
+//TODO This is for opening the chart page on the chat maintaning the data (ERROR)
   void trigger() async {
-    AppSetup a = Provider.of<AppSetup>(context, listen: false);
-    dataList = await getDataFromList(a.chartList.skip(2).toList());
+    AppSetup setup = Provider.of<AppSetup>(context, listen: false);
+    dataList = await getDataFromList(setup.chartList.skip(2).toList());
     triggered = true;
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    AppSetup a = Provider.of<AppSetup>(context, listen: false);
+    AppSetup setup = Provider.of<AppSetup>(context, listen: false);
 
-    finalList = a.chartList;
-    if (a.mainScreenDesktopIndex == 2 && a.chatId != -1 && !triggered)
+    finalList = setup.chartList;
+    if (setup.mainScreenDesktopIndex == 2 && setup.chatId != -1 && !triggered)
       trigger();
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       child: Row(
@@ -46,6 +47,7 @@ class _EchartsPageState extends State<EchartsPage> {
         children: [
           Column(
             children: [
+              //Check boxes for the sensor data
               Container(
                 height: MediaQuery.of(context).size.height * 0.5,
                 width: 250,
@@ -53,21 +55,25 @@ class _EchartsPageState extends State<EchartsPage> {
                   setFinalList: refresh,
                 ),
               ),
+
+              //Fetch the sensor data available from supabase
               TextButton(
                   onPressed: () async {
                     dataList =
-                        await getDataFromList(a.chartList.skip(2).toList());
+                        await getDataFromList(setup.chartList.skip(2).toList());
                     setState(() {});
                   },
                   child: Text(
                     'Fetch Data',
                     style: TextStyle(fontSize: 20),
                   )),
+
+              //When you press the SEND TO CHAT
               if (finalList.length > 1)
                 TextButton(
                   onPressed: () async {
                     final channels =
-                        await getAllChannelsForUser(id: a.supabase_id);
+                        await getAllChannelsForUser(id: setup.supabase_id);
                     showDialog(
                       context: context,
                       builder: (context) {
@@ -87,7 +93,7 @@ class _EchartsPageState extends State<EchartsPage> {
                                     onTap: () {
                                       sendChart(
                                           list: finalList,
-                                          id: a.supabase_id,
+                                          id: setup.supabase_id,
                                           channel_id: channels[index]['id']);
                                     },
                                   ),

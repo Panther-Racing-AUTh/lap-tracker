@@ -15,16 +15,16 @@ class CheckedBoxWidget extends StatelessWidget {
   var dropdownvalue = checkboxList[0];
   @override
   Widget build(BuildContext context) {
-    AppSetup a = Provider.of<AppSetup>(context, listen: false);
+    AppSetup setup = Provider.of<AppSetup>(context, listen: false);
 
-    finalSelectedList = a.chartList;
+    finalSelectedList = setup.chartList;
 
     onAllClicked(CheckBoxClass ckbItem) {
-      if (a.listContainsAllItems()) {
-        a.setList([]);
+      if (setup.listContainsAllItems()) {
+        setup.setList([]);
       } else {
-        a.setList(m.keys.toList());
-        print(a.chartList);
+        setup.setList(loggerNamesToPrintedNames.keys.toList());
+        print(setup.chartList);
       }
     }
 
@@ -59,12 +59,13 @@ class CheckedBoxWidget extends StatelessWidget {
     }
       */
     onItemClicked(CheckBoxClass ckbItem) {
-      String item = m.keys.firstWhere((element) => m[element] == ckbItem.title);
-      if (a.listContainsItem(item)) {
-        a.removeItemFromlist(item);
+      String item = loggerNamesToPrintedNames.keys.firstWhere(
+          (element) => loggerNamesToPrintedNames[element] == ckbItem.title);
+      if (setup.listContainsItem(item)) {
+        setup.removeItemFromlist(item);
       } else
-        a.addItemTolist(item);
-      print(a.chartList);
+        setup.addItemTolist(item);
+      print(setup.chartList);
       setFinalList(finalSelectedList);
     }
 
@@ -95,7 +96,6 @@ class CheckedBoxWidget extends StatelessWidget {
     */
 
     return ListView(
-      //physics: NeverScrollableScrollPhysics(),
       children: [
         Consumer<AppSetup>(
           builder: (context, value, child) {
@@ -117,8 +117,9 @@ class CheckedBoxWidget extends StatelessWidget {
                 builder: (context, value, child) => ListTile(
                   onTap: () => onItemClicked(item),
                   leading: Checkbox(
-                    value: value.listContainsItem(m.keys
-                        .firstWhere((element) => m[element] == item.title)),
+                    value: value.listContainsItem(loggerNamesToPrintedNames.keys
+                        .firstWhere((element) =>
+                            loggerNamesToPrintedNames[element] == item.title)),
                     onChanged: (value) => onItemClicked(item),
                   ),
                   title: Text(item.title),
@@ -140,10 +141,11 @@ class CheckedBoxWidget extends StatelessWidget {
             onChanged: (CheckBoxClass? v) {
               dropdownvalue = v!;
               if (dropdownvalue == checkboxList[0]) {
-                a.setXAxis('');
+                setup.setXAxis('');
               } else
-                a.setXAxis(
-                    m.keys.firstWhere((element) => m[element] == v.title));
+                setup.setXAxis(loggerNamesToPrintedNames.keys.firstWhere(
+                    (element) =>
+                        loggerNamesToPrintedNames[element] == v.title));
             },
           ),
         ),

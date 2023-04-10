@@ -1,6 +1,5 @@
 //import 'package:chat_app/mark_as_read.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/widgets/echarts_widget.dart';
 import 'package:flutter_complete_guide/widgets/graph.dart';
 import 'package:provider/provider.dart';
 import '../models/message.dart';

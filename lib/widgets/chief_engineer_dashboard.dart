@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/proposal.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
-import 'package:flutter_complete_guide/widgets/echarts_widget.dart';
 import 'package:flutter_complete_guide/widgets/graph.dart';
 import 'package:provider/provider.dart';
 

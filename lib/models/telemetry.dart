@@ -17,7 +17,7 @@ class Data {
   });
 }
 
-Map<String, String> m = {
+Map<String, String> loggerNamesToPrintedNames = {
   'SUSP_FL': 'Tire Temperature',
   'SUSP_FR': 'Oil Pressure',
   'Strai_Gauge_FR': 'Air Intake Pressure',

@@ -10,7 +10,7 @@ import '../../providers/app_setup.dart';
 import '../../screens/desktop_screens/hands_on_screen.dart';
 import '../../screens/desktop_screens/proposal_screen.dart';
 import '../../supabase/authentication_functions.dart';
-import '../overview.dart';
+import '../chief_engineer_dashboard.dart';
 
 class DashBoardDesktop extends StatefulWidget {
   DashBoardDesktop(double this.width);
