@@ -219,10 +219,10 @@ class _SectionState extends State<Section> {
                               onPressed: (widget.proposal!.state == 'DONE')
                                   ? null
                                   : () {
+                                      print('1');
                                       changeProposalState(
                                         newState: ProposalState(
-                                          id: widget.proposal!.state!.id,
-                                          proposalId: widget.proposal!.id!,
+                                          proposalId: widget.proposal!.proposalId!,
                                           changedByUserId: setup.supabase_id,
                                           state: 'APPROVED',
                                         ),
@@ -238,10 +238,11 @@ class _SectionState extends State<Section> {
                               onPressed: (widget.proposal!.state == 'DONE')
                                   ? null
                                   : () {
+                                      print('1');
+
                                       changeProposalState(
                                         newState: ProposalState(
-                                          id: widget.proposal!.state!.id,
-                                          proposalId: widget.proposal!.id!,
+                                          proposalId: widget.proposal!.proposalId!,
                                           changedByUserId: setup.supabase_id,
                                           state: 'DECLINED',
                                         ),

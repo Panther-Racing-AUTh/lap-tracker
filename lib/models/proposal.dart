@@ -2,6 +2,17 @@ import 'package:flutter/material.dart';
 
 class Proposal {
   int? id;
+  int? proposalId;
+  String? proposalCreatedAt;
+  String? proposalProposalPoolId;
+  String? proposalPartId;
+  String? proposalUserId;
+  String? proposalTitle;
+  String? proposalDescription;
+  String? proposalReason;
+  String? proposalJsonData;
+  String? proposalPartValueFrom;
+  String? proposalPartValueTo;
   int? poolId;
   int partId;
   String partName;
@@ -22,7 +33,7 @@ class Proposal {
   String partValueFrom;
   String partValueTo;
   ProposalState? state;
-
+  
   Proposal.empty()
       : description = '',
         partId = 0,
@@ -38,6 +49,16 @@ class Proposal {
         state = ProposalState.empty();
 
   Proposal({
+    this.proposalCreatedAt,
+    this.proposalProposalPoolId,
+    this.proposalPartId,
+    this.proposalUserId,
+    this.proposalTitle,
+    this.proposalDescription,
+    this.proposalReason,
+    this.proposalJsonData,
+    this.proposalPartValueFrom,
+    this.proposalPartValueTo,
     this.id,
     this.poolId,
     required this.partId,
@@ -62,7 +83,9 @@ class Proposal {
   });
 
   Proposal.fromJson(Map json, ProposalState this.state)
-      : id = json['proposal__id'],
+      : id = json['id'], // 201 -> 202
+        proposalId = json['proposal__id'], //65
+        proposalCreatedAt = json['proposal__created_at'], //65
         poolId = json['proposal__proposal_pool_id'],
         partId = json['proposal__part_id'],
         userId = json['proposal__user_id'],
@@ -88,21 +111,36 @@ class Proposal {
 
   Map toJson() {
     return {
-      'proposal_pool_id': 1,
-      'part_id': partId,
-      'user_id': userId,
+      'id': id,
+      'proposalId': proposalId,
+      'proposalCreatedAt': proposalCreatedAt,
+      'poolId': poolId,
+      'partId': partId,
+      'userId': userId,
       'title': title,
       'description': description,
       'reason': reason,
-      'part_value_from': partValueFrom,
-      'part_value_to': partValueTo
+      'partValueFrom': partValueFrom,
+      'partValueTo': partValueTo,
+      'userFullName': userFullName,
+      'userRole': userRole,
+      'userDepartment': userDepartment,
+      'userUuid': userUuid,
+      'partName': partName,
+      'partSubsystemId': partSubsystemId,
+      'partCurrentValueId': partCurrentValueId,
+      'partMeasurementUnit': partMeasurementUnit,
+      'partValuesId': partValuesId,
+      'partValuesPartId': partValuesPartId,
+      'partValuesValue': partValuesValue,
+      'state': state!.toJson(),
     };
   }
 }
 
 class ProposalState {
   int? id;
-  int proposalId;
+  int? proposalId;
   int changedByUserId;
   String state;
 
@@ -126,8 +164,8 @@ class ProposalState {
 
   Map toJson() {
     return {
-      'proposal_id': proposalId,
-      'changed_by_user_id': changedByUserId,
+      'proposalId': proposalId,
+      'changedByUserId': changedByUserId,
       'state': state,
     };
   }

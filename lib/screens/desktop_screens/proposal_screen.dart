@@ -356,9 +356,18 @@ class _SetupPageState extends State<SetupPage> {
 }
 
 String calculateTitle() {
-  return selectedPart.name +
-      ' ' +
-      (int.parse(change.text) - selectedPart.value).toString() +
-      ' ' +
-      selectedPart.measurementUnit;
+  bool sign = false;
+  if (int.parse(change.text) - selectedPart.value > 0) sign = true;
+  if (sign) {
+    return selectedPart.name +
+        ' +' +
+        (int.parse(change.text) - selectedPart.value).toString() +
+        ' ' +
+        selectedPart.measurementUnit;
+  } else
+    return selectedPart.name +
+        ' ' +
+        (int.parse(change.text) - selectedPart.value).toString() +
+        ' ' +
+        selectedPart.measurementUnit;
 }
