@@ -33,7 +33,9 @@ class _ProfileDesktopState extends State<ProfileDesktop>
       dataFuture = getUserProfile(id: appSetup.supabase_id);
   }
 
+//limit to change icons from horizontal to vertical to avoid error
   int changeIconsLayout = 1400;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -59,8 +61,11 @@ class _ProfileDesktopState extends State<ProfileDesktop>
             future: dataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
+                //assign user to local variable. p is the variable that holds the user profile
                 p = snapshot.data![1];
+                //list of admins
                 final admins = [];
+                //add all admins to this list
                 snapshot.data![0].forEach((element) {
                   admins.add(element['admin_name']['full_name']);
                 });
@@ -75,6 +80,7 @@ class _ProfileDesktopState extends State<ProfileDesktop>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      //if the user is new show admins names
                       if (setup.role == 'default')
                         Stack(
                           children: [
@@ -93,19 +99,23 @@ class _ProfileDesktopState extends State<ProfileDesktop>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                //show profile image, department image
                                 Container(
                                   child: buildTop(width, height * 0.2),
                                 ),
+
                                 if (width < changeIconsLayout)
                                   SizedBox(
                                     height: height * 0.01,
                                     child: Container(),
                                   ),
+                                //show name and role
                                 if (width < changeIconsLayout)
                                   Container(
                                     padding: EdgeInsets.only(left: 20, top: 20),
                                     child: nameAndRole(),
                                   ),
+                                //show about section
                                 Container(
                                   padding: EdgeInsets.fromLTRB(35, 30, 10, 20),
                                   child: Text(
@@ -122,6 +132,7 @@ class _ProfileDesktopState extends State<ProfileDesktop>
                                       : width * 0.55,
                                   alignment: Alignment.centerLeft,
                                 ),
+                                //show social media horizontally
                                 if (width < changeIconsLayout)
                                   Container(
                                     padding: EdgeInsets.only(left: 20, top: 20),
@@ -159,6 +170,7 @@ class _ProfileDesktopState extends State<ProfileDesktop>
           );
   }
 
+//merge profile image with department image
   Stack buildTop(double width, double height) {
     final bottom = profileHeight / 2;
     final top = coverHeight - profileHeight / 4;
@@ -194,6 +206,7 @@ class _ProfileDesktopState extends State<ProfileDesktop>
     );
   }
 
+//show department image
   Widget buildCoverImage(double width) => Container(
         alignment: Alignment.centerLeft,
         padding: EdgeInsets.all(10),
@@ -207,7 +220,7 @@ class _ProfileDesktopState extends State<ProfileDesktop>
           ),
         ),
       );
-
+//show profile image
   Widget buildProfileImage() => Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
@@ -225,7 +238,7 @@ class _ProfileDesktopState extends State<ProfileDesktop>
         width: profileHeight,
         height: profileHeight,
       );
-
+//show social media icon
   Widget buildSocialIcon(IconData icon) => CircleAvatar(
         radius: 25,
         child: Material(
@@ -252,7 +265,7 @@ class _ProfileDesktopState extends State<ProfileDesktop>
           ),
         ),
       );
-
+//show social media icons vertically
   Widget showIconsVertical(double height) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,6 +309,7 @@ class _ProfileDesktopState extends State<ProfileDesktop>
     );
   }
 
+//show social media icons horizontally
   Widget showIconsHorizontal() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

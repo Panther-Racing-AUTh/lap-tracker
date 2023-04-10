@@ -8,6 +8,8 @@ import 'package:flutter_complete_guide/supabase/motorcycle_setup_functions.dart'
 import '../models/vehicle.dart';
 import '../supabase/data_functions.dart';
 
+//stores global data to access from every page
+
 class AppSetup extends ChangeNotifier {
   AppSetup();
   //TODO: store settings and preferences locally on the device

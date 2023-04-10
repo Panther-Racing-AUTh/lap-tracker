@@ -21,6 +21,7 @@ class _AdminPanelState extends State<AdminPanel>
   @override
   void initState() {
     super.initState();
+    //future initialization
     dataFuture = getUsersWithRoles();
   }
 
@@ -31,7 +32,9 @@ class _AdminPanelState extends State<AdminPanel>
       future: dataFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
+          //assign future result to local variable
           List users = snapshot.data![1];
+          //sort users according to their role
           users.sort(
             (a, b) {
               return a['role']['role'].compareTo(b['role']['role']);
@@ -39,16 +42,19 @@ class _AdminPanelState extends State<AdminPanel>
           );
 
           List roles = [];
+          //assign all the different roles to local variable
           snapshot.data![0].forEach((element) {
             roles.add(Role(element['id'], element['role']));
           });
 
+          //create the dropdown-menu
           List<DropdownMenuItem<Role>> allRolesDropdown = [];
           roles.forEach((element) {
             allRolesDropdown.add(DropdownMenuItem<Role>(
                 child: Text(element.role_name), value: element));
           });
 
+          //current role for each user to initialize the dropdown-menu
           List<Role> currentValue = [];
           for (int i = 0; i < users.length; i++) {
             for (int j = 0; j < allRolesDropdown.length; j++) {
@@ -61,6 +67,7 @@ class _AdminPanelState extends State<AdminPanel>
           return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                //table columns
                 DataTable(
                     headingRowColor: MaterialStateProperty.resolveWith(
                         (states) => Colors.grey.shade200),
@@ -73,9 +80,11 @@ class _AdminPanelState extends State<AdminPanel>
                       DataColumn(label: Text("Created At")),
                       DataColumn(label: Text("Last Modified At")),
                       DataColumn(
+                          //button to apply role changes
                           label: TextButton(
                         child: Text('Apply'),
                         onPressed: () {
+                          //for each user the role is changed
                           for (int i = 0; i < users.length; i++) {
                             users[i]['role']['role'] = roles
                                 .firstWhere(
@@ -87,13 +96,14 @@ class _AdminPanelState extends State<AdminPanel>
                           }
                           List<Map> newMap = [];
                           users.forEach((element) {
+                            //replace the old user role with new one and change 'last modified' field
                             newMap.add({
                               'id': element['primary_id'],
                               'last_modified': DateTime.now().toString(),
                               'role_id': element['role']['role'],
                             });
                           });
-
+                          //update roles on database
                           updateUserRoles(newMap);
                         },
                       )),
@@ -101,11 +111,16 @@ class _AdminPanelState extends State<AdminPanel>
                     rows: [
                       for (int i = 0; i < users.length; i++)
                         DataRow(
+                          //row with information for each user
                           cells: [
                             DataCell(Text((i + 1).toString())),
+                            //user name
                             DataCell(Text(users[i]['user']['full_name'])),
+                            //user department
                             DataCell(Text(users[i]['user']['department'])),
+                            //user role
                             DataCell(Text(users[i]['user']['role'])),
+                            //dropdown button for user role reassigning
                             DataCell(DropdownButton(
                               value: currentValue[i],
                               items: allRolesDropdown,
@@ -115,14 +130,17 @@ class _AdminPanelState extends State<AdminPanel>
                                 });
                               }),
                             )),
+                            //'created at' field
                             DataCell(
                               Text(DateTime.parse(users[0]['created_at'])
                                   .toString()),
                             ),
+                            //'last modified at' field
                             DataCell(Text(
                                 DateTime.parse(users[0]['last_modified'])
                                     .toString())),
                             DataCell(
+                              //decorative button
                               IconButton(
                                 disabledColor: Theme.of(context).primaryColor,
                                 onPressed: (users[i]['role']['role'] == 'admin')

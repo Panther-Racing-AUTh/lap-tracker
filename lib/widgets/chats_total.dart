@@ -39,7 +39,8 @@ class _ChatLandingPageState extends State<ChatLandingPage>
   Widget build(BuildContext context) {
     super.build(context);
     AppSetup setup = Provider.of<AppSetup>(context);
-
+    //setup.chatId indicates the id from supabase of the chat shown. if it is -1, then no chat is selected and all the channels that the user is a part of are shown
+    //check if no chat is selected, else show the contents
     return (setup.chatId == -1)
         ? FutureBuilder<List>(
             future: dataFuture,
@@ -58,6 +59,7 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                         itemBuilder: (context, index) {
                           return GestureDetector(
                               onTap: () async {
+                                //on tap of certain channel(group chat or direct message)
                                 setup.allUsers = await getAllUsersFromChannel(
                                     channelId: channels[index]['id']);
 
@@ -65,6 +67,7 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                                   setup.chatId = channels[index]['id'];
                                 });
                               },
+                              //ui of the chat, name and image
                               child: Container(
                                 margin: EdgeInsets.only(
                                     top: 5.0, bottom: 5.0, right: 20.0),
@@ -122,6 +125,7 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                               ));
                         },
                       ),
+                      //add chat button
                       Container(
                         padding: EdgeInsets.all(20),
                         child: IconButton(

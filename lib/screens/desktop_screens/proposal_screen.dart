@@ -6,13 +6,19 @@ import '../../models/vehicle.dart';
 import '../../providers/app_setup.dart';
 import '../../supabase/proposal_functions.dart';
 
+//selected part
 Part selectedPart = Part(name: 'name', measurementUnit: '', value: -1);
 
+//title of proposal
 TextEditingController title = TextEditingController();
+//description of proposal
 TextEditingController description = TextEditingController();
+//reason of proposal
 TextEditingController reason = TextEditingController();
+//new value of proposed part
 TextEditingController change = TextEditingController();
 
+//displays alert dialog to show the proposal
 void showProposal({required BuildContext context}) {
   AppSetup setup = Provider.of<AppSetup>(context, listen: false);
   final screenHeight = MediaQuery.of(context).size.height;
@@ -34,7 +40,7 @@ void showProposal({required BuildContext context}) {
           }
 
           Vehicle v = setup.proposalVehicle;
-
+          // dynamically create side menu for the systems of the vehicle
           List<NavigationRailDestination> navigationRailDestinations = [];
           for (int i = 0; i < v.systems.length; i++) {
             navigationRailDestinations.add(
@@ -44,7 +50,7 @@ void showProposal({required BuildContext context}) {
               ),
             );
           }
-
+          // dynamically create page of every system of the vehicle
           for (int i = 0; i < v.systems.length; i++) {
             _pages.add(
               SetupPage(
@@ -53,6 +59,8 @@ void showProposal({required BuildContext context}) {
               ),
             );
           }
+
+          //custom textfield
           TextField myTextField({
             required TextEditingController controller,
             required String label,
@@ -104,6 +112,7 @@ void showProposal({required BuildContext context}) {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      //show window with vehicle divided into systems
                       Text('Select Part:'),
                       SingleChildScrollView(
                         child: Container(
@@ -146,6 +155,7 @@ void showProposal({required BuildContext context}) {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      //title of proposal
                       Text(
                           (selectedPart.name == 'name')
                               ? 'Select a part to generate title'
@@ -154,6 +164,7 @@ void showProposal({required BuildContext context}) {
                                   : setup.proposalTitle,
                           style: TextStyle(fontSize: 25)),
                       SizedBox(height: 15),
+                      //description of proposal
                       Container(
                         width: screenWidth * 0.3,
                         child: myTextField(
@@ -164,6 +175,7 @@ void showProposal({required BuildContext context}) {
                         ),
                       ),
                       SizedBox(height: 15),
+                      //reason of proposal
                       Container(
                         width: screenWidth * 0.3,
                         child: myTextField(
@@ -175,6 +187,7 @@ void showProposal({required BuildContext context}) {
                       ),
                       SizedBox(height: 15),
                       Row(
+                        //assign new value
                         children: [
                           Text('Change value from',
                               style: TextStyle(fontSize: 20)),
@@ -216,6 +229,7 @@ void showProposal({required BuildContext context}) {
                 ],
               ),
             ),
+            //buttons on the bottom of the dialog
             actions: [
               TextButton(
                 child: Text('DISCARD', style: TextStyle(fontSize: 25)),
@@ -223,11 +237,14 @@ void showProposal({required BuildContext context}) {
                   Navigator.of(context).pop();
                 },
               ),
+              //button to save proposal
               TextButton(
+                //check if new value is a number and a part has been selected
                 onPressed: !((int.tryParse(change.text) != null) &&
                         selectedPart.name != 'name')
                     ? null
                     : () {
+                        //send proposal to database
                         sendProposal(
                           proposal: Proposal(
                             partId: selectedPart.id!,
@@ -260,6 +277,9 @@ void showProposal({required BuildContext context}) {
   );
 }
 
+//ui to build the vehicle systems pages
+
+//for each system a new page is built with the vehicle's subsystems, parts and values
 class SetupPage extends StatefulWidget {
   SetupPage({required this.subsystems, required this.updateParent});
   List<Subsystem> subsystems;
@@ -291,6 +311,7 @@ class _SetupPageState extends State<SetupPage> {
                 shrinkWrap: true,
                 itemCount: widget.subsystems[index].parts.length,
                 itemBuilder: ((context, index1) {
+                  //if a part is selected its color changes and the selectedPart variable is changed
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -355,6 +376,7 @@ class _SetupPageState extends State<SetupPage> {
   }
 }
 
+//called to dynamically calculate title
 String calculateTitle() {
   bool sign = false;
   if (int.parse(change.text) - selectedPart.value > 0) sign = true;

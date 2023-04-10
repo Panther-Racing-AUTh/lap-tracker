@@ -64,6 +64,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 */
+//pick image function
   Future pickImage(
       {required bool isCamera, required int id, required int channelId}) async {
     try {
@@ -77,6 +78,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     }
   }
 
+//send message function
   Future<void> _submit({required int userId, required int channelId}) async {
     final text = _msgController.text;
 
@@ -143,6 +145,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                             ),
                             Row(
                               children: [
+                                //add user to chat button
                                 IconButton(
                                   onPressed: (() {
                                     addUserToChat(
@@ -152,6 +155,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                   }),
                                   icon: Icon(Icons.group_add_rounded),
                                 ),
+                                //show group users button
                                 IconButton(
                                   onPressed: (() {
                                     showChannelUsers(
@@ -167,6 +171,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                       ],
                     ),
                     Expanded(
+                      //show messages
                       child: ListView.builder(
                         reverse: true,
                         itemCount: messages.length,

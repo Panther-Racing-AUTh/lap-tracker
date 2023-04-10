@@ -38,7 +38,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     TextEditingController(),
   ];
 
-  //subsystem controllers
+  //subsystem controllers. First index is for part, second is for subsystem
   List<List<TextEditingController>> subsystemNameControllerList = [
     [
       TextEditingController(),
@@ -50,7 +50,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     ]
   ];
 
-  //part controllers
+  //part controllers. First index is for part, second is for subsystem, third is for part
   List<List<List<TextEditingController>>> partNameControllerList = [
     [
       [
@@ -78,7 +78,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       ],
     ]
   ];
-
+  //all the parts are contained in this nested list. First index is system, second is subsystem and third is part number
   late List<List<List<Widget>>> partBoxList = [
     [
       [
@@ -112,7 +112,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       ]
     ],
   ];
-
+//all the subsystems are contained in this nested list. First index is system, second is subsystem
   late List<List<Widget>> subsystemBoxList = [
     [
       SubsystemBox(
@@ -126,7 +126,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       ),
     ]
   ];
-
+//all the systems are contained in this list
   late List<Widget> systemBoxList = [
     Container(
       padding: EdgeInsets.only(top: 5),
@@ -141,18 +141,21 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       ),
     ),
   ];
+  //called when a part is added
   void addPart({
     required int partNumber,
     required int subsystemNumber,
     required int systemNumber,
   }) {
     setState(() {
+      //add controllers to all controller lists(name, value, measurement unit)
       partNameControllerList[systemNumber][subsystemNumber]
           .add(TextEditingController());
       partValueControllerList[systemNumber][subsystemNumber]
           .add(TextEditingController(text: '0'));
       partMeasureControllerList[systemNumber][subsystemNumber]
           .add(TextEditingController());
+      //add item to parts list
       partBoxList[systemNumber][subsystemNumber].add(
         PartBox(
           id: partNumber,
@@ -170,17 +173,20 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     });
   }
 
+  //called when subsystem is added
   void addSubsystem({required int subsystemNumber, required int systemNumber}) {
     setState(() {
+      //add list of controllers for new subsystem
       partNameControllerList[systemNumber].add([]);
       partMeasureControllerList[systemNumber].add([]);
       partValueControllerList[systemNumber].add([]);
+      //add controllers to all controller lists(name, description)
       subsystemNameControllerList[systemNumber].add(TextEditingController());
       subsystemDescriptionControllerList[systemNumber]
           .add(TextEditingController());
       subsystemBoxList.add([]);
       partBoxList[systemNumber].add([]);
-
+      //add empty parts to the new subsystem
       addPart(
         partNumber: 0,
         subsystemNumber: subsystemNumber,
@@ -191,7 +197,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
         subsystemNumber: subsystemNumber,
         systemNumber: systemNumber,
       );
-
+      //add item to subsystem list
       subsystemBoxList[systemNumber].add(
         SubsystemBox(
           id: subsystemNumber,
@@ -207,20 +213,26 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     });
   }
 
+  //called when system is added
   void addSystem() {
     int systemNumber = systemBoxList.length;
     setState(() {
+      //add list of controllers for new part
       partNameControllerList.add([]);
       partValueControllerList.add([]);
       partMeasureControllerList.add([]);
+      //add controllers for new system
       systemNameControllerList.add(TextEditingController());
       systemDescriptionControllerList.add(TextEditingController());
+      //add list of controllers for new subsystem
       subsystemBoxList.add([]);
       subsystemNameControllerList.add([]);
       subsystemDescriptionControllerList.add([]);
+      //add list of parts for new subsystem
       partBoxList.add([]);
+      //add subsystem
       addSubsystem(subsystemNumber: 0, systemNumber: systemNumber);
-
+      //add item to system list
       systemBoxList.add(
         Container(
           padding: EdgeInsets.only(top: 5),
@@ -238,12 +250,15 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     });
   }
 
+  //called to save vehicle
   Vehicle saveVehicle() {
     late Vehicle vehicle;
     List<List<List<Part>>> parts = [];
     List<List<Subsystem>> subsystems = [];
     List<System> systems = [];
+    //copy values of lists to new lists with designated classes
 
+    //create lists with parts
     for (int i = 0; i < partBoxList.length; i++) {
       parts.add([]);
       for (int j = 0; j < partBoxList[i].length; j++) {
@@ -266,7 +281,9 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
         }
       }
     }
+
     print(parts);
+    //create lists with subsystems
     for (int i = 0; i < subsystemBoxList.length; i++) {
       print('object' + i.toString());
       subsystems.add([]);
@@ -287,6 +304,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       }
     }
 
+    //create list with systems
     for (int i = 0; i < systemBoxList.length; i++) {
       systems.add(
         System(
@@ -297,8 +315,9 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
         ),
       );
     }
+    //create the new vehicle
     vehicle = Vehicle(
-      id: done ? v.id : null,
+      id: setListsDone ? v.id : null,
       name: vehicleName.text,
       year: vehicleYear.text,
       description: vehicleDescription.text,
@@ -310,8 +329,11 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     //vehicle.printVehicle();
   }
 
-  bool done = false;
+  //variable that controls whether the setLists function has been executed or not
+  bool setListsDone = false;
+  //called if the user edits the vehicle and does not create a new one
   void setLists(Vehicle v) {
+    //create and assign the textfields with the values for the user to modify
     vehicleName = TextEditingController(text: v.name);
     vehicleYear = TextEditingController(text: v.year);
     vehicleDescription = TextEditingController(text: v.description);
@@ -397,13 +419,14 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       }
     }
     print('secret message');
-    done = true;
+    setListsDone = true;
   }
 
   @override
   Widget build(BuildContext context) {
     widget.v.printVehicle();
-    if (!done && (v.id != null)) {
+    //if the user edits a pre existing vehicle the appropriate function is executed
+    if (!setListsDone && (v.id != null)) {
       setLists(v);
     }
 
@@ -411,6 +434,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SafeArea(
+          //back button
           child: IconButton(
             icon: Icon(Icons.arrow_back_outlined),
             onPressed: () => setState(() {
@@ -438,6 +462,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      //display the information of the vehicle
                       VehicleBox(
                         vehicleNameController: vehicleName,
                         vehicleDescriptionController: vehicleDescription,
@@ -449,7 +474,9 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                       ),
                       Column(
                         children: [
+                          //button to save vehicle
                           TextButton(
+                            //show dialog to alert user for saved changes
                             onPressed: () => showDialog(
                               barrierDismissible: false,
                               context: context,
@@ -465,7 +492,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                                         child: Text('No')),
                                     TextButton(
                                         onPressed: () {
-                                          (done)
+                                          (setListsDone)
                                               ? updateVehicleinDb(
                                                   vehicle: saveVehicle())
                                               : uploadVehicle(
@@ -490,6 +517,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                     ],
                   ),
                   SizedBox(height: 5),
+                  // display list with systems
                   ...systemBoxList,
                   SizedBox(height: screenHeight * 0.1)
                 ],
@@ -502,6 +530,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
   }
 }
 
+//the ui of the card that holds a system, its subsystem and the parts of each subsystem
 class SystemBox extends StatefulWidget {
   SystemBox({
     required int this.id,
@@ -547,6 +576,7 @@ class _SystemBoxState extends State<SystemBox> {
                         'System Details',
                         style: TextStyle(fontSize: 24),
                       ),
+                      //add subsystem button
                       TextButton(
                         child: Text(
                           'Add Subsystem',
@@ -566,6 +596,7 @@ class _SystemBoxState extends State<SystemBox> {
             ],
           ),
           SizedBox(height: widget.screenHeight * 0.01),
+          //display textfields
           Row(
             children: [
               Container(
@@ -597,6 +628,7 @@ class _SystemBoxState extends State<SystemBox> {
                 ),
                 Column(
                   children: [
+                    //display parts of the subsystem
                     ...widget.children,
                   ],
                 ),
@@ -609,6 +641,7 @@ class _SystemBoxState extends State<SystemBox> {
   }
 }
 
+//the ui of the card that holds a subsystem and the parts of it
 class SubsystemBox extends StatefulWidget {
   SubsystemBox({
     required int this.id,
@@ -661,6 +694,7 @@ class _SubsystemBoxState extends State<SubsystemBox> {
                         style: TextStyle(fontSize: 24),
                       ),
                       TextButton(
+                        //add part button
                         child: Text(
                           'Add Part',
                           style: TextStyle(fontSize: 20),
@@ -682,6 +716,7 @@ class _SubsystemBoxState extends State<SubsystemBox> {
           SizedBox(height: screenHeight * 0.01),
           Row(
             children: [
+              //textfields for the subsystem
               Container(
                 width: screenWidth * 0.2,
                 child: myTextField(
@@ -711,6 +746,7 @@ class _SubsystemBoxState extends State<SubsystemBox> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Part Details', style: TextStyle(fontSize: 20)),
+                      //display parts of the subsystem
                       ...widget.children
                     ],
                   ),
@@ -724,6 +760,7 @@ class _SubsystemBoxState extends State<SubsystemBox> {
   }
 }
 
+//ui of the subsystem part
 Widget PartBox({
   required int id,
   required List<TextEditingController> partNameControllerList,
@@ -738,6 +775,7 @@ Widget PartBox({
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          //textfields for the part
           Container(
             width: screenWidth * 0.19,
             child: myTextField(
@@ -765,6 +803,7 @@ Widget PartBox({
       ),
     );
 
+//ui for vehicle information
 Widget VehicleBox({
   required TextEditingController vehicleNameController,
   required TextEditingController vehicleYearController,
@@ -804,6 +843,7 @@ Widget VehicleBox({
           SizedBox(height: screenHeight * 0.01),
           Row(
             children: [
+              //display textfields for vehicle
               Container(
                 width: screenWidth * 0.2,
                 child: myTextField(
@@ -833,6 +873,7 @@ Widget VehicleBox({
       ),
     );
 
+//custom textfield
 TextField myTextField({
   required TextEditingController controller,
   required String label,

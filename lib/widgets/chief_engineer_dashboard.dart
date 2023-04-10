@@ -13,6 +13,15 @@ class Overview extends StatefulWidget {
   State<Overview> createState() => _OverviewState();
 }
 
+//index to determine what to render on screen:
+//0: show all 6 windows
+//1: show powertrain window
+//2: show electronics window
+//3: show aerodynamics window
+//4: show intake & exhaust window
+//5: show suspension window
+//6: show hands-on team
+
 int _selected = 0;
 
 class _OverviewState extends State<Overview> {
@@ -36,7 +45,7 @@ class _OverviewState extends State<Overview> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final proposals = snapshot.data!;
-
+            //all six windows of each department initialization with custm widget
             late List<Widget> windows = [
               Section(
                 title: 'Powertrain',
@@ -145,6 +154,7 @@ class _OverviewState extends State<Overview> {
   }
 }
 
+//custom widget for each department
 class Section extends StatefulWidget {
   const Section(
     int this.id,
@@ -166,6 +176,7 @@ class _SectionState extends State<Section> {
   int count = 0;
   @override
   Widget build(BuildContext context) {
+    //checks if window is that of the hands team
     bool hands = widget.id == 6;
     AppSetup setup = Provider.of<AppSetup>(context);
     // print(widget.title);
@@ -188,7 +199,9 @@ class _SectionState extends State<Section> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
+                        child:
+                            //proposal state
+                            Text(
                           (widget.proposal == null)
                               ? (hands)
                                   ? 'Waiting for response'
@@ -207,6 +220,7 @@ class _SectionState extends State<Section> {
                           ),
                         ),
                       ),
+                      //buttons for approval and rejection
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -222,7 +236,8 @@ class _SectionState extends State<Section> {
                                       print('1');
                                       changeProposalState(
                                         newState: ProposalState(
-                                          proposalId: widget.proposal!.proposalId!,
+                                          proposalId:
+                                              widget.proposal!.proposalId!,
                                           changedByUserId: setup.supabase_id,
                                           state: 'APPROVED',
                                         ),
@@ -242,7 +257,8 @@ class _SectionState extends State<Section> {
 
                                       changeProposalState(
                                         newState: ProposalState(
-                                          proposalId: widget.proposal!.proposalId!,
+                                          proposalId:
+                                              widget.proposal!.proposalId!,
                                           changedByUserId: setup.supabase_id,
                                           state: 'DECLINED',
                                         ),
@@ -263,8 +279,10 @@ class _SectionState extends State<Section> {
                         color: Theme.of(context).selectedRowColor),
                   ),
                 ),
+                //show message if no proposal is made
                 if (widget.proposal == null)
                   Text((hands) ? 'No Response yet' : 'No proposal yet'),
+                //else show proposal
                 if (widget.proposal != null)
                   Column(
                     children: [
@@ -284,7 +302,9 @@ class _SectionState extends State<Section> {
                             Padding(
                               padding: const EdgeInsets.only(left: 20),
                               child: Center(
-                                child: Text(
+                                child:
+                                    //show part of title if title is too big, show everything when zoomed in
+                                    Text(
                                   (widget.proposal!.title.length < 35 ||
                                           _selected == widget.id)
                                       ? widget.proposal!.title
@@ -309,6 +329,7 @@ class _SectionState extends State<Section> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
+                                  //proposal description
                                   Text(
                                     'Description',
                                     style: TextStyle(
@@ -328,12 +349,14 @@ class _SectionState extends State<Section> {
                                 ],
                               ),
                             ),
+                            //show proposal part name
                             Text(
                               widget.proposal!.partName,
                               style: TextStyle(
                                   fontSize: 25,
                                   color: Theme.of(context).selectedRowColor),
                             ),
+                            //show proposal part current value
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -351,6 +374,7 @@ class _SectionState extends State<Section> {
                                       color:
                                           Theme.of(context).selectedRowColor),
                                 ),
+                                //show proposal part suggested value
                                 Text(
                                   widget.proposal!.partValueTo,
                                   style: TextStyle(
@@ -363,6 +387,7 @@ class _SectionState extends State<Section> {
                             //customText(widget.proposal!.)
                           ],
                         ),
+                      //show reason
                       if (!hands)
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),
@@ -400,6 +425,7 @@ class _SectionState extends State<Section> {
             BoxDecoration(border: Border.all(width: 15, color: widget.color)),
       ),
       onTap: () {
+        //zoom in or out if window is tapped
         (_selected == 0) ? _selected = widget.id : _selected = 0;
         widget.notifyParent();
       },

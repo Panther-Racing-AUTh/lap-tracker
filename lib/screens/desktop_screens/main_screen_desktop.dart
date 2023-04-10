@@ -52,14 +52,16 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     super.dispose();
   }
 
+  //called when user clicks chart from message to open in 'charts' page
   void openChartInPage() {
     AppSetup setup = Provider.of<AppSetup>(context, listen: false);
     setState(() {
-      setup.setIndex(2);
-      _pageController.jumpToPage(2);
+      setup.setIndex(setup.role == 'engineer' ? 1 : 2);
+      _pageController.jumpToPage(setup.role == 'engineer' ? 1 : 2);
     });
   }
 
+  //called to dynamically calculate width screen
   double _calculateAvailableWidthOfScreen(double deviceScreenWidth) {
     if (showSidebar) {
       if (deviceScreenWidth > 1000) {
@@ -76,6 +78,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     var height = MediaQuery.of(context).size.height;
     var width =
         _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
+    //list of all pages
     _Allpages = [
       DashBoardDesktop(width),
       ChatLandingPage(openChartInPage),
@@ -92,6 +95,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            // show/hide sidebar button
             IconButton(
               icon: Icon((showSidebar)
                   ? Icons.keyboard_double_arrow_left
@@ -101,12 +105,14 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             SizedBox(
               width: 10,
             ),
+            //display weather information based on role
             if (setup.role != 'default' && setup.role != 'data_analyst')
               WeatherWidget(
                 appbar: true,
                 screenWidth: width,
               ),
             SizedBox(width: width * 0.1),
+            //display time based on role
             if (width > 620 &&
                 setup.role != 'default' &&
                 setup.role != 'data_analyst')
@@ -123,6 +129,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         //title: Text('Panther Racing AUTh'),
         actions: [
+          //open proposal popup button
           if (setup.role == 'engineer')
             TextButton(
                 onPressed: () => showProposal(context: context),
@@ -131,6 +138,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                   style: TextStyle(color: Colors.white),
                 )),
           SizedBox(width: 10),
+          //button for user information
           IconButton(
               onPressed: () {
                 showDialog(
@@ -179,6 +187,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                 );
               },
               icon: Icon(Icons.info)),
+          //sign out button
           IconButton(
               onPressed: () => signOut(context), icon: Icon(Icons.exit_to_app)),
           SizedBox(width: 5),
@@ -196,6 +205,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                         MediaQuery.of(context).padding.top -
                         kToolbarHeight),
                 child: IntrinsicHeight(
+                  //side bar with pages
                   child: NavigationRail(
                     selectedIndex: setup.mainScreenDesktopInd,
                     groupAlignment: -1,
@@ -206,6 +216,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                       });
                     },
                     labelType: NavigationRailLabelType.all,
+                    //dynamically display the available pages based on user role
                     destinations: dynamicList(setup.role),
                     backgroundColor:
                         Theme.of(context).primaryColor.withOpacity(0.15),
@@ -320,7 +331,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       selectedIcon: Icon(Icons.settings),
     ),
   ];
-
+  //the custom page list based on user role
   List<Widget> _pagesCustom(String role) {
     List<Widget> l = [];
     if (role == 'admin') {
@@ -364,6 +375,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     return l;
   }
 
+  //custom destinations for available pages based on user role
   List<NavigationRailDestination> dynamicList(String role) {
     List<NavigationRailDestination> l = [];
 

@@ -24,8 +24,10 @@ class Graph extends StatefulWidget {
 }
 
 class _GraphState extends State<Graph> {
+  //controller initialization
   late ZoomPanBehavior _zoomPanBehavior;
   late RangeController _rangeController;
+
   @override
   void initState() {
     _rangeController = RangeController(
@@ -47,13 +49,19 @@ class _GraphState extends State<Graph> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     //AppSetup a = Provider.of<AppSetup>(context);
+
+    //ratio to not diplay all points
     late var ratio;
     late final minimum;
     late final maximum;
+    //all points that exist, a timestamp-value pair with additional metadata such as canbus id name
     List<List<Data>> points = [];
     //Map<String, List<Data>> series = {};
+
+    //list of the lines that will be drawn
     List series = [];
 
+    //if a sensor is selected display data else do not
     if (widget.list.length > 0) {
       //series[a.chartList[i]] = [];
 
@@ -62,9 +70,11 @@ class _GraphState extends State<Graph> {
       }
       print(series.length);
       //print(series[a.chartList[1]]);
+
       ratio = widget.showDetails ? 4 : 8;
       if (widget.isMessage) ratio = 50;
 
+      //add points to nested list
       for (int i = 0; i < widget.list.length; i++) {
         points.add([]);
         for (int j = 0; j < series[i].length; j++) {
@@ -72,6 +82,7 @@ class _GraphState extends State<Graph> {
         }
       }
 
+      //maximum and minimum time period that data represents
       minimum = DateTime.parse('2023-03-02 ' + points[0].first.timestamp);
       maximum = DateTime.parse('2023-03-02 ' + points[0].last.timestamp);
       _rangeController.start = minimum;
@@ -123,6 +134,7 @@ class _GraphState extends State<Graph> {
                     ],
                   ),
                 ),
+                //check to display menu at the bottom to drag and change limits of chart at bottom of screen
                 if (widget.showDetails)
                   SfRangeSelector(
                     dragMode: SliderDragMode.both,
@@ -144,6 +156,7 @@ class _GraphState extends State<Graph> {
                         primaryYAxis: NumericAxis(isVisible: false),
                         plotAreaBorderWidth: 0,
                         series: <FastLineSeries<dynamic, dynamic>>[
+                          //feed points of each graph in widget
                           for (int i = 0; i < points.length; i++)
                             FastLineSeries(
                               width: 0.5,

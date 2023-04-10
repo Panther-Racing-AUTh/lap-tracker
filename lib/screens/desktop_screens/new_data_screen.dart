@@ -29,6 +29,7 @@ class _NewDataScreenState extends State<NewDataScreen>
     super.initState();
   }
 
+  //called to open chart from chat to data screen
   void openChartInPage() {
     setState(() {
       isLoadingChart = false;
@@ -44,8 +45,10 @@ class _NewDataScreenState extends State<NewDataScreen>
     AppSetup setup = Provider.of<AppSetup>(context);
     dateController.text = DateFormat('dd/MM/yyyy').format(setup.date);
 
+    //checks if user came from chat and executes the appropriate function
     if (setup.mainScreenDesktopIndex == 2 && setup.chatId != -1)
       openChartInPage();
+    //show dialog to select lap
     showLapDialog({
       required BuildContext context,
       required Map session,
@@ -105,6 +108,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                                         shrinkWrap: true,
                                         itemCount: laps.length,
                                         itemBuilder: (context, index) {
+                                          //return list tile for each result found
                                           return ListTile(
                                             title: Row(
                                               mainAxisAlignment:
@@ -115,6 +119,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                                               ],
                                             ),
                                             onTap: () async {
+                                              //get data for selected lap
                                               Navigator.of(context).pop();
                                               setState(() {
                                                 isLoadingChart = true;
@@ -163,6 +168,7 @@ class _NewDataScreenState extends State<NewDataScreen>
           children: [
             Row(
               children: [
+                //show date picker
                 Container(
                   width: 200,
                   height: 50,
@@ -190,17 +196,20 @@ class _NewDataScreenState extends State<NewDataScreen>
                   ),
                 ),
                 SizedBox(width: 10),
+                // show race track selector
                 Container(
                   height: 50,
                   //width: 300,
                   child: RaceTrackSelector(),
                 ),
+                //button to search for session
                 TextButton(
                   onPressed: () async {
                     setState(() {
                       isLoadingRacetrack = true;
                     });
-                    final List? res = await searchData(
+                    //assign fetched sessions to local variable
+                    final List? sessions = await searchData(
                         dateTime: setup.date, race: setup.racetrack);
 
                     setState(() {
@@ -212,10 +221,11 @@ class _NewDataScreenState extends State<NewDataScreen>
                         builder: ((context) {
                           return AlertDialog(
                             actions: [
+                              //show search results to user
                               Container(
                                 width: screenWidth * 0.7,
                                 height: screenHeight * 0.6,
-                                child: (res!.isNotEmpty)
+                                child: (sessions!.isNotEmpty)
                                     ? Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -270,9 +280,10 @@ class _NewDataScreenState extends State<NewDataScreen>
                                               children: [
                                                 ListView.builder(
                                                   shrinkWrap: true,
-                                                  itemCount: res.length,
+                                                  itemCount: sessions.length,
                                                   itemBuilder:
                                                       (context, index) {
+                                                    //return list tiles for each session
                                                     return ListTile(
                                                       title: Row(
                                                         mainAxisAlignment:
@@ -285,7 +296,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                                                               width:
                                                                   screenWidth *
                                                                       0.2),
-                                                          Text(res[index][
+                                                          Text(sessions[index][
                                                                       'event_date']
                                                                   ['date']
                                                               .toString()
@@ -294,16 +305,18 @@ class _NewDataScreenState extends State<NewDataScreen>
                                                               width:
                                                                   screenWidth *
                                                                       0.2),
-                                                          Text(res[index]
+                                                          Text(sessions[index]
                                                               ['type'])
                                                         ],
                                                       ),
                                                       onTap: () {
+                                                        //search for laps based on the selected session
                                                         Navigator.of(context)
                                                             .pop();
                                                         showLapDialog(
                                                           context: context,
-                                                          session: res[index],
+                                                          session:
+                                                              sessions[index],
                                                           screenHeight:
                                                               screenHeight,
                                                           screenWidth:
@@ -316,6 +329,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                                               ],
                                             ),
                                           ])
+                                    //no data screen
                                     : Container(
                                         height: screenHeight * 0.1,
                                         child: Center(
@@ -330,11 +344,12 @@ class _NewDataScreenState extends State<NewDataScreen>
                         }));
                   },
                   child: Text(
-                    'Search Lap',
+                    'Search Sessions',
                     style: TextStyle(fontSize: 19),
                   ),
                 ),
                 SizedBox(width: 500),
+                //center graph button
                 TextButton(
                   child: Text(
                     'Center Graph',
@@ -344,6 +359,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                 )
               ],
             ),
+            //when data is fetched the chart customization is made visible
             if (fetchedData && !isLoadingChart) EchartsPage()
           ],
         ),

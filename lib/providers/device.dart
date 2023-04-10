@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 
+//stores data related to the device specifications
+
 class DeviceManager with ChangeNotifier {
   String mode = '';
   bool isPhone = false;

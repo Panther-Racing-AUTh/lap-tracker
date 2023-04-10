@@ -10,6 +10,7 @@ import '../supabase/data_functions.dart';
 class ChatBubble extends StatelessWidget {
   final Message message;
   final BuildContext context;
+  //executes when user opens chart in data screen
   final Function function;
   const ChatBubble({
     Key? key,
@@ -57,13 +58,16 @@ class ChatBubble extends StatelessWidget {
                             : Colors.white,
                         borderRadius: BorderRadius.circular(8),
                       ),
+                      //check if message is of type text of chart
                       child: (message.type == 'text')
                           ? Text(
                               message.content,
                               style: const TextStyle(
                                   color: Colors.white, fontSize: 16.0),
                             )
-                          : GestureDetector(
+                          :
+                          //if chart, display the chart
+                          GestureDetector(
                               child: Stack(
                                 children: [
                                   FutureBuilder(
@@ -93,6 +97,7 @@ class ChatBubble extends StatelessWidget {
                                   ),
                                 ],
                               ),
+                              //on long press show the options for full screen or redirection to data screen
                               onLongPress: () => showDialog(
                                   context: context,
                                   builder: (ctx) => AlertDialog(
@@ -161,6 +166,7 @@ class ChatBubble extends StatelessWidget {
                                               title: Text(
                                                   'Open in \'Chart\' page'),
                                               onTap: () {
+                                                //redirect to data screen
                                                 function();
                                                 setup.setListFull(
                                                     chartStringToList(
@@ -206,6 +212,7 @@ class ChatBubble extends StatelessWidget {
   }
 }
 
+//convert string to list
 List<dynamic> chartStringToList(String t) {
   List<dynamic> l = [], u = [];
   u = t.replaceFirst('[', '').replaceFirst(']', '').split(',').toList();

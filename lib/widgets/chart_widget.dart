@@ -37,6 +37,7 @@ class _EchartsPageState extends State<EchartsPage> {
     AppSetup setup = Provider.of<AppSetup>(context, listen: false);
 
     finalList = setup.chartList;
+    //check if user was redirected from chat or not
     if (setup.mainScreenDesktopIndex == 2 && setup.chatId != -1 && !triggered)
       trigger();
 

@@ -15,7 +15,9 @@ class EditVehicleSetup extends StatefulWidget {
 
 class _EditVehicleSetupState extends State<EditVehicleSetup> {
   late Future<Vehicle> myFuture;
+  //index for which page of systems is displayed
   var _selectedIndex = 0;
+  //list of pages for each system
   List<Widget> _pages = [];
   @override
   void initState() {
@@ -35,6 +37,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
           Vehicle v = snapshot.data!;
           print(v.systems.length);
           List<NavigationRailDestination> navigationRailDestinations = [];
+          //add each system to the side menu
           for (int i = 0; i < v.systems.length; i++) {
             navigationRailDestinations.add(
               NavigationRailDestination(
@@ -43,7 +46,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
               ),
             );
           }
-
+          //add a new page for each system with custom widget
           for (int i = 0; i < v.systems.length; i++) {
             _pages.add(
               SetupPage(
@@ -62,16 +65,19 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        //back button
                         BackButton(
                           onPressed: () =>
                               widget.backFunction(edit: false, vehicle: v),
                         ),
+                        //edit vehicle button, takes user to new screen to edit vehicle
                         IconButton(
                             onPressed: () =>
                                 widget.backFunction(edit: true, vehicle: v),
                             icon: Icon(Icons.edit)),
                       ],
                     ),
+                    //information of the vehicle
                     Center(
                       child: Column(
                         children: [
@@ -90,6 +96,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
                   ],
                 ),
               ),
+              //show side menu and the page it corresponds to
               SingleChildScrollView(
                 child: Container(
                   height: screenHeight * 0.87,
@@ -130,6 +137,8 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
   }
 }
 
+//custom widget for each system to display subsystems, parts and information for each system
+//it is a nested ListView.builder for each system and its subsystems
 class SetupPage extends StatefulWidget {
   SetupPage({required this.subsystems});
   List<Subsystem> subsystems;
@@ -152,6 +161,7 @@ class _SetupPageState extends State<SetupPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                //subsystem name
                 Text(
                   widget.subsystems[index].name,
                   style: TextStyle(color: Colors.black, fontSize: 26),
@@ -179,12 +189,14 @@ class _SetupPageState extends State<SetupPage> {
                                 children: [
                                   Row(
                                     children: [
+                                      //part name
                                       Text(
                                         widget.subsystems[index].parts[index1]
                                             .name,
                                         style: TextStyle(
                                             color: Colors.black, fontSize: 20),
                                       ),
+                                      //part measurement unit
                                       Text(
                                         '(' +
                                             widget.subsystems[index]
@@ -195,6 +207,7 @@ class _SetupPageState extends State<SetupPage> {
                                       ),
                                     ],
                                   ),
+                                  //part value
                                   Padding(
                                     padding: const EdgeInsets.only(right: 10),
                                     child: Text(

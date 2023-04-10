@@ -12,6 +12,10 @@ class VehicleScreen extends StatefulWidget {
   State<VehicleScreen> createState() => _VehicleScreenState();
 }
 
+//controls which page is shown
+//0: select vehicle screen
+//1: create new vehicle screen
+//2: view vehicle screen
 int _index = 0;
 int vehicleId = -1;
 Vehicle v = Vehicle.empty();
@@ -20,7 +24,7 @@ class _VehicleScreenState extends State<VehicleScreen>
     with AutomaticKeepAliveClientMixin<VehicleScreen> {
   @override
   bool get wantKeepAlive => true;
-
+//called to get back to this page
   void backFunction({required bool edit, required Vehicle vehicle}) {
     setState(() {
       _index = 0;
@@ -30,7 +34,6 @@ class _VehicleScreenState extends State<VehicleScreen>
         _index = 1;
         v = vehicle;
       }
-      ;
     });
   }
 
@@ -39,6 +42,7 @@ class _VehicleScreenState extends State<VehicleScreen>
     super.build(context);
     return (_index == 0)
         ? StreamBuilder<List<Vehicle>>(
+            //use a stream to get all stored vehicles for user to choose
             stream: getAllVehicles(),
             builder: (context, snapshot) {
               if (!snapshot.hasData || snapshot.data!.length == 0) {
@@ -58,6 +62,7 @@ class _VehicleScreenState extends State<VehicleScreen>
               return ListView.builder(
                 itemCount: vehicles.length + 1,
                 itemBuilder: ((context, index) {
+                  //display the vehicles' details with list tiles and add button to add new vehicle
                   if (index == vehicles.length)
                     return TextButton(
                       onPressed: () => setState(() {
