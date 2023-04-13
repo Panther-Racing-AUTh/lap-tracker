@@ -99,7 +99,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
               //show side menu and the page it corresponds to
               SingleChildScrollView(
                 child: Container(
-                  height: screenHeight * 0.87,
+                  height: screenHeight * 0.8,
                   width: screenWidth,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +138,7 @@ class _EditVehicleSetupState extends State<EditVehicleSetup> {
 }
 
 //custom widget for each system to display subsystems, parts and information for each system
-//it is a nested ListView.builder for each system and its subsystems
+//it is a nested ListView.builder for each subsystem and its parts
 class SetupPage extends StatefulWidget {
   SetupPage({required this.subsystems});
   List<Subsystem> subsystems;

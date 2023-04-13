@@ -176,7 +176,7 @@ Future<Vehicle> getVehicle(int id) async {
   );
 }
 
-Future<void> uploadVehicle({required Vehicle vehicle}) async {
+Future<bool> uploadVehicle({required Vehicle vehicle}) async {
   var vehicleResponse = await supabase
       .from('vehicle')
       .insert({
@@ -242,9 +242,10 @@ Future<void> uploadVehicle({required Vehicle vehicle}) async {
       }
     }
   }
+  return true;
 }
 
-Future<void> updateVehicleinDb({required Vehicle vehicle}) async {
+Future<bool> updateVehicleinDb({required Vehicle vehicle}) async {
   print('vehicle id:  ' + vehicle.id.toString());
   vehicle.printVehicle();
   await supabase.from('vehicle').update({
@@ -354,5 +355,66 @@ Future<void> updateVehicleinDb({required Vehicle vehicle}) async {
       }
     }
   }
+  var newVehicle = await getVehicle(vehicle.id!);
+  List<int> partIds = [];
+  List<int> subsystemIds = [];
+  List<int> systemIds = [];
+
+  List<int> partIdsToDelete = [];
+  List<int> subsystemIdsToDelete = [];
+  List<int> systemIdsToDelete = [];
+
+  for (int i = 0; i < vehicle.systems.length; i++) {
+    systemIds.add(vehicle.systems[i].id!);
+    for (int j = 0; j < vehicle.systems[i].subsystems.length; j++) {
+      subsystemIds.add(vehicle.systems[i].subsystems[j].id!);
+      for (int k = 0; k < vehicle.systems[i].subsystems[j].parts.length; k++) {
+        partIds.add(vehicle.systems[i].subsystems[j].parts[k].id!);
+      }
+    }
+  }
+
+  for (int i = 0; i < newVehicle.systems.length; i++) {
+    var systemFromNewVehicle = newVehicle.systems[i];
+    if (!systemIds.contains(systemFromNewVehicle.id)) {
+      systemIdsToDelete.add(systemFromNewVehicle.id!);
+    }
+    for (int j = 0; j < newVehicle.systems[i].subsystems.length; j++) {
+      var subsystemFromNewVehicle = newVehicle.systems[i].subsystems[j];
+      if (!subsystemIds.contains(subsystemFromNewVehicle.id)) {
+        subsystemIdsToDelete.add(subsystemFromNewVehicle.id!);
+      }
+      for (int k = 0;
+          k < newVehicle.systems[i].subsystems[j].parts.length;
+          k++) {
+        var partFromNewVehicle = newVehicle.systems[i].subsystems[j].parts[k];
+
+        if (!partIds.contains(partFromNewVehicle.id)) {
+          partIdsToDelete.add(partFromNewVehicle.id!);
+        }
+      }
+    }
+  }
+  print(subsystemIds);
+  print(subsystemIdsToDelete);
+  await deletePartsFromList(partIdsToDelete);
+  await deleteSubsystemsFromList(subsystemIdsToDelete);
+  await deleteSystemsFromList(systemIdsToDelete);
+  print(partIds);
+  print(partIdsToDelete);
   print('success');
+  return true;
+}
+
+Future deletePartsFromList(List<int> partIdsToDelete) async {
+  await supabase.from('part_values').delete().in_('part_id', partIdsToDelete);
+  await supabase.from('part').delete().in_('id', partIdsToDelete);
+}
+
+Future deleteSubsystemsFromList(List<int> subsystemIdsToDelete) async {
+  await supabase.from('subsystem').delete().in_('id', subsystemIdsToDelete);
+}
+
+Future deleteSystemsFromList(List<int> systemIdsToDelete) async {
+  await supabase.from('system').delete().in_('id', systemIdsToDelete);
 }

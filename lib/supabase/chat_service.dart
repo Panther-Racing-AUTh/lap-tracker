@@ -69,15 +69,18 @@ Stream<List<Message>> getMessages(
 }
 
 Future getAllUsersFromChannel({required int channelId}) async {
+  print('getAllUsersFromChannel function called');
   List allUsers = [];
   List allUsersWithImage = [];
   final data = await supabase
       .from('channel_users')
-      .select(''' user_id: user_id(id, full_name, role, department, uuid) ''');
+      .select(''' user_id: user_id(id, full_name, role, department, uuid) ''').eq(
+          'channel_id', channelId);
   data.forEach((element) {
     allUsers.add(element['user_id']);
   });
-
+  print(allUsers);
+  print(allUsers.length);
   for (var element in allUsers) {
     var image = supabase.storage.from('users').getPublicUrl(
         (element['uuid'] == null) ? '' : element['uuid'] + '.jpeg');
@@ -86,6 +89,9 @@ Future getAllUsersFromChannel({required int channelId}) async {
         : image.split('users/').first + 'users/default.webp';
     allUsersWithImage.add(element);
   }
+  print(allUsersWithImage);
+  print(allUsersWithImage.length);
+  print('ended function getAllUsersFromChannel');
   return allUsersWithImage;
 }
 
@@ -240,6 +246,9 @@ void showChannelUsers({required BuildContext context, required int channelId}) {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List channelUsers = snapshot.data as List;
+
+            print(channelUsers);
+            print(channelUsers.length);
             return Container(
               child: AlertDialog(
                 title: Text('Users in this chat'),

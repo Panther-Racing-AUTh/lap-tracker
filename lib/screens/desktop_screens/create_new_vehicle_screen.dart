@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/vehicle.dart';
+import 'package:http/http.dart';
+import 'package:quiver/collection.dart';
 
 import '../../../supabase/motorcycle_setup_functions.dart';
 
@@ -24,6 +26,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.width;
   double screenHeight =
       MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.height;
+  late int key = 1;
 
   //vehicle controllers
   TextEditingController vehicleName = new TextEditingController();
@@ -83,31 +86,39 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     [
       [
         PartBox(
-          id: 0,
-          partNameControllerList: partNameControllerList[0][0],
-          partMeasureControllerList: partMeasureControllerList[0][0],
-          partValueControllerList: partValueControllerList[0][0],
-          screenWidth: screenWidth,
-          screenHeight: screenHeight,
-          context: context,
-        ),
+            id: 0,
+            subsystemId: 0,
+            systemId: 0,
+            partNameControllerList: partNameControllerList[0][0],
+            partMeasureControllerList: partMeasureControllerList[0][0],
+            partValueControllerList: partValueControllerList[0][0],
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+            context: context,
+            deletePartFunction: deletePart),
         PartBox(
           id: 1,
+          subsystemId: 0,
+          systemId: 0,
           partNameControllerList: partNameControllerList[0][0],
           partMeasureControllerList: partMeasureControllerList[0][0],
           partValueControllerList: partValueControllerList[0][0],
           screenWidth: screenWidth,
           screenHeight: screenHeight,
           context: context,
+          deletePartFunction: deletePart,
         ),
         PartBox(
           id: 2,
+          subsystemId: 0,
+          systemId: 0,
           partNameControllerList: partNameControllerList[0][0],
           partMeasureControllerList: partMeasureControllerList[0][0],
           partValueControllerList: partValueControllerList[0][0],
           screenWidth: screenWidth,
           screenHeight: screenHeight,
           context: context,
+          deletePartFunction: deletePart,
         ),
       ]
     ],
@@ -123,6 +134,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
             subsystemDescriptionControllerList[0],
         children: partBoxList[0][0],
         addPartFunction: addPart,
+        deleteSubsystemFunction: deleteSubsystem,
       ),
     ]
   ];
@@ -138,6 +150,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
         screenHeight: screenHeight,
         children: subsystemBoxList[0],
         addSubsystemFunction: addSubsystem,
+        deleteSystemFunction: deleteSystem,
       ),
     ),
   ];
@@ -159,6 +172,8 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       partBoxList[systemNumber][subsystemNumber].add(
         PartBox(
           id: partNumber,
+          subsystemId: subsystemNumber,
+          systemId: systemNumber,
           partNameControllerList: partNameControllerList[systemNumber]
               [subsystemNumber],
           partMeasureControllerList: partMeasureControllerList[systemNumber]
@@ -168,8 +183,35 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
           screenWidth: screenWidth,
           screenHeight: screenHeight,
           context: context,
+          deletePartFunction: deletePart,
         ),
       );
+      key++;
+    });
+  }
+
+  //called when a part is deleted
+  void deletePart(
+      {required int subsystemNumber,
+      required int systemNumber,
+      required int partNumber}) {
+    print('part with id ' +
+        partNumber.toString() +
+        ' from subsystem ' +
+        subsystemNumber.toString() +
+        ' from system ' +
+        systemNumber.toString() +
+        ' deleted');
+
+    setState(() {
+      // partBoxList[systemNumber][subsystemNumber].removeAt(partNumber);
+
+      partBoxList[systemNumber][subsystemNumber]
+          .replaceRange(partNumber, partNumber + 1, [Container()]);
+
+      partNameControllerList[systemNumber][subsystemNumber][partNumber].text =
+          'deleted';
+      key++;
     });
   }
 
@@ -184,7 +226,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       subsystemNameControllerList[systemNumber].add(TextEditingController());
       subsystemDescriptionControllerList[systemNumber]
           .add(TextEditingController());
-      subsystemBoxList.add([]);
+
       partBoxList[systemNumber].add([]);
       //add empty parts to the new subsystem
       addPart(
@@ -208,8 +250,34 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
               subsystemDescriptionControllerList[systemNumber],
           children: partBoxList[systemNumber][subsystemNumber],
           addPartFunction: addPart,
+          deleteSubsystemFunction: deleteSubsystem,
         ),
       );
+      key++;
+    });
+  }
+
+  //called when subsystem is deleted
+  void deleteSubsystem(
+      {required int subsystemNumber, required int systemNumber}) {
+    print('subsystem with id ' +
+        subsystemNumber.toString() +
+        ' from system ' +
+        systemNumber.toString() +
+        ' deleted');
+    setState(() {
+      // partBoxList[systemNumber].removeAt(subsystemNumber);
+      // subsystemBoxList[systemNumber].removeAt(subsystemNumber);
+
+      partBoxList[systemNumber]
+          .replaceRange(subsystemNumber, subsystemNumber + 1, [
+        [Container()]
+      ]);
+      subsystemBoxList[systemNumber]
+          .replaceRange(subsystemNumber, subsystemNumber + 1, [Container()]);
+      subsystemNameControllerList[systemNumber][subsystemNumber].text =
+          'deleted';
+      key++;
     });
   }
 
@@ -244,9 +312,34 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
             screenHeight: screenHeight,
             children: subsystemBoxList[systemNumber],
             addSubsystemFunction: addSubsystem,
+            deleteSystemFunction: deleteSystem,
           ),
         ),
       );
+      key++;
+    });
+  }
+
+  //called when system is deleted
+  void deleteSystem({required int systemNumber}) {
+    print('system with id ' + systemNumber.toString() + ' deleted');
+
+    setState(() {
+      // subsystemBoxList.removeAt(systemNumber);
+      // systemBoxList.removeAt(systemNumber);
+      // partBoxList.removeAt(systemNumber);
+
+      subsystemBoxList.replaceRange(systemNumber, systemNumber + 1, [
+        [Container()]
+      ]);
+      systemBoxList.replaceRange(systemNumber, systemNumber + 1, [Container()]);
+      partBoxList.replaceRange(systemNumber, systemNumber + 1, [
+        [
+          [Container()]
+        ]
+      ]);
+      systemNameControllerList[systemNumber].text = 'deleted';
+      key++;
     });
   }
 
@@ -264,20 +357,22 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       for (int j = 0; j < partBoxList[i].length; j++) {
         parts[i].add([]);
         for (int k = 0; k < partBoxList[i][j].length; k++) {
-          parts[i][j].add(
-            Part(
-              id: (v.systems.length - 1 < i)
-                  ? null
-                  : (v.systems[i].subsystems.length - 1 < j)
-                      ? null
-                      : (v.systems[i].subsystems[j].parts.length - 1 < k)
-                          ? null
-                          : v.systems[i].subsystems[j].parts[k].id,
-              name: partNameControllerList[i][j][k].text,
-              measurementUnit: partMeasureControllerList[i][j][k].text,
-              value: int.parse(partValueControllerList[i][j][k].text),
-            ),
-          );
+          if (partNameControllerList[i][j][k].text != 'deleted') {
+            parts[i][j].add(
+              Part(
+                id: (v.systems.length - 1 < i)
+                    ? null
+                    : (v.systems[i].subsystems.length - 1 < j)
+                        ? null
+                        : (v.systems[i].subsystems[j].parts.length - 1 < k)
+                            ? null
+                            : v.systems[i].subsystems[j].parts[k].id,
+                name: partNameControllerList[i][j][k].text,
+                measurementUnit: partMeasureControllerList[i][j][k].text,
+                value: int.parse(partValueControllerList[i][j][k].text),
+              ),
+            );
+          }
         }
       }
     }
@@ -289,31 +384,35 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
       subsystems.add([]);
       for (int j = 0; j < subsystemBoxList[i].length; j++) {
         print('object' + j.toString());
-        subsystems[i].add(
-          Subsystem(
-            id: (v.systems.length - 1 < i)
-                ? null
-                : (v.systems[i].subsystems.length - 1 < j)
-                    ? null
-                    : v.systems[i].subsystems[j].id,
-            name: subsystemNameControllerList[i][j].text,
-            description: subsystemDescriptionControllerList[i][j].text,
-            parts: parts[i][j],
-          ),
-        );
+        if (subsystemNameControllerList[i][j].text != 'deleted') {
+          subsystems[i].add(
+            Subsystem(
+              id: (v.systems.length - 1 < i)
+                  ? null
+                  : (v.systems[i].subsystems.length - 1 < j)
+                      ? null
+                      : v.systems[i].subsystems[j].id,
+              name: subsystemNameControllerList[i][j].text,
+              description: subsystemDescriptionControllerList[i][j].text,
+              parts: parts[i][j],
+            ),
+          );
+        }
       }
     }
 
     //create list with systems
     for (int i = 0; i < systemBoxList.length; i++) {
-      systems.add(
-        System(
-          id: (v.systems.length - 1 < i) ? null : v.systems[i].id,
-          name: systemNameControllerList[i].text,
-          description: systemDescriptionControllerList[i].text,
-          subsystems: subsystems[i],
-        ),
-      );
+      if (systemNameControllerList[i].text != 'deleted') {
+        systems.add(
+          System(
+            id: (v.systems.length - 1 < i) ? null : v.systems[i].id,
+            name: systemNameControllerList[i].text,
+            description: systemDescriptionControllerList[i].text,
+            subsystems: subsystems[i],
+          ),
+        );
+      }
     }
     //create the new vehicle
     vehicle = Vehicle(
@@ -369,6 +468,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
           screenHeight: screenHeight,
           children: subsystemBoxList[i],
           addSubsystemFunction: addSubsystem,
+          deleteSystemFunction: deleteSystem,
         ),
       );
 
@@ -392,6 +492,7 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                 subsystemDescriptionControllerList[i],
             children: partBoxList[i][j],
             addPartFunction: addPart,
+            deleteSubsystemFunction: deleteSubsystem,
           ),
         );
 
@@ -406,14 +507,16 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
           //
           partBoxList[i][j].add(
             PartBox(
-              id: k,
-              partNameControllerList: partNameControllerList[i][j],
-              partValueControllerList: partValueControllerList[i][j],
-              partMeasureControllerList: partMeasureControllerList[i][j],
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
-              context: context,
-            ),
+                id: k,
+                subsystemId: j,
+                systemId: i,
+                partNameControllerList: partNameControllerList[i][j],
+                partValueControllerList: partValueControllerList[i][j],
+                partMeasureControllerList: partMeasureControllerList[i][j],
+                screenWidth: screenWidth,
+                screenHeight: screenHeight,
+                context: context,
+                deletePartFunction: deletePart),
           );
         }
       }
@@ -422,15 +525,42 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
     setListsDone = true;
   }
 
+  //called when a part is removed to update the key
+  void calculateKey() {
+    print('called calculateKey');
+    int sum = 0;
+    for (int i = 0; i < partBoxList.length; i++) {
+      sum += partBoxList[i].length;
+      for (int k = 0; k < partBoxList[i].length; k++) {
+        sum += partBoxList[i][k].length;
+      }
+    }
+    //key = sum.toString();
+    print('exited calculateKey');
+  }
+
   @override
   Widget build(BuildContext context) {
-    widget.v.printVehicle();
+    //calculateKey();
+    print('key: ' + key.toString());
+    print('-----');
+    print('systems');
+    print(systemBoxList);
+    print('------------------------------');
+    print('subsystems');
+    print(subsystemBoxList);
+    print('------------------------------');
+    print('parts');
+    print(partBoxList);
+    print(
+        '-------------------------------------------------------------------------------------');
     //if the user edits a pre existing vehicle the appropriate function is executed
     if (!setListsDone && (v.id != null)) {
       setLists(v);
     }
 
     return Column(
+      key: Key(key.toString()),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SafeArea(
@@ -474,6 +604,11 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                       ),
                       Column(
                         children: [
+                          TextButton(
+                              onPressed: () {
+                                saveVehicle();
+                              },
+                              child: Text('TASK')),
                           //button to save vehicle
                           TextButton(
                             //show dialog to alert user for saved changes
@@ -485,24 +620,52 @@ class _NewVehicleScreenState extends State<NewVehicleScreen> {
                                   title: Text('Save Vehicle?'),
                                   content: Text('Your setup will be saved.'),
                                   actions: [
+                                    //button to cancel vehicle saving
                                     TextButton(
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
                                         child: Text('No')),
+                                    //button to proceed with vehicle saving
                                     TextButton(
-                                        onPressed: () {
-                                          (setListsDone)
-                                              ? updateVehicleinDb(
-                                                  vehicle: saveVehicle())
-                                              : uploadVehicle(
-                                                  vehicle: saveVehicle());
-                                          Navigator.of(context).pop();
-                                          widget.backArrowPressed(
-                                              edit: false,
-                                              vehicle: Vehicle.empty());
-                                        },
-                                        child: Text('OK')),
+                                      onPressed: () async {
+                                        var vehicleLoadedOnDatabase;
+                                        await Future.delayed(
+                                          Duration(milliseconds: 500),
+                                        );
+                                        Navigator.of(context).pop();
+                                        //new dialog pops up with loading indicator
+                                        showDialog(
+                                          context: context,
+                                          builder: (dialogcontext) {
+                                            Future.wait([
+                                              //vehicle is being inserted or updated
+                                              (setListsDone)
+                                                  ? vehicleLoadedOnDatabase =
+                                                      updateVehicleinDb(
+                                                          vehicle:
+                                                              saveVehicle())
+                                                  : vehicleLoadedOnDatabase =
+                                                      uploadVehicle(
+                                                          vehicle:
+                                                              saveVehicle()),
+                                            ]).then((value) {
+                                              //then user is redirected to the previous page
+                                              Navigator.of(dialogcontext).pop();
+                                              widget.backArrowPressed(
+                                                  edit: false,
+                                                  vehicle: Vehicle.empty());
+                                            });
+
+                                            return Center(
+                                                child:
+                                                    CircularProgressIndicator());
+                                          },
+                                        );
+                                        //
+                                      },
+                                      child: Text('OK'),
+                                    ),
                                   ],
                                 );
                               },
@@ -541,6 +704,7 @@ class SystemBox extends StatefulWidget {
     required List<Widget> this.children,
     required Function({required int subsystemNumber, required int systemNumber})
         this.addSubsystemFunction,
+    required Function({required int systemNumber}) this.deleteSystemFunction,
   });
   int id;
   List<TextEditingController> systemNameControllerList;
@@ -550,6 +714,7 @@ class SystemBox extends StatefulWidget {
   List<Widget> children;
   Function({required int subsystemNumber, required int systemNumber})
       addSubsystemFunction;
+  Function({required int systemNumber}) deleteSystemFunction;
   @override
   State<SystemBox> createState() => _SystemBoxState();
 }
@@ -576,18 +741,34 @@ class _SystemBoxState extends State<SystemBox> {
                         'System Details',
                         style: TextStyle(fontSize: 24),
                       ),
-                      //add subsystem button
-                      TextButton(
-                        child: Text(
-                          'Add Subsystem',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        onPressed: () => setState(() {
-                          widget.addSubsystemFunction(
-                            subsystemNumber: widget.children.length,
-                            systemNumber: widget.id,
-                          );
-                        }),
+                      Row(
+                        children: [
+                          //delete system button
+                          TextButton(
+                            child: Text(
+                              'Delete System',
+                              style: TextStyle(fontSize: 20, color: Colors.red),
+                            ),
+                            onPressed: () => setState(() {
+                              widget.deleteSystemFunction(
+                                systemNumber: widget.id,
+                              );
+                            }),
+                          ),
+                          //add subsystem button
+                          TextButton(
+                            child: Text(
+                              'Add Subsystem',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            onPressed: () => setState(() {
+                              widget.addSubsystemFunction(
+                                subsystemNumber: widget.children.length,
+                                systemNumber: widget.id,
+                              );
+                            }),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -655,6 +836,8 @@ class SubsystemBox extends StatefulWidget {
             required int subsystemNumber,
             required int systemNumber})
         this.addPartFunction,
+    required Function({required int subsystemNumber, required int systemNumber})
+        this.deleteSubsystemFunction,
   });
   int id;
   int systemNumber;
@@ -665,6 +848,8 @@ class SubsystemBox extends StatefulWidget {
       {required int partNumber,
       required int subsystemNumber,
       required int systemNumber}) addPartFunction;
+  Function({required int subsystemNumber, required int systemNumber})
+      deleteSubsystemFunction;
   @override
   State<SubsystemBox> createState() => _SubsystemBoxState();
 }
@@ -674,6 +859,7 @@ class _SubsystemBoxState extends State<SubsystemBox> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
       padding: EdgeInsets.only(left: 10, right: 10),
       child: Column(
@@ -693,19 +879,34 @@ class _SubsystemBoxState extends State<SubsystemBox> {
                         'SubSystem Details',
                         style: TextStyle(fontSize: 24),
                       ),
-                      TextButton(
-                        //add part button
-                        child: Text(
-                          'Add Part',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        onPressed: () => setState(() {
-                          widget.addPartFunction(
-                            partNumber: widget.children.length,
-                            subsystemNumber: widget.id,
-                            systemNumber: widget.systemNumber,
-                          );
-                        }),
+                      Row(
+                        children: [
+                          TextButton(
+                              //delete subsystem button
+                              child: Text(
+                                'Delete Subsystem',
+                                style:
+                                    TextStyle(fontSize: 20, color: Colors.red),
+                              ),
+                              onPressed: () => widget.deleteSubsystemFunction(
+                                    subsystemNumber: widget.id,
+                                    systemNumber: widget.systemNumber,
+                                  )),
+                          TextButton(
+                            //add part button
+                            child: Text(
+                              'Add Part',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            onPressed: () => setState(() {
+                              widget.addPartFunction(
+                                partNumber: widget.children.length,
+                                subsystemNumber: widget.id,
+                                systemNumber: widget.systemNumber,
+                              );
+                            }),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -763,12 +964,19 @@ class _SubsystemBoxState extends State<SubsystemBox> {
 //ui of the subsystem part
 Widget PartBox({
   required int id,
+  required int subsystemId,
+  required int systemId,
   required List<TextEditingController> partNameControllerList,
   required List<TextEditingController> partValueControllerList,
   required List<TextEditingController> partMeasureControllerList,
   required double screenWidth,
   required double screenHeight,
   required BuildContext context,
+  required Function(
+          {required int subsystemNumber,
+          required int systemNumber,
+          required int partNumber})
+      deletePartFunction,
 }) =>
     Container(
       padding: EdgeInsets.only(top: 10),
@@ -799,6 +1007,17 @@ Widget PartBox({
               label: 'Initial Value',
             ),
           ),
+          SizedBox(width: screenWidth * 0.01),
+          IconButton(
+              onPressed: () => deletePartFunction(
+                    partNumber: id,
+                    subsystemNumber: subsystemId,
+                    systemNumber: systemId,
+                  ),
+              icon: Icon(
+                Icons.delete,
+                color: Colors.red,
+              ))
         ],
       ),
     );
@@ -866,7 +1085,7 @@ Widget VehicleBox({
                   controller: vehicleDescriptionController,
                   label: 'Description',
                 ),
-              )
+              ),
             ],
           ),
         ],
