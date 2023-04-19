@@ -349,14 +349,6 @@ class _NewDataScreenState extends State<NewDataScreen>
                   ),
                 ),
                 SizedBox(width: 500),
-                //center graph button
-                TextButton(
-                  child: Text(
-                    'Center Graph',
-                    style: TextStyle(fontSize: 19),
-                  ),
-                  onPressed: () => setState(() {}),
-                )
               ],
             ),
             //when data is fetched the chart customization is made visible

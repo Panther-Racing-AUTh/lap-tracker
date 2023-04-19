@@ -110,7 +110,17 @@ class _EchartsPageState extends State<EchartsPage> {
                     'Send to Chat',
                     style: TextStyle(fontSize: 20),
                   ),
+                ), //center graph button
+              TextButton(
+                child: Text(
+                  'Center Graph',
+                  style: TextStyle(fontSize: 19),
                 ),
+                onPressed: () => setState(() {
+                  setup.timeConstraints[0] = null;
+                  setup.timeConstraints[1] = null;
+                }),
+              ),
             ],
           ),
           Expanded(

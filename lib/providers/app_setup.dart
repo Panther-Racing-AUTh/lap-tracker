@@ -36,6 +36,8 @@ class AppSetup extends ChangeNotifier {
   String proposalDescription = '';
   String proposalReason = '';
 
+  List timeConstraints = [null, null];
+
   get chartPreferences => chartList;
   get mainScreenDesktopInd => mainScreenDesktopIndex;
   get date => chartList[0];
