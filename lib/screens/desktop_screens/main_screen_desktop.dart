@@ -5,12 +5,14 @@ import 'package:flutter_complete_guide/screens/desktop_screens/new_data_screen.d
 import 'package:flutter_complete_guide/screens/desktop_screens/proposal_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/vehicle_screen.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
+import 'package:flutter_complete_guide/supabase/profile_functions.dart';
 import 'package:flutter_complete_guide/widgets/chat_widget.dart';
 import 'package:flutter_complete_guide/widgets/chats_total.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/create_new_vehicle_screen.dart';
 import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/proposals_desktop.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/data_desktop_widget.dart';
+import 'package:flutter_complete_guide/widgets/profile_preview.dart';
 import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
 import 'package:flutter_complete_guide/widgets/weather_widget.dart';
@@ -91,6 +93,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: kToolbarHeight + 10,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -105,24 +108,32 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             SizedBox(
               width: 10,
             ),
+            ProfilePreview(),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Container(),
+            ),
             //display weather information based on role
             if (setup.role != 'default' && setup.role != 'data_analyst')
               WeatherWidget(
                 appbar: true,
                 screenWidth: width,
               ),
+
             SizedBox(width: width * 0.1),
             //display time based on role
-            if (width > 620 &&
-                setup.role != 'default' &&
-                setup.role != 'data_analyst')
-              StreamBuilder(
-                stream: Stream.periodic(const Duration(seconds: 1)),
-                builder: (context, snapshot) {
-                  return Text(
-                      DateFormat('MM/dd/yyyy hh:mm:ss').format(DateTime.now()));
-                },
-              ),
+            // if (width > 620 &&
+            //     setup.role != 'default' &&
+            //     setup.role != 'data_analyst')
+            //   StreamBuilder(
+            //     stream: Stream.periodic(const Duration(seconds: 1)),
+            //     builder: (context, snapshot) {
+            //       return Text(
+            //           DateFormat('MM/dd/yyyy hh:mm:ss').format(DateTime.now()));
+            //     },
+            //   ),
           ],
         ),
 

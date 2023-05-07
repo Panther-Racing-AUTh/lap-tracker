@@ -77,7 +77,7 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                                     top: 10.0,
                                     bottom: 10.0),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.only(
                                       topRight: Radius.circular(20.0),
                                       bottomRight: Radius.circular(20.0)),
@@ -128,12 +128,13 @@ class _ChatLandingPageState extends State<ChatLandingPage>
                       //add chat button
                       Container(
                         padding: EdgeInsets.all(20),
-                        child: IconButton(
-                            onPressed: () => addChat(
-                                context: context,
-                                currentUserId: setup.supabase_id,
-                                refresh: setStateFunction),
-                            icon: Icon(Icons.add, size: 30)),
+                        child: FloatingActionButton(
+                          child: Icon(Icons.add, size: 30),
+                          onPressed: () => addChat(
+                              context: context,
+                              currentUserId: setup.supabase_id,
+                              refresh: setStateFunction),
+                        ),
                       ),
                     ],
                   ),

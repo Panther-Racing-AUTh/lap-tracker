@@ -60,6 +60,7 @@ ThemeData darkTheme(MaterialColor c) => ThemeData(
       primaryColor: c,
       iconTheme: IconThemeData(color: Colors.white),
       selectedRowColor: Colors.white,
+      backgroundColor: Colors.black,
     );
 
 ThemeData lightTheme(MaterialColor c) => ThemeData(
@@ -69,7 +70,9 @@ ThemeData lightTheme(MaterialColor c) => ThemeData(
           color: Colors.black,
         ),
       ),
+      cardColor: c.shade200,
       iconTheme: IconThemeData(color: c),
       primaryIconTheme: IconThemeData(color: c),
       selectedRowColor: Colors.black,
+      backgroundColor: Colors.grey.shade300,
     );
