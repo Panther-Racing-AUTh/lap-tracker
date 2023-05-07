@@ -8,8 +8,15 @@ import 'package:provider/provider.dart' as provider;
 import 'providers/theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'configs/supabase_credentials.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
+import 'view/graphql_view.dart';
+
+final graphqlEndpoint = 'https://funny-sculpin-82.hasura.app/v1/graphql';
 Future<void> main() async {
+
+  await initHiveForFlutter();
+
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
     url: SupabaseCredentials.APIURL,
@@ -26,19 +33,22 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return provider.MultiProvider(
-      providers: [
-        provider.ChangeNotifierProvider<ThemeChanger>(
-          create: (_) => ThemeChanger(),
-        ),
-        provider.ChangeNotifierProvider<DeviceManager>(
-          create: (_) => DeviceManager(),
-        ),
-        provider.ChangeNotifierProvider<AppSetup>(
-          create: (_) => AppSetup(),
-        ),
-      ],
-      child: MaterialAppWithTheme(),
+    return ClientProvider(
+      uri: graphqlEndpoint,
+      child: provider.MultiProvider(
+        providers: [
+          provider.ChangeNotifierProvider<ThemeChanger>(
+            create: (_) => ThemeChanger(),
+          ),
+          provider.ChangeNotifierProvider<DeviceManager>(
+            create: (_) => DeviceManager(),
+          ),
+          provider.ChangeNotifierProvider<AppSetup>(
+            create: (_) => AppSetup(),
+          ),
+        ],
+        child: MaterialAppWithTheme(),
+      ),
     );
   }
 }

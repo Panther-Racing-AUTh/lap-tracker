@@ -46,6 +46,7 @@ dependencies:
   syncfusion_flutter_core:
   charts_flutter: ^0.12.0
   timelines: ^0.1.0
+  graphql_flutter: ^5.1.2
 
 
    
