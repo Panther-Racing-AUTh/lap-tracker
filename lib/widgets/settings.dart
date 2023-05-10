@@ -8,7 +8,6 @@ import '../providers/theme.dart';
 import '../supabase/authentication_functions.dart';
 import 'dark_theme_icons.dart';
 
-
 String readUsers = """
   query readUsers (\$name: String!) {
     part(where: { name: { _eq: \$name } }) {
@@ -67,14 +66,15 @@ class _SettingsState extends State<Settings>
 
     return Query(
       options: QueryOptions(
-          document: gql(readUsers), // this is the query string you just created
-          variables: {
-            'name': 'Traction Control',
-          },
-        ),
-      builder: (QueryResult result, { VoidCallback? refetch, FetchMore? fetchMore }) {
+        document: gql(readUsers), // this is the query string you just created
+        variables: {
+          'name': 'Traction Control',
+        },
+      ),
+      builder: (QueryResult result,
+          {VoidCallback? refetch, FetchMore? fetchMore}) {
         if (result.hasException) {
-            return Text(result.exception.toString());
+          return Text(result.exception.toString());
         }
 
         if (result.isLoading) {
@@ -89,12 +89,12 @@ class _SettingsState extends State<Settings>
         }
 
         return ListView.builder(
-          itemCount: repositories.length,
-          itemBuilder: (context, index) {
-            final repository = repositories[index];
+            itemCount: repositories.length,
+            itemBuilder: (context, index) {
+              final repository = repositories[index];
 
-            return Text(repository.toString());
-        });
+              return Text(repository.toString());
+            });
       },
     );
   }

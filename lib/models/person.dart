@@ -15,6 +15,16 @@ class Person {
       this.image = '',
       this.department_image = ''});
 
+  Person.fromJson(Map json)
+      : name = json['full_name'],
+        role = json['role'],
+        about = json['about'],
+        department = json['department'],
+        image =
+            'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/users/40a8216a-d486-42c5-bf96-85e8bf5664d6.jpeg',
+        department_image =
+            'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/departments/electronics.jpeg';
+
   static Map toMap(Person person) {
     return {
       'full_name': person.name,

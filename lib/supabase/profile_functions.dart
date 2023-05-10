@@ -6,37 +6,62 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final supabase = Supabase.instance.client;
 
 Future<List> getUserProfile({required int id}) async {
-  final data = await supabase
-      .from('users')
-      .select('full_name, role, about, department')
-      .eq('id', id)
-      .single();
-  var image = supabase.storage
-      .from('users')
-      .getPublicUrl(supabase.auth.currentUser!.id + '.jpeg');
-  print(await validateImage(image));
-  final dept_image = supabase.storage
-      .from('departments')
-      .getPublicUrl(data['department'] + '.jpeg');
+  // final data = await supabase
+  //     .from('users')
+  //     .select('full_name, role, about, department')
+  //     .eq('id', id)
+  //     .single();
+  // var image = supabase.storage
+  //     .from('users')
+  //     .getPublicUrl(supabase.auth.currentUser!.id + '.jpeg');
+  // print(await validateImage(image));
+  // final dept_image = supabase.storage
+  //     .from('departments')
+  //     .getPublicUrl(data['department'] + '.jpeg');
 
-  final admins = await supabase
-      .from('user_roles')
-      .select('''admin_name: user_id ( full_name )''').eq('role_id', 1);
+  // final admins = await supabase
+  //     .from('user_roles')
+  //     .select('''admin_name: user_id ( full_name )''').eq('role_id', 1);
 
-  return [
-    admins,
-    Person(
-      name: data['full_name'],
-      role: data['role'],
-      about: data['about'],
-      department: data['department'],
-      image: await validateImage(image)
-          ? image
-          : image.split('users/').first + 'users/default.webp',
-      department_image: dept_image,
-    )
-  ];
+  // return [
+  //   admins,
+  //   Person(
+  //     name: data['full_name'],
+  //     role: data['role'],
+  //     about: data['about'],
+  //     department: data['department'],
+  //     image: await validateImage(image)
+  //         ? image
+  //         : image.split('users/').first + 'users/default.webp',
+  //     department_image: dept_image,
+  //   )
+  // ];
+
+  return [];
 }
+
+String getUserProfileWithId = """ 
+    query getUserProfile (\$id: Int!) {
+      users(where: {id: {_eq: \$id } }) {
+        id 
+        full_name
+        email
+        department
+        about
+        role 
+        uuid
+      }
+      
+    }
+  """;
+
+String getAdmins = """ 
+   query getAdmins {
+      users(where: { user_roles: { role_id: {_eq: 1}}}) {
+        full_name
+      }
+    }
+  """;
 
 Future<void> saveProfile({required int id, required Person p}) async {
   await supabase.from('users').update(Person.toMap(p)).match({

@@ -108,7 +108,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             SizedBox(
               width: 10,
             ),
-            ProfilePreview(),
+            //ProfilePreview(),
             SizedBox(
               width: 10,
             ),

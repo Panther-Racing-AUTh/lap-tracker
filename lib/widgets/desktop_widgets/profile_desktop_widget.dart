@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/person.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart' as provider;
@@ -57,104 +58,18 @@ class _ProfileDesktopState extends State<ProfileDesktop>
               ),
             ),
           )
-        : FutureBuilder<List>(
-            future: dataFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                //assign user to local variable. p is the variable that holds the user profile
-                p = snapshot.data![1];
-                //list of admins
-                final admins = [];
-                //add all admins to this list
-                snapshot.data![0].forEach((element) {
-                  admins.add(element['admin_name']['full_name']);
-                });
+        : Query(
+            options: QueryOptions(
+              document: gql(getUserProfileWithId),
+              variables: {'id': setup.supabase_id},
+            ),
+            builder: (QueryResult result,
+                {VoidCallback? refetch, FetchMore? fetchMore}) {
+              if (result.hasException) {
+                return Text(result.exception.toString());
+              }
 
-                return Container(
-                  constraints: BoxConstraints(
-                    minHeight: height,
-                    minWidth: (width >= changeIconsLayout)
-                        ? width * 0.6
-                        : width * 0.75,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      //if the user is new show admins names
-                      if (setup.role == 'default')
-                        Stack(
-                          children: [
-                            Container(
-                              color: Colors.grey,
-                              height: 40,
-                            ),
-                            VerificationMessage(admins),
-                          ],
-                        ),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                //show profile image, department image
-                                Container(
-                                  child: buildTop(width, height * 0.2),
-                                ),
-
-                                if (width < changeIconsLayout)
-                                  SizedBox(
-                                    height: height * 0.01,
-                                    child: Container(),
-                                  ),
-                                //show name and role
-                                if (width < changeIconsLayout)
-                                  Container(
-                                    padding: EdgeInsets.only(left: 20, top: 20),
-                                    child: nameAndRole(),
-                                  ),
-                                //show about section
-                                Container(
-                                  padding: EdgeInsets.fromLTRB(35, 30, 10, 20),
-                                  child: Text(
-                                    p!.about,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      height: 1.4,
-                                      color: Color.fromARGB(255, 121, 119, 119),
-                                    ),
-                                    textAlign: TextAlign.start,
-                                  ),
-                                  width: (width >= changeIconsLayout)
-                                      ? width * 0.6
-                                      : width * 0.55,
-                                  alignment: Alignment.centerLeft,
-                                ),
-                                //show social media horizontally
-                                if (width < changeIconsLayout)
-                                  Container(
-                                    padding: EdgeInsets.only(left: 20, top: 20),
-                                    child: showIconsHorizontal(),
-                                  )
-                              ],
-                            ),
-                          ),
-                          //social media
-
-                          if (width >= changeIconsLayout)
-                            Container(
-                              width: width * 0.2,
-                              padding: EdgeInsets.only(left: 20, top: 20),
-                              child: showIconsVertical(height * 0.3),
-                            )
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else
+              if (result.isLoading) {
                 return Container(
                   constraints: BoxConstraints(
                     minHeight: height,
@@ -166,6 +81,99 @@ class _ProfileDesktopState extends State<ProfileDesktop>
                     child: CircularProgressIndicator(),
                   ),
                 );
+              }
+
+              p = Person.fromJson(result.data!['users'].first);
+              //list of admins
+              final admins = [];
+              //add all admins to this list
+              // snapshot.data![0].forEach((element) {
+              //   admins.add(element['admin_name']['full_name']);
+              // });
+
+              return Container(
+                constraints: BoxConstraints(
+                  minHeight: height,
+                  minWidth:
+                      (width >= changeIconsLayout) ? width * 0.6 : width * 0.75,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    //if the user is new show admins names
+                    if (setup.role == 'default')
+                      Stack(
+                        children: [
+                          Container(
+                            color: Colors.grey,
+                            height: 40,
+                          ),
+                          VerificationMessage(),
+                        ],
+                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              //show profile image, department image
+                              Container(
+                                child: buildTop(width, height * 0.2),
+                              ),
+
+                              if (width < changeIconsLayout)
+                                SizedBox(
+                                  height: height * 0.01,
+                                  child: Container(),
+                                ),
+                              //show name and role
+                              if (width < changeIconsLayout)
+                                Container(
+                                  padding: EdgeInsets.only(left: 20, top: 20),
+                                  child: nameAndRole(),
+                                ),
+                              //show about section
+                              Container(
+                                padding: EdgeInsets.fromLTRB(35, 30, 10, 20),
+                                child: Text(
+                                  p!.about,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    height: 1.4,
+                                    color: Color.fromARGB(255, 121, 119, 119),
+                                  ),
+                                  textAlign: TextAlign.start,
+                                ),
+                                width: (width >= changeIconsLayout)
+                                    ? width * 0.6
+                                    : width * 0.55,
+                                alignment: Alignment.centerLeft,
+                              ),
+                              //show social media horizontally
+                              if (width < changeIconsLayout)
+                                Container(
+                                  padding: EdgeInsets.only(left: 20, top: 20),
+                                  child: showIconsHorizontal(),
+                                )
+                            ],
+                          ),
+                        ),
+                        //social media
+
+                        if (width >= changeIconsLayout)
+                          Container(
+                            width: width * 0.2,
+                            padding: EdgeInsets.only(left: 20, top: 20),
+                            child: showIconsVertical(height * 0.3),
+                          )
+                      ],
+                    ),
+                  ],
+                ),
+              );
             },
           );
   }
@@ -404,35 +412,54 @@ class CustomWebsiteButton extends StatelessWidget {
   }
 }
 
-Widget VerificationMessage(List admins) => Container(
-      height: 40,
-      color: Colors.grey.withOpacity(0.9),
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+Widget VerificationMessage() => Query(
+      options: QueryOptions(
+        document: gql(getAdmins),
+      ),
+      builder: (QueryResult result,
+          {VoidCallback? refetch, FetchMore? fetchMore}) {
+        if (result.hasException) {
+          return Text(result.exception.toString());
+        }
+
+        if (result.isLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
+        print(result.data);
+        List admins = [];
+        for (var user in result.data!['users']) admins.add(user['full_name']);
+
+        return Container(
+          height: 40,
+          color: Colors.grey.withOpacity(0.9),
+          child: ListView(
+            scrollDirection: Axis.horizontal,
             children: [
-              SizedBox(width: 20),
-              Icon(
-                Icons.warning,
-                color: Colors.red,
-              ),
-              Text(
-                'Contact an admin to be assigned a role!',
-                style: TextStyle(fontSize: 22),
-              ),
-              SizedBox(width: 20),
-              Text(
-                'Admin(s): ' +
-                    admins
-                        .toString()
-                        .replaceFirst('[', '')
-                        .replaceFirst(']', ''),
-                style: TextStyle(fontSize: 17),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width: 20),
+                  Icon(
+                    Icons.warning,
+                    color: Colors.red,
+                  ),
+                  Text(
+                    'Contact an admin to be assigned a role!',
+                    style: TextStyle(fontSize: 22),
+                  ),
+                  SizedBox(width: 20),
+                  Text(
+                    'Admin(s): ' +
+                        admins
+                            .toString()
+                            .replaceFirst('[', '')
+                            .replaceFirst(']', ''),
+                    style: TextStyle(fontSize: 17),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
