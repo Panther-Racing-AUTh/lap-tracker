@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart' as provider;
 import '../../providers/app_setup.dart';
+import '../../queries.dart';
 import '../../supabase/profile_functions.dart';
 
 final double coverHeight = 150;

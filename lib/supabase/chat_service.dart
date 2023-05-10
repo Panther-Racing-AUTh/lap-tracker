@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/supabase/profile_functions.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:universal_io/io.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/message.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart' as p;
+
+import '../models/person.dart';
+import '../queries.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -136,101 +140,120 @@ Future<void> sendChart(
   await supabase.from('message').insert(message.toMap());
 }
 
-Future addUserToChat(
-    {required BuildContext context,
-    required int channelId,
-    required List allUsersOfChannel}) async {
-  List selectedUsers = [];
-  List<bool> selectedUsersValues = [];
-
+Future addUserToChat({
+  required BuildContext context,
+  required int channelId,
+}) async {
+  List<int> idsOfPeopleToBeAdded = [];
+  bool allUsersAreOnChat = false;
+  print(channelId);
   showDialog(
     context: context,
     builder: (context) {
-      return FutureBuilder<List>(
-        future: getAllUsers(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List allUsers = snapshot.data!;
-            allUsers.forEach((element) {
-              bool exists = false;
-              for (int j = 0; j < allUsersOfChannel.length; j++) {
-                if (element['id'] == allUsersOfChannel[j]['id']) {
-                  exists = true;
-                }
-              }
-              if (!exists) selectedUsers.add(element);
-            });
-            for (int i = 0; i < selectedUsers.length; i++) {
-              selectedUsersValues.add(false);
-            }
-            return StatefulBuilder(
-              builder: (context, setState) {
-                return Container(
-                  child: AlertDialog(
-                    title: Text('Add User'),
-                    content: Container(
-                      height: MediaQuery.of(context).size.height * 0.7,
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: selectedUsers.length,
-                        itemBuilder: (context, index) {
-                          return CheckboxListTile(
-                            title: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 22,
-                                  backgroundImage: NetworkImage(
-                                      selectedUsers[index]['profile_image']),
+      return Query(
+        options: QueryOptions(
+          document: gql(getUsersNotOnChannel),
+          variables: {"channelId": channelId},
+        ),
+        builder: (QueryResult result,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (result.hasException) {
+            print(result.exception.toString());
+            return Text(result.exception.toString());
+          }
+          if (result.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          List<Person> allUsersNotOnChat = [];
+          print(result.data);
+          for (var user in result.data!['users'])
+            allUsersNotOnChat.add(Person.fromJson(user));
+          allUsersAreOnChat = allUsersNotOnChat.isEmpty;
+          print(allUsersNotOnChat);
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Container(
+                child: AlertDialog(
+                  title: Text('Add User'),
+                  content: Container(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: (allUsersAreOnChat)
+                        ? Text('There are no more users!')
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: allUsersNotOnChat.length,
+                            itemBuilder: (context, index) {
+                              return CheckboxListTile(
+                                title: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 22,
+                                      backgroundImage: NetworkImage(
+                                          allUsersNotOnChat[index].image),
+                                    ),
+                                    SizedBox(width: 15),
+                                    Text(allUsersNotOnChat[index].name),
+                                    SizedBox(width: 15),
+                                    Text(allUsersNotOnChat[index].department),
+                                    SizedBox(width: 15),
+                                    Text(allUsersNotOnChat[index].role)
+                                  ],
                                 ),
-                                SizedBox(width: 15),
-                                Text(selectedUsers[index]['full_name']),
-                                SizedBox(width: 15),
-                                Text(selectedUsers[index]['department']),
-                                SizedBox(width: 15),
-                                Text(selectedUsers[index]['role'])
-                              ],
-                            ),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            value: selectedUsersValues[index],
-                            onChanged: (value) {
-                              setState(
-                                () {
-                                  selectedUsersValues[index] =
-                                      !selectedUsersValues[index];
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                value: idsOfPeopleToBeAdded
+                                    .contains(allUsersNotOnChat[index].id),
+                                onChanged: (value) {
+                                  setState(
+                                    () {
+                                      if (idsOfPeopleToBeAdded.contains(
+                                          allUsersNotOnChat[index].id))
+                                        idsOfPeopleToBeAdded.remove(
+                                            allUsersNotOnChat[index].id);
+                                      else
+                                        idsOfPeopleToBeAdded
+                                            .add(allUsersNotOnChat[index].id);
+                                    },
+                                  );
                                 },
                               );
                             },
-                          );
-                        },
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          for (int i = 0; i < selectedUsersValues.length; i++) {
-                            if (selectedUsersValues[i])
-                              await supabase.from('channel_users').insert({
-                                'user_id': selectedUsers[i]['id'],
-                                'channel_id': channelId
-                              });
-                          }
-
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('OK'),
-                      ),
-                    ],
+                          ),
                   ),
-                );
-              },
-            );
-          }
-          return Center(child: CircularProgressIndicator());
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text('Cancel'),
+                    ),
+                    Mutation(
+                      options:
+                          MutationOptions(document: gql(addUsersToChannel)),
+                      builder: (RunMutation insert, result) {
+                        return TextButton(
+                          onPressed: allUsersAreOnChat
+                              ? null
+                              : () async {
+                                  List<Map<String, int>> objects = [];
+                                  for (var id in idsOfPeopleToBeAdded)
+                                    objects.add({
+                                      'channel_id': channelId,
+                                      'user_id': id
+                                    });
+
+                                  insert({'objects': objects});
+                                  Navigator.of(context).pop();
+                                },
+                          child: Text('OK'),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
         },
       );
     },

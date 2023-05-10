@@ -1,4 +1,5 @@
 class Person {
+  int id;
   String name;
   String role;
   String about;
@@ -8,7 +9,8 @@ class Person {
   String department_image;
 
   Person(
-      {required this.name,
+      {this.id = 0,
+      required this.name,
       required this.role,
       required this.about,
       required this.department,
@@ -16,10 +18,11 @@ class Person {
       this.department_image = ''});
 
   Person.fromJson(Map json)
-      : name = json['full_name'],
-        role = json['role'],
-        about = json['about'],
-        department = json['department'],
+      : id = json['id'] ?? 0,
+        name = json['full_name'] ?? 'Default Full Name',
+        role = json['role'] ?? 'Default Role',
+        about = json['about'] ?? 'Default About',
+        department = json['department'] ?? 'Default Department',
         image =
             'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/users/40a8216a-d486-42c5-bf96-85e8bf5664d6.jpeg',
         department_image =

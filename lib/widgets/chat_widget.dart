@@ -149,9 +149,9 @@ class _ChatWidgetState extends State<ChatWidget> {
                                 IconButton(
                                   onPressed: (() {
                                     addUserToChat(
-                                        context: context,
-                                        channelId: setup.chatId,
-                                        allUsersOfChannel: setup.allUsers);
+                                      context: context,
+                                      channelId: setup.chatId,
+                                    );
                                   }),
                                   icon: Icon(Icons.group_add_rounded),
                                 ),
