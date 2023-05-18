@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_complete_guide/queries.dart';
 import 'package:flutter_complete_guide/widgets/checked_boxes_widget.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart' as provider;
@@ -103,6 +105,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print('built single chat ');
     AppSetup setup = provider.Provider.of<AppSetup>(context);
 
     return CallbackShortcuts(
@@ -113,163 +116,158 @@ class _ChatWidgetState extends State<ChatWidget> {
       },
       child: Focus(
         autofocus: true,
-        child: StreamBuilder<List<Message>>(
-          initialData: messagesGlobal,
-          stream: getMessages(
-              channel_id: setup.chatId,
-              allChannelUsersList: setup.allUsers,
-              currentUserId: setup.supabase_id),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final messages = snapshot.data!;
-              messagesGlobal = messages;
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Stack(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              height: 45,
-                              child: IconButton(
-                                iconSize: 25,
-                                icon: Icon(Icons.arrow_back),
-                                onPressed: () {
-                                  setup.setChatId(-1);
-                                },
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                //add user to chat button
-                                IconButton(
-                                  onPressed: (() {
-                                    addUserToChat(
-                                      context: context,
-                                      channelId: setup.chatId,
-                                    );
-                                  }),
-                                  icon: Icon(Icons.group_add_rounded),
-                                ),
-                                //show group users button
-                                IconButton(
-                                  onPressed: (() {
-                                    showChannelUsers(
-                                        channelId: setup.chatId,
-                                        context: context);
-                                  }),
-                                  icon: Icon(Icons.more_vert),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      //show messages
-                      child: ListView.builder(
-                        reverse: true,
-                        itemCount: messages.length,
-                        itemBuilder: (context, index) {
-                          final message = messages[index];
-
-                          return (message.isMine)
-                              ? ChatBubble(
-                                  message: message,
-                                  context: context,
-                                  function: widget.function,
-                                )
-                              : Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 22,
-                                        backgroundImage:
-                                            NetworkImage(message.userFromImage),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Text(
-                                                  '',
-                                                  style: const TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 16.0),
-                                                ),
-                                              ],
-                                            ),
-                                            ChatBubble(
-                                              message: message,
-                                              context: context,
-                                              function: widget.function,
-                                            ),
-                                            Container(
-                                              padding:
-                                                  EdgeInsets.only(left: 10),
-                                              child: Text(
-                                                message.createAt.toString(),
-                                                style: const TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 12.0),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                        },
-                      ),
-                    ),
-                    ActionBar(
-                        userId: setup.supabase_id, channelId: setup.chatId),
-                    const SizedBox(height: 20.0)
-                  ],
-                ),
-              );
-            } else if (Supabase.instance.client.auth.currentUser == null) {
-              return Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.3,
-                    ),
-                    Text(
-                      sign_in_to_see_chat,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 30,
-                      ),
-                    ),
-                  ],
-                ),
+        child: Subscription(
+          options: SubscriptionOptions(
+            document: gql(getMessagesForChannel),
+            variables: {'channelId': setup.chatId},
+          ),
+          onSubscriptionResult: (subscriptionResult, client) {
+            print(subscriptionResult);
+            print(client);
+          },
+          builder: (result) {
+            print('inserted builder function');
+            print(result);
+            if (result.hasException) {
+              print('exception');
+              print(result.exception);
+              return Text(result.exception.toString());
+            }
+            if (result.isLoading) {
+              print('loading');
+              return Center(
+                child: const CircularProgressIndicator(),
               );
             }
+            print('tried to build widget');
+            List<Message> messages = [];
+            for (var message in result.data!['message'])
+              messages.add(
+                Message.fromJson(
+                  message,
+                  setup.supabase_id == message['user_id'],
+                  'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/users/40a8216a-d486-42c5-bf96-85e8bf5664d6.jpeg',
+                ),
+              );
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 45,
+                            child: IconButton(
+                              iconSize: 25,
+                              icon: Icon(Icons.arrow_back),
+                              onPressed: () {
+                                setup.setChatId(-1);
+                              },
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              //add user to chat button
+                              IconButton(
+                                onPressed: (() {
+                                  addUserToChat(
+                                    context: context,
+                                    channelId: setup.chatId,
+                                  );
+                                }),
+                                icon: Icon(Icons.group_add_rounded),
+                              ),
+                              //show group users button
+                              IconButton(
+                                onPressed: (() {
+                                  showChannelUsers(
+                                      channelId: setup.chatId,
+                                      context: context);
+                                }),
+                                icon: Icon(Icons.more_vert),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    //show messages
+                    child: ListView.builder(
+                      reverse: true,
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
 
-            return const Center(
-              child: CircularProgressIndicator(),
+                        return (message.isMine)
+                            ? ChatBubble(
+                                message: message,
+                                context: context,
+                                function: widget.function,
+                              )
+                            : Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 22,
+                                      backgroundImage:
+                                          NetworkImage(message.userFromImage),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                '',
+                                                style: const TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 16.0),
+                                              ),
+                                            ],
+                                          ),
+                                          ChatBubble(
+                                            message: message,
+                                            context: context,
+                                            function: widget.function,
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              message.createAt.toString(),
+                                              style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.0),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                      },
+                    ),
+                  ),
+                  ActionBar(userId: setup.supabase_id, channelId: setup.chatId),
+                  const SizedBox(height: 20.0)
+                ],
+              ),
             );
           },
         ),

@@ -42,11 +42,13 @@ class _ChatLandingPageState extends State<ChatLandingPage>
   Widget build(BuildContext context) {
     super.build(context);
     AppSetup setup = Provider.of<AppSetup>(context);
+    //setup.chatId = 10;
     //setup.chatId indicates the id from supabase of the chat shown. if it is -1, then no chat is selected and all the channels that the user is a part of are shown
     //check if no chat is selected, else show the contents
     return (setup.chatId == -1)
         ? Query(
             options: QueryOptions(
+              pollInterval: Duration(seconds: 10),
               document: gql(getAllChannelsForUserQuery),
               variables: {'id': setup.supabase_id},
             ),

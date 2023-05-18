@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -15,12 +17,35 @@ String? uuidFromObject(Object object) {
 }
 
 ValueNotifier<GraphQLClient> clientFor({
-  required String uri
+  required String uri,
+  String? subscriptionUri,
 }) {
   // Link link = authLink.concat(HttpLink(uri));
-  final entr = <String, String>{'x-hasura-admin-secret': '7UmxtmfpEDJ9IO9Q4b9ChBhZoj27pM14uwB3pEPzgCGf0elD83gdgxMIMANflyMl'};
-  HttpLink httpLink = HttpLink(uri, defaultHeaders: entr);
-
+  String _token = 'k';
+  //final AuthLink authLink = AuthLink(getToken: () => _token);
+  final entr = <String, String>{
+    'x-hasura-admin-secret':
+        '7UmxtmfpEDJ9IO9Q4b9ChBhZoj27pM14uwB3pEPzgCGf0elD83gdgxMIMANflyMl'
+  };
+  Link httpLink = HttpLink(uri, defaultHeaders: entr);
+  //Link link = HttpLink(uri);
+  if (subscriptionUri != null) {
+    final WebSocketLink websocketLink = WebSocketLink(
+      subscriptionUri,
+      config: SocketClientConfig(
+        initialPayload: () async {
+          //_token = await authLink.getToken().toString();
+          print('TOKEN::::: ' + _token);
+          return {
+            'headers': entr,
+          };
+        },
+        autoReconnect: false,
+      ),
+    );
+    httpLink = Link.split(
+        (request) => request.isSubscription, websocketLink, httpLink);
+  }
   return ValueNotifier<GraphQLClient>(
     GraphQLClient(
       cache: GraphQLCache(store: HiveStore()),

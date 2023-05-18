@@ -60,3 +60,16 @@ String addUsersToChannel = """
   }
 }
 """;
+
+String getMessagesForChannel = """
+  subscription getMessagesForChannel(\$channelId: Int!) {
+    message(where: {channel_id: {_eq: \$channelId } } order_by: {created_at: desc}) {
+      created_at
+      id
+      content
+      user_id
+      channel_id
+      type
+    }
+  }
+""";

@@ -7,10 +7,9 @@ import '/utils/graphql_provider.dart';
 class ClientProvider extends StatelessWidget {
   ClientProvider({
     required this.child,
-    required String uri
-  }) : client = clientFor(
-          uri: uri
-        );
+    required String uri,
+    String? subscriptionUri,
+  }) : client = clientFor(uri: uri, subscriptionUri: subscriptionUri);
 
   final Widget child;
   final ValueNotifier<GraphQLClient> client;
