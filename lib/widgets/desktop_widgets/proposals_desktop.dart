@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/race.dart';
+import 'package:flutter_complete_guide/queries.dart';
 import 'package:flutter_complete_guide/supabase/select_race_track_functions.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/create_new_vehicle_screen.dart';
 import 'package:flutter_complete_guide/widgets/drivers_grid.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:timelines/timelines.dart';
 
@@ -29,11 +31,28 @@ class _DashBoardDesktopState extends State<DashBoardDesktop>
   Widget build(BuildContext context) {
     super.build(context);
     AppSetup setup = Provider.of<AppSetup>(context);
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
-//show the proposal screen to the admin and chief engineer, the task page to the hands on engineer
-    return (setup.role == 'admin' || setup.role == 'chief_engineer')
-        ? Overview(widget.width)
-        : HandsOnScreen();
+
+//show the proposal screen to the admin and chief engineer,
+//the task page to the hands on engineer
+    return Subscription(
+      options: SubscriptionOptions(
+        document: gql(getCurrentProposalPool),
+      ),
+      builder: (result) {
+        if (result.hasException) {
+          return Text(result.exception.toString());
+        }
+        if (result.isLoading) {
+          return Center(
+            child: const CircularProgressIndicator(),
+          );
+        }
+        print(result.data);
+        final int proposalPoolId = result.data!['proposal_pool'][0]['id'];
+        return (setup.role == 'admin' || setup.role == 'chief_engineer')
+            ? Overview(widget.width, proposalPoolId)
+            : HandsOnScreen();
+      },
+    );
   }
 }

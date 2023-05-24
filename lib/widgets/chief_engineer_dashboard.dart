@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/proposal.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/widgets/graph.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../queries.dart';
 import '../supabase/proposal_functions.dart';
 
 class Overview extends StatefulWidget {
-  Overview(double this.width);
+  Overview(double this.width, int this.proposalPoolId);
   double width;
+  int proposalPoolId;
   @override
   State<Overview> createState() => _OverviewState();
 }
@@ -33,6 +36,7 @@ class _OverviewState extends State<Overview> {
   @override
   void initState() {
     _stream = getProposals();
+
     super.initState();
   }
 
@@ -40,116 +44,139 @@ class _OverviewState extends State<Overview> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return StreamBuilder<Map<String, Proposal>>(
-        stream: _stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final proposals = snapshot.data!;
-            //all six windows of each department initialization with custm widget
-            late List<Widget> windows = [
-              Section(
-                title: 'Powertrain',
-                color: Color.fromARGB(255, 247, 224, 158),
-                proposal: proposals['powertrain'],
-                1,
-                manageState,
-              ),
-              Section(
-                title: 'Electronics',
-                color: Colors.orange,
-                proposal: proposals['electronics'],
-                2,
-                manageState,
-              ),
-              Section(
-                title: 'Aerodynamics',
-                color: Colors.green,
-                proposal: proposals['aerodynamics'],
-                3,
-                manageState,
-              ),
-              Section(
-                title: 'Intake & Exhaust',
-                color: Colors.red,
-                proposal: proposals['intake_exhaust'],
-                4,
-                manageState,
-              ),
-              Section(
-                title: 'Suspension',
-                color: Colors.yellow,
-                proposal: proposals['suspension'],
-                5,
-                manageState,
-              ),
-              Section(
-                title: 'Hands-On Team',
-                color: Colors.blue,
-                proposal: proposals['hands_on'],
-                6,
-                manageState,
-              ),
-            ];
-
-            return (_selected == 0)
-                ? Container(
-                    width: widget.width,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Column(
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(15),
-                                  child: windows[0],
-                                  width: constraints.maxWidth / 3,
-                                  height: constraints.maxHeight / 2,
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(15),
-                                  child: windows[1],
-                                  width: constraints.maxWidth / 3,
-                                  height: constraints.maxHeight / 2,
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(15),
-                                  child: windows[2],
-                                  width: constraints.maxWidth / 3,
-                                  height: constraints.maxHeight / 2,
-                                )
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(15),
-                                  child: windows[3],
-                                  width: constraints.maxWidth / 3,
-                                  height: constraints.maxHeight / 2,
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(15),
-                                  child: windows[4],
-                                  width: constraints.maxWidth / 3,
-                                  height: constraints.maxHeight / 2,
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(15),
-                                  child: windows[5],
-                                  width: constraints.maxWidth / 3,
-                                  height: constraints.maxHeight / 2,
-                                )
-                              ],
-                            )
-                          ],
-                        );
-                      },
-                    ),
-                  )
-                : Container(child: windows.elementAt(_selected - 1));
+    return Subscription(
+        options: SubscriptionOptions(
+          document: gql(getProposalsFromProposalPool),
+          variables: {'proposal_pool_id': widget.proposalPoolId},
+        ),
+        builder: (result) {
+          if (result.hasException) {
+            print('exception');
+            print(result.exception);
+            return Text(result.exception.toString());
           }
-          return Center(child: CircularProgressIndicator());
+          if (result.isLoading) {
+            print('loading');
+            return Center(
+              child: const CircularProgressIndicator(),
+            );
+          }
+          print('chief engineer dashboard');
+          print(result.data);
+          Map<String, Proposal> proposals = {};
+          for (var proposal in result.data!['proposal']) {
+            if (proposals.length > 6) break;
+            if (!proposals.containsKey(proposal['user']['department'])) {
+              proposals.addAll({
+                proposal['user']['department']: Proposal.fromJson(proposal,
+                    ProposalState.fromJson(proposal['proposal_states'][0]))
+              });
+            }
+          }
+          print('done');
+          //all six windows of each department initialization with custom widget
+          late List<Widget> windows = [
+            Section(
+              title: 'Powertrain',
+              color: Color.fromARGB(255, 247, 224, 158),
+              proposal: proposals['powertrain'],
+              1,
+              manageState,
+            ),
+            Section(
+              title: 'Electronics',
+              color: Colors.orange,
+              proposal: proposals['electronics'],
+              2,
+              manageState,
+            ),
+            Section(
+              title: 'Aerodynamics',
+              color: Colors.green,
+              proposal: proposals['aerodynamics'],
+              3,
+              manageState,
+            ),
+            Section(
+              title: 'Intake & Exhaust',
+              color: Colors.red,
+              proposal: proposals['intake_exhaust'],
+              4,
+              manageState,
+            ),
+            Section(
+              title: 'Suspension',
+              color: Colors.yellow,
+              proposal: proposals['suspension'],
+              5,
+              manageState,
+            ),
+            Section(
+              title: 'Hands-On Team',
+              color: Colors.blue,
+              proposal: proposals['hands_on'],
+              6,
+              manageState,
+            ),
+          ];
+
+          return (_selected == 0)
+              ? Container(
+                  width: widget.width,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                child: windows[0],
+                                width: constraints.maxWidth / 3,
+                                height: constraints.maxHeight / 2,
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                child: windows[1],
+                                width: constraints.maxWidth / 3,
+                                height: constraints.maxHeight / 2,
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                child: windows[2],
+                                width: constraints.maxWidth / 3,
+                                height: constraints.maxHeight / 2,
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                child: windows[3],
+                                width: constraints.maxWidth / 3,
+                                height: constraints.maxHeight / 2,
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                child: windows[4],
+                                width: constraints.maxWidth / 3,
+                                height: constraints.maxHeight / 2,
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                child: windows[5],
+                                width: constraints.maxWidth / 3,
+                                height: constraints.maxHeight / 2,
+                              )
+                            ],
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                )
+              : Container(child: windows.elementAt(_selected - 1));
         });
   }
 }
@@ -215,7 +242,10 @@ class _SectionState extends State<Section> {
                                     ? Colors.green
                                     : (widget.proposal!.state!.state == 'NEW')
                                         ? Colors.blue
-                                        : Colors.red,
+                                        : (widget.proposal!.state!.state ==
+                                                'DONE')
+                                            ? Colors.green
+                                            : Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -351,7 +381,7 @@ class _SectionState extends State<Section> {
                             ),
                             //show proposal part name
                             Text(
-                              widget.proposal!.partName,
+                              widget.proposal!.partName ?? 'part name',
                               style: TextStyle(
                                   fontSize: 25,
                                   color: Theme.of(context).selectedRowColor),

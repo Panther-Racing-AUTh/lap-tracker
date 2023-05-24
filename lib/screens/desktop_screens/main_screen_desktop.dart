@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_complete_guide/queries.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/new_data_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/proposal_screen.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_complete_guide/widgets/profile_preview.dart';
 import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
 import 'package:flutter_complete_guide/widgets/weather_widget.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../names.dart' as names;
 import '../../providers/app_setup.dart';
@@ -122,7 +124,26 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                 screenWidth: width,
               ),
 
-            SizedBox(width: width * 0.1),
+            SizedBox(width: width * 0.005),
+            Mutation(
+                options: MutationOptions(document: gql(clearProposals)),
+                builder: (RunMutation clearProposalsFunction, result) {
+                  return TextButton(
+                    onPressed: () {
+                      clearProposalsFunction({
+                        "proposal_pool": {
+                          "ended": false,
+                          "vehicle_id": 11,
+                          "session_id": 1
+                        }
+                      });
+                    },
+                    child: Text(
+                      'Clear Proposals',
+                      style: TextStyle(fontSize: 20, color: Colors.amber),
+                    ),
+                  );
+                })
             //display time based on role
             // if (width > 620 &&
             //     setup.role != 'default' &&

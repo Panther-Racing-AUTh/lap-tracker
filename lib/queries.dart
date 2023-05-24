@@ -73,3 +73,80 @@ String getMessagesForChannel = """
     }
   }
 """;
+
+String clearProposals = """
+  mutation clearProposals(\$proposal_pool: proposal_pool_insert_input!) {
+  
+  update_proposal_pool(where:{} _set: {ended:true}){
+    affected_rows
+  }
+  
+  insert_proposal_pool_one(object: \$proposal_pool) {
+    id
+    session_id
+    vehicle_id
+    ended
+  }
+  
+}
+""";
+
+String getCurrentProposalPool = """
+  subscription getCurrentProposalPool {
+    proposal_pool(order_by:{created_at: desc}){
+      id
+    }
+  }
+
+""";
+
+String getProposalsFromProposalPool = """
+  subscription getProposalsFromProposalPool(\$proposal_pool_id: Int!){
+    proposal(where: {proposal_pool_id: {_eq: \$proposal_pool_id}}, order_by:{created_at:desc}) {
+    id
+    part_id
+    user_id
+    part_value_from
+    part_value_to
+    title
+    description
+    reason
+    user{
+      department
+    }
+    proposal_pool_id
+    proposal_states(order_by:{created_at:desc}){
+      id
+      state
+      proposal_id
+      changed_by_user_id
+    }
+    }
+  }
+""";
+
+String getApprovedProposals = """
+  subscription getApprovedProposals {
+    proposal_pool(order_by: {id: desc}, limit:1){
+      id
+      proposals(where: {proposal_states: {state: {_eq:"APPROVED"}}}) {
+        id
+        title
+        created_at
+        proposal_pool_id
+        part_id
+        user_id
+        description
+        reason
+        part_value_from
+        part_value_to
+        proposal_states(limit:1, order_by:{id: desc}){
+          id
+          proposal_id
+          state
+          changed_by_user_id
+        }
+      }
+    }
+  }
+""";

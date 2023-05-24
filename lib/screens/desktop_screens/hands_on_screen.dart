@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
+import 'package:flutter_complete_guide/queries.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/proposal.dart';
@@ -7,6 +9,7 @@ import '../../supabase/proposal_functions.dart';
 
 class HandsOnScreen extends StatefulWidget {
   const HandsOnScreen({super.key});
+//
 
   @override
   State<HandsOnScreen> createState() => _HandsOnScreenState();
@@ -23,35 +26,64 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
     setState(() {
       changeProposalState(newState: newState);
     });
-
   }
 
-  final _handsOnStream = handsOnStream();
+  @override
+  void initState() {
+    print('constructed hands on screen');
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Proposal>>(
-      stream: _handsOnStream,
-      builder: (context, snapshot) {
-        // // print('snapshot.hasData : ' + snapshot.hasData.toString());
-        // initialize tasks before each build 
-        // task is an external global variable that has to be set
-        // to its initial value every time the builder is called
-        //List<Map<proposal__id(65), Map<id(201), proposalDescription.randomString>>>
+    return Subscription(
+        options: SubscriptionOptions(
+          document: gql(getApprovedProposals),
+        ),
+        builder: (result) {
+          if (result.hasException) {
+            print(result.exception);
+            return Text(result.exception.toString());
+          }
+          if (result.isLoading) {
+            return Center(
+              child: const CircularProgressIndicator(),
+            );
+          }
 
-        tasks =  [];
+          tasks = [];
 
-        String tabs = '\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}';
-        if (snapshot.hasData) {
-          List<Proposal> incomingProposals = snapshot.data ?? [];
+          String tabs =
+              '\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}\u{2007}';
+
+          print(result.data);
+          List<Proposal> incomingProposals = [];
+          print(result.data!['proposal_pool']);
+          print(result.data!['proposal_pool'][0]);
+          print(result.data!['proposal_pool'][0]['proposals']);
+          print(result.data!['proposal_pool'][0]['proposals'][0]);
+          print('=============================');
+          for (var proposal in result.data!['proposal_pool'][0]['proposals']) {
+            print(1);
+            print(proposal);
+            if (proposal['proposal_states'][0]['state'] == 'APPROVED' ||
+                proposal['proposal_states'][0]['state'] == 'DONE')
+              incomingProposals.add(Proposal.fromJson(proposal,
+                  ProposalState.fromJson(proposal['proposal_states'][0])));
+          }
+          print(incomingProposals);
           // late Proposal proposal;
           // // // print('snapshot.data' + snapshot.data.toString());
           incomingProposals.forEach((prop) {
             // // print('\nprop.Id:\t\t' + prop.id.toString());
             // // print('prop.proposalId:\t' + prop.proposalId.toString());
-            MapEntry<int, MapEntry<int, String>> oldTask = MapEntry<int, MapEntry<int, String>>(0, MapEntry<int, String>(0,''));
+            MapEntry<int, MapEntry<int, String>> oldTask =
+                MapEntry<int, MapEntry<int, String>>(
+                    0, MapEntry<int, String>(0, ''));
 
             // print('prop.proposalId' + prop.proposalId.toString());
-            bool existingProposal = tasks.any((task) => task.key == prop.proposalId);
+            bool existingProposal =
+                tasks.any((task) => task.key == prop.proposalId);
             // print('existingProposal' + existingProposal.toString());
 
             try {
@@ -63,36 +95,28 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
               // // print(e);
             }
 
-            if(existingProposal && oldTask.key < (prop.proposalId ?? 0)) {
+            if (existingProposal && oldTask.key < (prop.proposalId ?? 0)) {
               // print('\tupdate existing task with id: ' + oldTask.key.toString() + '\tto: ' + prop.proposalId.toString());
-              int indexToUpdate = tasks.indexWhere((task) => task.key == prop.proposalId);
+              int indexToUpdate =
+                  tasks.indexWhere((task) => task.key == prop.proposalId);
 
-              tasks[indexToUpdate] = 
-                    MapEntry(
-                      prop.proposalId ?? -1, 
-                      MapEntry(
-                        prop.id ?? -1,
-                        prop.title + tabs + (prop.description)
-                      )
-                    );
+              tasks[indexToUpdate] = MapEntry(
+                  prop.proposalId ?? -1,
+                  MapEntry(
+                      prop.id ?? -1, prop.title + tabs + (prop.description)));
               // print('\ttasks[indexToUpdate]' + tasks[indexToUpdate].toString());
               // if old task has the same  id OR smaller do not update
-              
             } else if (!existingProposal) {
               // print('\tinsert new task with id: ' + prop.proposalId.toString());
-              tasks.insert(0, 
-                MapEntry(
-                  prop.proposalId ?? 0, 
+              tasks.insert(
+                  0,
                   MapEntry(
-                      prop.id ?? -1,
-                      prop.title + tabs + (prop.description)
-                    )
-                )
-              );
+                      prop.proposalId ?? 0,
+                      MapEntry(prop.id ?? -1,
+                          prop.title + tabs + (prop.description))));
             } else {
               // print('\tNo updates at all');
             }
-
           });
 
           // print('\n\n\n\n\ntasks');
@@ -105,7 +129,7 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
           // }
           // // // print('tasks.length : ' + tasks.length.toString());
           // // // print('proposal : ' + tasks.toString());
-          
+
           return ListView.builder(
               itemCount: tasks.length,
               itemBuilder: ((context, index) {
@@ -126,12 +150,9 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
                     task: tasks[index].value.value,
                     completed: checked,
                     proposal: prop);
-                    // sendTaskComplete: sendTaskComplete);
+                // sendTaskComplete: sendTaskComplete);
               }));
-        }
-        return Center(child: CircularProgressIndicator());
-      },
-    );
+        });
   }
 }
 
@@ -147,27 +168,21 @@ Widget customListTile({
       // tileColor: checks[id -1] ? Colors.green : Colors.white,
       leading: Text(id.toString()),
       title: RichText(
-              text: TextSpan(
-                text: task,
-                style: TextStyle(fontSize: 20, color: Colors.black)
-              )
-            ),
+          text: TextSpan(
+              text: task, style: TextStyle(fontSize: 20, color: Colors.black))),
       trailing: ElevatedButton(
           onPressed: () {
             // print('ListTile - onPressed\n');
             // print(proposal.state!.state);
             // print(proposal.state!.toJson());
-            completed(
-                    ProposalState(
-                      proposalId: proposal.proposalId,
-                      changedByUserId: 26, //hands on team id
-                      state: 'DONE',
-                    )
-            );
+            completed(ProposalState(
+              proposalId: proposal.proposalId,
+              changedByUserId: 26, //hands on team id
+              state: 'DONE',
+            ));
           },
           child: Text('DONE')),
     );
-
 
 //List<Map<proposal__id(65), Map<id(201), proposalDescription.randomString>>>
 List<MapEntry<int, MapEntry<int, String>>> tasks = [];

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/proposal.dart';
+import 'package:flutter_complete_guide/queries.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/vehicle.dart';
@@ -28,248 +30,278 @@ void showProposal({required BuildContext context}) {
   title.text = setup.proposalTitle;
   description.text = setup.proposalDescription;
   reason.text = setup.proposalReason;
+  int previousPoolId = -1;
   showDialog(
     context: context,
     builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState1) {
-          void updateParent() {
-            setState1(
-              () {},
+      return Query(
+        options: QueryOptions(document: gql(getCurrentProposalPool)),
+        builder: (result, {fetchMore, refetch}) {
+          if (result.hasException) {
+            print('exception');
+            print(result.exception);
+            return Text(result.exception.toString());
+          }
+          if (result.isLoading) {
+            print('loading');
+            return Center(
+              child: const CircularProgressIndicator(),
             );
           }
+          print(result.data);
+          int currentProposalPoolId = result.data!['proposal_pool'][0]['id'];
+          print('current proposal pool open has id: ' +
+              currentProposalPoolId.toString());
+          return StatefulBuilder(
+            builder: (context, setState1) {
+              void updateParent() {
+                setState1(
+                  () {},
+                );
+              }
 
-          Vehicle v = setup.proposalVehicle;
-          // dynamically create side menu for the systems of the vehicle
-          List<NavigationRailDestination> navigationRailDestinations = [];
-          for (int i = 0; i < v.systems.length; i++) {
-            navigationRailDestinations.add(
-              NavigationRailDestination(
-                icon: Icon(Icons.source),
-                label: Text(v.systems[i].name),
-              ),
-            );
-          }
-          // dynamically create page of every system of the vehicle
-          for (int i = 0; i < v.systems.length; i++) {
-            _pages.add(
-              SetupPage(
-                subsystems: v.systems[i].subsystems,
-                updateParent: updateParent,
-              ),
-            );
-          }
+              Vehicle v = setup.proposalVehicle;
+              // dynamically create side menu for the systems of the vehicle
+              List<NavigationRailDestination> navigationRailDestinations = [];
+              for (int i = 0; i < v.systems.length; i++) {
+                navigationRailDestinations.add(
+                  NavigationRailDestination(
+                    icon: Icon(Icons.source),
+                    label: Text(v.systems[i].name),
+                  ),
+                );
+              }
+              // dynamically create page of every system of the vehicle
+              for (int i = 0; i < v.systems.length; i++) {
+                _pages.add(
+                  SetupPage(
+                    subsystems: v.systems[i].subsystems,
+                    updateParent: updateParent,
+                  ),
+                );
+              }
 
-          //custom textfield
-          TextField myTextField({
-            required TextEditingController controller,
-            required String label,
-            bool isTitle = false,
-            bool isDescription = false,
-            bool isReason = false,
-            required AppSetup setup,
-          }) =>
-              TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  labelText: label,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1, color: Colors.black),
+              //custom textfield
+              TextField myTextField({
+                required TextEditingController controller,
+                required String label,
+                bool isTitle = false,
+                bool isDescription = false,
+                bool isReason = false,
+                required AppSetup setup,
+              }) =>
+                  TextField(
+                    controller: controller,
+                    decoration: InputDecoration(
+                      labelText: label,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1, color: Colors.black),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      if (isDescription) {
+                        setup.proposalDescription = value;
+                        setState1(
+                          () {
+                            setup.proposalTitle = calculateTitle();
+                          },
+                        );
+                      } else if (isReason)
+                        setup.proposalReason = value;
+                      else
+                        setup.proposalTitle = value;
+
+                      setState1(
+                        () {},
+                      );
+                    },
+                  );
+
+              return AlertDialog(
+                title: Center(
+                  child: Text(
+                    "CURRENT PROPOSAL",
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
-                onChanged: (value) {
-                  if (isDescription) {
-                    setup.proposalDescription = value;
-                    setState1(
-                      () {
-                        setup.proposalTitle = calculateTitle();
-                      },
-                    );
-                  } else if (isReason)
-                    setup.proposalReason = value;
-                  else
-                    setup.proposalTitle = value;
-
-                  setState1(
-                    () {},
-                  );
-                },
-              );
-
-          return AlertDialog(
-            title: Center(
-              child: Text(
-                "CURRENT PROPOSAL",
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-            content: Container(
-              height: screenHeight * 0.9,
-              width: screenWidth * 0.9,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                content: Container(
+                  height: screenHeight * 0.9,
+                  width: screenWidth * 0.9,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      //show window with vehicle divided into systems
-                      Text('Select Part:'),
-                      SingleChildScrollView(
-                        child: Container(
-                          height: screenHeight * 0.7,
-                          width: screenWidth * 0.45,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (v.systems.length >= 2)
-                                NavigationRail(
-                                  destinations: navigationRailDestinations,
-                                  selectedIndex: _selectedIndex,
-                                  groupAlignment: 0,
-                                  onDestinationSelected: (value) {
-                                    setState1(() {
-                                      _selectedIndex = value;
-                                    });
-                                  },
-                                  labelType: NavigationRailLabelType.all,
-                                ),
-                              if (v.systems.length >= 2)
-                                VerticalDivider(
-                                  width: 1,
-                                  thickness: 1,
-                                  color: Colors.black,
-                                ),
-                              SizedBox(width: 10),
-                              Container(child: _pages[_selectedIndex]),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  VerticalDivider(
-                    width: 1,
-                    thickness: 1,
-                    color: Colors.black,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      //title of proposal
-                      Text(
-                          (selectedPart.name == 'name')
-                              ? 'Select a part to generate title'
-                              : (int.tryParse(change.text) == null)
-                                  ? 'Enter a valid value for the change'
-                                  : setup.proposalTitle,
-                          style: TextStyle(fontSize: 25)),
-                      SizedBox(height: 15),
-                      //description of proposal
-                      Container(
-                        width: screenWidth * 0.3,
-                        child: myTextField(
-                          isDescription: true,
-                          setup: setup,
-                          controller: description,
-                          label: 'Description',
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                      //reason of proposal
-                      Container(
-                        width: screenWidth * 0.3,
-                        child: myTextField(
-                          isReason: true,
-                          setup: setup,
-                          controller: reason,
-                          label: 'Reason',
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                      Row(
-                        //assign new value
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Change value from',
-                              style: TextStyle(fontSize: 20)),
-                          SizedBox(width: 10),
-                          Container(
-                            alignment: Alignment.center,
-                            color: Colors.grey.shade200,
-                            width: 50,
-                            child: TextField(
-                              controller: TextEditingController(
-                                  text: (selectedPart.value == -1)
-                                      ? '    -'
-                                      : ' ' + selectedPart.value.toString()),
-                              enabled: false,
+                          //show window with vehicle divided into systems
+                          Text('Select Part:'),
+                          SingleChildScrollView(
+                            child: Container(
+                              height: screenHeight * 0.7,
+                              width: screenWidth * 0.45,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (v.systems.length >= 2)
+                                    NavigationRail(
+                                      destinations: navigationRailDestinations,
+                                      selectedIndex: _selectedIndex,
+                                      groupAlignment: 0,
+                                      onDestinationSelected: (value) {
+                                        setState1(() {
+                                          _selectedIndex = value;
+                                        });
+                                      },
+                                      labelType: NavigationRailLabelType.all,
+                                    ),
+                                  if (v.systems.length >= 2)
+                                    VerticalDivider(
+                                      width: 1,
+                                      thickness: 1,
+                                      color: Colors.black,
+                                    ),
+                                  SizedBox(width: 10),
+                                  Container(child: _pages[_selectedIndex]),
+                                ],
+                              ),
                             ),
                           ),
-                          SizedBox(width: 10),
-                          Text('to', style: TextStyle(fontSize: 20)),
-                          SizedBox(width: 10),
+                        ],
+                      ),
+                      VerticalDivider(
+                        width: 1,
+                        thickness: 1,
+                        color: Colors.black,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          //title of proposal
+                          Text(
+                              (selectedPart.name == 'name')
+                                  ? 'Select a part to generate title'
+                                  : (int.tryParse(change.text) == null)
+                                      ? 'Enter a valid value for the change'
+                                      : setup.proposalTitle,
+                              style: TextStyle(fontSize: 25)),
+                          SizedBox(height: 15),
+                          //description of proposal
                           Container(
-                              width: 50,
-                              child: TextField(
-                                controller: change,
-                                onChanged: (value) {
-                                  setState1(
-                                    () {
-                                      if ((int.tryParse(change.text) != null) &&
-                                          selectedPart.name != 'name')
-                                        setup.proposalTitle = calculateTitle();
+                            width: screenWidth * 0.3,
+                            child: myTextField(
+                              isDescription: true,
+                              setup: setup,
+                              controller: description,
+                              label: 'Description',
+                            ),
+                          ),
+                          SizedBox(height: 15),
+                          //reason of proposal
+                          Container(
+                            width: screenWidth * 0.3,
+                            child: myTextField(
+                              isReason: true,
+                              setup: setup,
+                              controller: reason,
+                              label: 'Reason',
+                            ),
+                          ),
+                          SizedBox(height: 15),
+                          Row(
+                            //assign new value
+                            children: [
+                              Text('Change value from',
+                                  style: TextStyle(fontSize: 20)),
+                              SizedBox(width: 10),
+                              Container(
+                                alignment: Alignment.center,
+                                color: Colors.grey.shade200,
+                                width: 50,
+                                child: TextField(
+                                  controller: TextEditingController(
+                                      text: (selectedPart.value == -1)
+                                          ? '    -'
+                                          : ' ' +
+                                              selectedPart.value.toString()),
+                                  enabled: false,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Text('to', style: TextStyle(fontSize: 20)),
+                              SizedBox(width: 10),
+                              Container(
+                                  width: 50,
+                                  child: TextField(
+                                    controller: change,
+                                    onChanged: (value) {
+                                      setState1(
+                                        () {
+                                          if ((int.tryParse(change.text) !=
+                                                  null) &&
+                                              selectedPart.name != 'name')
+                                            setup.proposalTitle =
+                                                calculateTitle();
+                                        },
+                                      );
                                     },
-                                  );
-                                },
-                              )),
-                          Text(selectedPart.measurementUnit)
+                                  )),
+                              Text(selectedPart.measurementUnit)
+                            ],
+                          ),
                         ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            //buttons on the bottom of the dialog
-            actions: [
-              TextButton(
-                child: Text('DISCARD', style: TextStyle(fontSize: 25)),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              //button to save proposal
-              TextButton(
-                //check if new value is a number and a part has been selected
-                onPressed: !((int.tryParse(change.text) != null) &&
-                        selectedPart.name != 'name')
-                    ? null
-                    : () {
-                        //send proposal to database
-                        sendProposal(
-                          proposal: Proposal(
-                            partId: selectedPart.id!,
-                            partName: selectedPart.name,
-                            partMeasurementUnit: selectedPart.measurementUnit,
-                            userId: setup.supabase_id,
-                            userRole: setup.role,
-                            userDepartment: setup.userDepartment,
-                            title: setup.proposalTitle,
-                            description: description.text,
-                            reason: reason.text,
-                            partValueFrom: selectedPart.value.toString() +
-                                ' ' +
-                                selectedPart.measurementUnit,
-                            partValueTo:
-                                (selectedPart.value + int.parse(change.text))
-                                        .toString() +
+                ),
+                //buttons on the bottom of the dialog
+                actions: [
+                  TextButton(
+                    child: Text('DISCARD', style: TextStyle(fontSize: 25)),
+                    onPressed: () {
+                      setup.proposalDescription = '';
+                      setup.proposalReason = '';
+                      setup.proposalTitle = '';
+                      selectedPart =
+                          Part(name: 'name', measurementUnit: '', value: -1);
+                      change.text = '';
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  //button to save proposal
+                  TextButton(
+                    //check if new value is a number and a part has been selected
+                    onPressed: !((int.tryParse(change.text) != null) &&
+                            selectedPart.name != 'name')
+                        ? null
+                        : () {
+                            //send proposal to database
+                            sendProposal(
+                              proposal: Proposal(
+                                partId: selectedPart.id!,
+                                partName: selectedPart.name,
+                                partMeasurementUnit:
+                                    selectedPart.measurementUnit,
+                                userId: setup.supabase_id,
+                                userRole: setup.role,
+                                userDepartment: setup.userDepartment,
+                                title: setup.proposalTitle,
+                                description: description.text,
+                                reason: reason.text,
+                                poolId: currentProposalPoolId,
+                                partValueFrom: selectedPart.value.toString() +
                                     ' ' +
                                     selectedPart.measurementUnit,
-                          ),
-                        );
-                      },
-                child: Text('SAVE', style: TextStyle(fontSize: 25)),
-              )
-            ],
+                                partValueTo: change.text.toString() +
+                                    ' ' +
+                                    selectedPart.measurementUnit,
+                              ),
+                            );
+                          },
+                    child: Text('SAVE', style: TextStyle(fontSize: 25)),
+                  )
+                ],
+              );
+            },
           );
         },
       );

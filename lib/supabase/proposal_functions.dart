@@ -44,23 +44,24 @@ Stream<List<Proposal>> handsOnStream() {
       .map(
         (item) {
           List<Proposal> m = [];
-          List<int> t_v_proposalds= [];
+          List<int> t_v_proposalds = [];
 
           item.forEach((element) {
-            if (t_v_proposalds.contains(element['id'])) 
-              return;
-            
+            if (t_v_proposalds.contains(element['id'])) return;
+
             t_v_proposalds.add(element['id']);
 
-            print('proposal_state__state:\t' + element['proposal_state__state']);
-            if(element['proposal_state__state'] == 'DONE' 
-              || element['proposal_state__state'] == 'APPROVED' ) {
-                print('\tIF');
-                print(element);
-                m.add(Proposal.fromJson(element, ProposalState.fromJson(element)));
-                print('\tEND IF');
-                print('new proposal:\0t' + m.last.toJson().toString());
-              }
+            print(
+                'proposal_state__state:\t' + element['proposal_state__state']);
+            if (element['proposal_state__state'] == 'DONE' ||
+                element['proposal_state__state'] == 'APPROVED') {
+              print('\tIF');
+              print(element);
+              m.add(
+                  Proposal.fromJson(element, ProposalState.fromJson(element)));
+              print('\tEND IF');
+              print('new proposal:\0t' + m.last.toJson().toString());
+            }
           });
           print('\n\n\n m size : \t' + m.length.toString());
           print(m);
@@ -78,9 +79,9 @@ Future getproposals() async {
 Future changeProposalState({required ProposalState newState}) async {
   print('changeProposalState: proposal_state\t' + newState.toJson().toString());
   Map<String, dynamic> stateReq = {
-         'proposal_id': newState.proposalId,
-         'changed_by_user_id': newState.changedByUserId,
-         'state': newState.state,
+    'proposal_id': newState.proposalId,
+    'changed_by_user_id': newState.changedByUserId,
+    'state': newState.state,
   };
   print(stateReq);
   var proposalState =
@@ -89,6 +90,17 @@ Future changeProposalState({required ProposalState newState}) async {
 
 Future sendProposal({required Proposal proposal}) async {
   print('sendProposal: proposal');
+
+  print(proposal.description.runtimeType);
+  print(proposal.reason.runtimeType);
+  print(proposal.partId.runtimeType);
+  print(proposal.partValueFrom.runtimeType);
+  print(proposal.partValueTo.runtimeType);
+  print(proposal.poolId.runtimeType);
+  print(proposal.title.runtimeType);
+  print(proposal.userId.runtimeType);
+
+  //print(proposal.);
   await supabase.from('proposal').insert(proposal.toJson());
 }
 
