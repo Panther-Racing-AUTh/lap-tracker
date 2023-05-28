@@ -26,6 +26,7 @@ import '../../widgets/desktop_widgets/charts_desktop_widget.dart';
 import '../../widgets/desktop_widgets/panther_desktop_widget.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
 import '../../widgets/diagram_comparison_button.dart';
+import '../../widgets/event_setup.dart';
 import 'vehicle_setup_screen.dart';
 import 'package:intl/intl.dart';
 
@@ -126,24 +127,34 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
 
             SizedBox(width: width * 0.005),
             Mutation(
-                options: MutationOptions(document: gql(clearProposals)),
-                builder: (RunMutation clearProposalsFunction, result) {
-                  return TextButton(
-                    onPressed: () {
-                      clearProposalsFunction({
-                        "proposal_pool": {
-                          "ended": false,
-                          "vehicle_id": 11,
-                          "session_id": 1
-                        }
-                      });
-                    },
-                    child: Text(
-                      'Clear Proposals',
-                      style: TextStyle(fontSize: 20, color: Colors.amber),
-                    ),
-                  );
-                })
+              options: MutationOptions(document: gql(clearProposals)),
+              builder: (RunMutation clearProposalsFunction, result) {
+                return TextButton(
+                  onPressed: () {
+                    clearProposalsFunction({
+                      "proposal_pool": {
+                        "ended": false,
+                        "vehicle_id": 11,
+                        "session_id": 1
+                      }
+                    });
+                  },
+                  child: Text(
+                    'Clear Proposals',
+                    style: TextStyle(fontSize: 20, color: Colors.amber),
+                  ),
+                );
+              },
+            ),
+            TextButton(
+              onPressed: () {
+                showEventSetupDialog(context: context);
+              },
+              child: Text(
+                'Start Event',
+                style: TextStyle(fontSize: 20, color: Colors.purple),
+              ),
+            )
             //display time based on role
             // if (width > 620 &&
             //     setup.role != 'default' &&

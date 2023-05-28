@@ -150,3 +150,14 @@ String getApprovedProposals = """
     }
   }
 """;
+
+String insertEvent = """
+  mutation insertEvent(\$description: String!, \$date: timestamp!) {
+    insert_event_date_one(object: {description: \$description, date: \$date}){
+      id
+      description
+      date
+    }
+  } 
+
+""";
