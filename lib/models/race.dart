@@ -9,6 +9,11 @@ class RaceTrack {
     required this.country,
     required this.countryCode,
   });
+  RaceTrack.fromJson(Map json)
+      : id = json['id'],
+        name = json['name'],
+        country = json['country'],
+        countryCode = json['country_code'];
 }
 
 /*

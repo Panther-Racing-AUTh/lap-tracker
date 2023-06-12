@@ -161,3 +161,29 @@ String insertEvent = """
   } 
 
 """;
+
+String getEvents = """
+  subscription getEvents {
+    event_date{
+      id
+      date
+      description
+      sessions {
+        id
+        type
+        racetrack {
+          id
+          name
+          country
+          country_code
+        }
+        
+        laps {
+          id
+          lap_order
+        }
+      }
+    }
+} 
+
+""";

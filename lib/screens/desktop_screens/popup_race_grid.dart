@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/widgets/diagram_comparison_button.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+
+import '../../models/event.dart';
+import '../../queries.dart';
 
 class PopUpRaceGrid extends StatefulWidget {
   const PopUpRaceGrid({super.key});
@@ -93,17 +98,45 @@ class _PopUpRaceGridState extends State<PopUpRaceGrid> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.all(15),
-        child: PlutoGrid(
-          columns: columns,
-          rows: rows,
-          columnGroups: columnGroups,
-          onChanged: (PlutoGridOnChangedEvent event) {
-            print(event);
-          },
-          configuration: const PlutoGridConfiguration(),
-        ),
-      ),
+          padding: const EdgeInsets.all(15),
+          child: Subscription(
+            options: SubscriptionOptions(document: gql(getEvents)),
+            builder: (result) {
+              if (result.hasException) {
+                return Text(result.exception.toString());
+              }
+              if (result.isLoading) {
+                return Center(
+                  child: const CircularProgressIndicator(),
+                );
+              }
+              print(result.data);
+              //#########
+              List<Event> events = [];
+              for (var event in result.data!['event_date']) {
+                List<Session> sessions = [];
+                for (var session in event['sessions']) {
+                  List<Lap> laps = [];
+                  for (var lap in session['laps']) {
+                    laps.add(Lap.fromJson(lap));
+                  }
+                  sessions.add(Session.fromJson(session, laps));
+                }
+                events.add(Event.fromJson(event, sessions));
+              }
+
+              print(events);
+              return PlutoGrid(
+                columns: columns,
+                rows: rows,
+                columnGroups: columnGroups,
+                onChanged: (PlutoGridOnChangedEvent event) {
+                  print(event);
+                },
+                configuration: const PlutoGridConfiguration(),
+              );
+            },
+          )),
     );
   }
 }
