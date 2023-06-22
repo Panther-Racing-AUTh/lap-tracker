@@ -14,7 +14,7 @@ class Proposal {
   String? proposalPartValueFrom;
   String? proposalPartValueTo;
   int? poolId;
-  int partId;
+  int? partId;
   String? partName;
   int? partSubsystemId;
   int? partCurrentValueId;
@@ -85,15 +85,15 @@ class Proposal {
   Proposal.fromJson(Map json, ProposalState this.state)
       : id = json['id'], // 201 -> 202
         proposalId = json['id'], //65
-        proposalCreatedAt = json['created_at'], //65
-        poolId = json['proposal_pool_id'],
-        partId = json['part_id'],
-        userId = json['user_id'],
-        title = json['title'],
+        proposalCreatedAt = json['created_at'] ?? null, //65
+        poolId = json['proposal_pool_id'] ?? null,
+        partId = json['part_id'] ?? null,
+        userId = json['user_id'] ?? null,
+        title = json['title'] ?? null,
         description = json['description'] == null ? '' : json['description'],
         reason = json['reason'] == null ? '' : json['reason'],
-        partValueFrom = json['part_value_from'],
-        partValueTo = json['part_value_to'];
+        partValueFrom = json['part_value_from'] ?? null,
+        partValueTo = json['part_value_to'] ?? null;
   //userFullName = json['user__full_name'],
   //userRole = json['user__role'],
   //userDepartment = json['user__department'],

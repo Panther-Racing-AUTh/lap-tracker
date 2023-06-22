@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_complete_guide/models/proposal.dart';
 import 'package:flutter_complete_guide/queries.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/the_new_data_screen2.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_complete_guide/widgets/settings.dart';
 import 'package:flutter_complete_guide/widgets/weather_widget.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
+import '../../models/vehicle.dart';
 import '../../names.dart' as names;
 import '../../providers/app_setup.dart';
 import '../../supabase/proposal_functions.dart';
@@ -174,12 +176,39 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         actions: [
           //open proposal popup button
           if (setup.role == 'engineer')
-            TextButton(
-                onPressed: () => showProposal(context: context),
-                child: Text(
-                  'OPEN PROPOSAL',
-                  style: TextStyle(color: Colors.white),
-                )),
+            Query(
+              options: QueryOptions(
+                  document: gql(getLastestProposalForDepartment),
+                  variables: {"department": setup.userDepartment}),
+              builder: (result, {fetchMore, refetch}) {
+                Proposal? proposal;
+                print(result.data);
+                if (result
+                    .data!['event_date'][0]['sessions'][0]['proposal_pools'][0]
+                        ['proposals']
+                    .isNotEmpty) {
+                  proposal = Proposal.fromJson(
+                    result.data!['event_date'][0]['sessions'][0]
+                        ['proposal_pools'][0]['proposals'][0],
+                    ProposalState.empty(),
+                  );
+                  proposal.partName = result.data!['event_date'][0]['sessions']
+                      [0]['proposal_pools'][0]['proposals'][0]['part']['name'];
+                  proposal.partMeasurementUnit = result.data!['event_date'][0]
+                          ['sessions'][0]['proposal_pools'][0]['proposals'][0]
+                      ['part']['measurement_unit'];
+                }
+
+                return TextButton(
+                    onPressed: () =>
+                        showProposal(context: context, proposal: proposal),
+                    child: Text(
+                      'OPEN PROPOSAL',
+                      style: TextStyle(color: Colors.white),
+                    ));
+              },
+            ),
+
           SizedBox(width: 10),
           //button for user information
           IconButton(

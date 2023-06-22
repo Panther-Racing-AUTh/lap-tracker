@@ -32,9 +32,9 @@ class AppSetup extends ChangeNotifier {
   String userEmail = '';
   String userDepartment = '';
 
-  String proposalTitle = '';
-  String proposalDescription = '';
-  String proposalReason = '';
+  // String proposalTitle = '';
+  // String proposalDescription = '';
+  // String proposalReason = '';
 
   List timeConstraints = [null, null];
 

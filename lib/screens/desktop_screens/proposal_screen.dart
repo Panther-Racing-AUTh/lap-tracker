@@ -21,16 +21,35 @@ TextEditingController reason = TextEditingController();
 TextEditingController change = TextEditingController();
 
 //displays alert dialog to show the proposal
-void showProposal({required BuildContext context}) {
+void showProposal(
+    {required BuildContext context, required Proposal? proposal}) {
   AppSetup setup = Provider.of<AppSetup>(context, listen: false);
   final screenHeight = MediaQuery.of(context).size.height;
   final screenWidth = MediaQuery.of(context).size.width;
   var _selectedIndex = 0;
-  List<Widget> _pages = [];
-  title.text = setup.proposalTitle;
-  description.text = setup.proposalDescription;
-  reason.text = setup.proposalReason;
-  int previousPoolId = -1;
+  List<SetupPage> _pages = [];
+  // title.text = setup.proposalTitle;
+  // description.text = setup.proposalDescription;
+  // reason.text = setup.proposalReason;
+
+  //check if proposal already exists in the pool
+  //if it does it is previewed to the interface
+  //else a blank one is created
+  if (proposal == null)
+    print('proposal is null');
+  else {
+    print(proposal.id);
+    title.text = proposal.title;
+    description.text = proposal.description;
+    reason.text = proposal.reason;
+    change.text = proposal.partValueTo.split(' ')[0];
+    selectedPart = Part(
+      name: proposal.partName!,
+      measurementUnit: proposal.partMeasurementUnit!,
+      value: int.parse(proposal.partValueFrom.split(' ')[0]),
+    );
+    //calculateTitle();
+  }
   showDialog(
     context: context,
     builder: (context) {
@@ -72,15 +91,29 @@ void showProposal({required BuildContext context}) {
                 );
               }
               // dynamically create page of every system of the vehicle
-              for (int i = 0; i < v.systems.length; i++) {
-                _pages.add(
-                  SetupPage(
-                    subsystems: v.systems[i].subsystems,
-                    updateParent: updateParent,
-                  ),
-                );
-              }
-
+              if (_pages.isEmpty)
+                for (int i = 0; i < v.systems.length; i++) {
+                  _pages.add(
+                    SetupPage(
+                      subsystems: v.systems[i].subsystems,
+                      updateParent: updateParent,
+                    ),
+                  );
+                }
+              print(_pages.length);
+              //set index to the correct page if proposal already existed
+              if (proposal != null)
+                for (int i = 0; i < _pages.length; i++) {
+                  print(_pages[i]);
+                  print(_pages.length);
+                  if (partBelongsToSubsystems(
+                      selectedPart, _pages[i].subsystems)) {
+                    print(i);
+                    print('object');
+                    _selectedIndex = i;
+                    break;
+                  }
+                }
               //custom textfield
               TextField myTextField({
                 required TextEditingController controller,
@@ -99,18 +132,6 @@ void showProposal({required BuildContext context}) {
                       ),
                     ),
                     onChanged: (value) {
-                      if (isDescription) {
-                        setup.proposalDescription = value;
-                        setState1(
-                          () {
-                            setup.proposalTitle = calculateTitle();
-                          },
-                        );
-                      } else if (isReason)
-                        setup.proposalReason = value;
-                      else
-                        setup.proposalTitle = value;
-
                       setState1(
                         () {},
                       );
@@ -182,7 +203,8 @@ void showProposal({required BuildContext context}) {
                                   ? 'Select a part to generate title'
                                   : (int.tryParse(change.text) == null)
                                       ? 'Enter a valid value for the change'
-                                      : setup.proposalTitle,
+                                      // : setup.proposalTitle,
+                                      : title.text,
                               style: TextStyle(fontSize: 25)),
                           SizedBox(height: 15),
                           //description of proposal
@@ -239,8 +261,9 @@ void showProposal({required BuildContext context}) {
                                           if ((int.tryParse(change.text) !=
                                                   null) &&
                                               selectedPart.name != 'name')
-                                            setup.proposalTitle =
-                                                calculateTitle();
+                                            // setup.proposalTitle =
+                                            //     calculateTitle();
+                                            title.text = calculateTitle();
                                         },
                                       );
                                     },
@@ -258,11 +281,11 @@ void showProposal({required BuildContext context}) {
                   TextButton(
                     child: Text('DISCARD', style: TextStyle(fontSize: 25)),
                     onPressed: () {
-                      setup.proposalDescription = '';
-                      setup.proposalReason = '';
-                      setup.proposalTitle = '';
-                      selectedPart =
-                          Part(name: 'name', measurementUnit: '', value: -1);
+                      // setup.proposalDescription = '';
+                      // setup.proposalReason = '';
+                      // setup.proposalTitle = '';
+                      // selectedPart =
+                      //     Part(name: 'name', measurementUnit: '', value: -1);
                       change.text = '';
                       Navigator.of(context).pop();
                     },
@@ -284,7 +307,8 @@ void showProposal({required BuildContext context}) {
                                 userId: setup.supabase_id,
                                 userRole: setup.role,
                                 userDepartment: setup.userDepartment,
-                                title: setup.proposalTitle,
+                                // title: setup.proposalTitle,
+                                title: title.text,
                                 description: description.text,
                                 reason: reason.text,
                                 poolId: currentProposalPoolId,
@@ -352,7 +376,8 @@ class _SetupPageState extends State<SetupPage> {
                       widget.updateParent();
 
                       if (int.tryParse(change.text) != null)
-                        setup.proposalTitle = calculateTitle();
+                        // setup.proposalTitle = calculateTitle();
+                        title.text = calculateTitle();
                     },
                     child: Card(
                       color: (selectedPart.name ==
@@ -424,4 +449,13 @@ String calculateTitle() {
         (int.parse(change.text) - selectedPart.value).toString() +
         ' ' +
         selectedPart.measurementUnit;
+}
+
+bool partBelongsToSubsystems(Part part, List<Subsystem> subSystems) {
+  for (int i = 0; i < subSystems.length; i++) {
+    for (int j = 0; j < subSystems[i].parts.length; j++) {
+      if (part.name == subSystems[i].parts[j].name) return true;
+    }
+  }
+  return false;
 }

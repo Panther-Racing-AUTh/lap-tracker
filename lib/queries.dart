@@ -187,3 +187,34 @@ String getEvents = """
 } 
 
 """;
+
+String getLastestProposalForDepartment = """
+  query getLatestProposalForDepartment(\$department: String! ) {
+    event_date(limit: 1, where: {id: {_eq: 1}}) {
+      sessions(limit: 1, order_by: {session_order: desc }){
+        proposal_pools(limit: 1, order_by: {id: desc }){
+          proposals(where: {user: {department: {_eq: \$department}} }, order_by: {id: desc }) {
+            id
+            proposal_pool{
+              id
+              vehicle{
+                id
+              }
+            }
+            part{
+              id
+              name
+              measurement_unit
+            }
+            user_id
+            title
+            description
+            reason
+            part_value_from
+            part_value_to
+          }
+        }
+      }
+    }
+  }
+""";
