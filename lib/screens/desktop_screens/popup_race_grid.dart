@@ -15,82 +15,30 @@ class PopUpRaceGrid extends StatefulWidget {
 
 final List<PlutoColumn> columns = <PlutoColumn>[
   PlutoColumn(
-    title: 'Id',
-    field: 'id',
-    type: PlutoColumnType.text(),
-  ),
-  PlutoColumn(
-    title: 'Name',
-    field: 'name',
-    type: PlutoColumnType.text(),
-  ),
-  PlutoColumn(
-    title: 'Age',
-    field: 'age',
-    type: PlutoColumnType.number(),
-  ),
-  PlutoColumn(
-    title: 'Role',
-    field: 'role',
-    type: PlutoColumnType.select(<String>[
-      'Programmer',
-      'Designer',
-      'Owner',
-    ]),
-  ),
-  PlutoColumn(
-    title: 'Joined',
-    field: 'joined',
+    title: 'Date',
+    field: 'date',
     type: PlutoColumnType.date(),
   ),
+  // PlutoColumn(
+  //   title: 'Racetrack',
+  //   field: 'racetrack',
+  //   type: PlutoColumnType.text(),
+  // ),
+  // PlutoColumn(
+  //   title: 'Country',
+  //   field: 'country',
+  //   type: PlutoColumnType.text(),
+  // ),
   PlutoColumn(
-    title: 'Working time',
-    field: 'working_time',
-    type: PlutoColumnType.time(),
-  ),
-];
-
-final List<PlutoRow> rows = [
-  PlutoRow(
-    cells: {
-      'id': PlutoCell(value: 'user1'),
-      'name': PlutoCell(value: 'Mike'),
-      'age': PlutoCell(value: 20),
-      'role': PlutoCell(value: 'Programmer'),
-      'joined': PlutoCell(value: '2021-01-01'),
-      'working_time': PlutoCell(value: '09:00'),
-    },
-  ),
-  PlutoRow(
-    cells: {
-      'id': PlutoCell(value: 'user2'),
-      'name': PlutoCell(value: 'Jack'),
-      'age': PlutoCell(value: 25),
-      'role': PlutoCell(value: 'Designer'),
-      'joined': PlutoCell(value: '2021-02-01'),
-      'working_time': PlutoCell(value: '10:00'),
-    },
-  ),
-  PlutoRow(
-    cells: {
-      'id': PlutoCell(value: 'user3'),
-      'name': PlutoCell(value: 'Suzi'),
-      'age': PlutoCell(value: 40),
-      'role': PlutoCell(value: 'Owner'),
-      'joined': PlutoCell(value: '2021-03-01'),
-      'working_time': PlutoCell(value: '11:00'),
-    },
-  ),
-];
-
-/// columnGroups that can group columns can be omitted.
-final List<PlutoColumnGroup> columnGroups = [
-  PlutoColumnGroup(title: 'Id', fields: ['id'], expandedColumn: true),
-  PlutoColumnGroup(title: 'User information', fields: ['name', 'age']),
-  PlutoColumnGroup(title: 'Status', children: [
-    PlutoColumnGroup(title: 'A', fields: ['role'], expandedColumn: true),
-    PlutoColumnGroup(title: 'Etc.', fields: ['joined', 'working_time']),
-  ]),
+    title: 'Session',
+    field: 'session',
+    type: PlutoColumnType.text(),
+  )
+  // PlutoColumn(
+  //   title: 'Working time',
+  //   field: 'working_time',
+  //   type: PlutoColumnType.time(),
+  // ),
 ];
 
 class _PopUpRaceGridState extends State<PopUpRaceGrid> {
@@ -125,10 +73,46 @@ class _PopUpRaceGridState extends State<PopUpRaceGrid> {
                 events.add(Event.fromJson(event, sessions));
               }
 
-              print(events);
+              final List<PlutoRow> fetchedRows = [];
+
+              events.forEach((data) {
+                print('The date is ${data.date} ');
+              });
+
+              // events.forEach((data) {
+              //   print('The ID is ${data.id} ');
+              // });
+
+              events.forEach(
+                (data) => {
+                  fetchedRows.add(
+                    PlutoRow(
+                      cells: {
+                        'date': PlutoCell(value: data.date),
+                        'session': PlutoCell(value: data.id)
+                      },
+                    ),
+                  ),
+                },
+              );
+
+              /// columnGroups that can group columns can be omitted.
+              final List<PlutoColumnGroup> columnGroups = [
+                PlutoColumnGroup(
+                  title: 'Date',
+                  fields: ['date'],
+                  expandedColumn: true,
+                ),
+                PlutoColumnGroup(
+                  title: 'Session',
+                  fields: ['session'],
+                  expandedColumn: true,
+                )
+              ];
+
               return PlutoGrid(
                 columns: columns,
-                rows: rows,
+                rows: fetchedRows,
                 columnGroups: columnGroups,
                 onChanged: (PlutoGridOnChangedEvent event) {
                   print(event);
