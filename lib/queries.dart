@@ -193,6 +193,7 @@ String getLastestProposalForDepartment = """
     event_date(limit: 1, where: {id: {_eq: 1}}) {
       sessions(limit: 1, order_by: {session_order: desc }){
         proposal_pools(limit: 1, order_by: {id: desc }){
+          id
           proposals(where: {user: {department: {_eq: \$department}} }, order_by: {id: desc }) {
             id
             proposal_pool{
@@ -206,6 +207,7 @@ String getLastestProposalForDepartment = """
               name
               measurement_unit
             }
+            part_id
             user_id
             title
             description

@@ -89,19 +89,15 @@ Future changeProposalState({required ProposalState newState}) async {
 }
 
 Future sendProposal({required Proposal proposal}) async {
-  print('sendProposal: proposal');
-
-  print(proposal.description.runtimeType);
-  print(proposal.reason.runtimeType);
-  print(proposal.partId.runtimeType);
-  print(proposal.partValueFrom.runtimeType);
-  print(proposal.partValueTo.runtimeType);
-  print(proposal.poolId.runtimeType);
-  print(proposal.title.runtimeType);
-  print(proposal.userId.runtimeType);
-
   //print(proposal.);
   await supabase.from('proposal').insert(proposal.toJson());
+}
+
+Future updateProposal({required Proposal proposal}) async {
+  await supabase
+      .from('proposal')
+      .update(proposal.toJson())
+      .match({'id': proposal.id});
 }
 
 Future taskDone({required ProposalState newState}) async {

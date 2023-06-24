@@ -176,37 +176,14 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         actions: [
           //open proposal popup button
           if (setup.role == 'engineer')
-            Query(
-              options: QueryOptions(
-                  document: gql(getLastestProposalForDepartment),
-                  variables: {"department": setup.userDepartment}),
-              builder: (result, {fetchMore, refetch}) {
-                Proposal? proposal;
-                print(result.data);
-                if (result
-                    .data!['event_date'][0]['sessions'][0]['proposal_pools'][0]
-                        ['proposals']
-                    .isNotEmpty) {
-                  proposal = Proposal.fromJson(
-                    result.data!['event_date'][0]['sessions'][0]
-                        ['proposal_pools'][0]['proposals'][0],
-                    ProposalState.empty(),
-                  );
-                  proposal.partName = result.data!['event_date'][0]['sessions']
-                      [0]['proposal_pools'][0]['proposals'][0]['part']['name'];
-                  proposal.partMeasurementUnit = result.data!['event_date'][0]
-                          ['sessions'][0]['proposal_pools'][0]['proposals'][0]
-                      ['part']['measurement_unit'];
-                }
-
-                return TextButton(
-                    onPressed: () =>
-                        showProposal(context: context, proposal: proposal),
-                    child: Text(
-                      'OPEN PROPOSAL',
-                      style: TextStyle(color: Colors.white),
-                    ));
+            TextButton(
+              onPressed: () {
+                showProposal(context: context);
               },
+              child: Text(
+                'OPEN PROPOSAL',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
 
           SizedBox(width: 10),
