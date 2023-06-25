@@ -75,17 +75,19 @@ String getMessagesForChannel = """
 """;
 
 String clearProposals = """
-  mutation clearProposals(\$proposal_pool: proposal_pool_insert_input!) {
+  mutation clearProposals(\$vehicle_idd: Int!, \$session_idd: Int!) {
   
   update_proposal_pool(where:{} _set: {ended:true}){
     affected_rows
   }
   
-  insert_proposal_pool_one(object: \$proposal_pool) {
+  insert_proposal_pool_one(object: {
+    session_id: \$session_idd,
+    vehicle_id: \$vehicle_idd,
+    ended: false,
+    proposals: {data: [{ title: "Health Check 1", description: "", reason: ""},{ title: "Health Check 2", description: "", reason: ""}]}
+  }){
     id
-    session_id
-    vehicle_id
-    ended
   }
   
 }
@@ -129,7 +131,7 @@ String getApprovedProposals = """
   subscription getApprovedProposals {
     proposal_pool(order_by: {id: desc}, limit:1){
       id
-      proposals(where: {proposal_states: {state: {_eq:"APPROVED"}}}) {
+      proposals(where: {_or: [{proposal_states: {state: {_eq:"APPROVED"} } }, {user_id: {_is_null:true} } ]}) {
         id
         title
         created_at

@@ -63,13 +63,31 @@ class _OverviewState extends State<Overview> {
           }
           print('chief engineer dashboard');
           print(result.data);
+          print(result.data!['proposal'].length);
           Map<String, Proposal> proposals = {};
+          List<Proposal> healthChecks = [];
           for (var proposal in result.data!['proposal']) {
-            if (proposals.length > 6) break;
-            if (!proposals.containsKey(proposal['user']['department'])) {
+            // if (proposals.length > 6) break;
+            print(proposal['title']);
+            print(proposal['user']);
+            print(proposal['proposal_states'][0]);
+            if (proposal['user'] == null) {
+              healthChecks.add(
+                Proposal.fromJson(
+                  proposal,
+                  ProposalState.fromJson(
+                    proposal['proposal_states'][0],
+                  ),
+                ),
+              );
+            } else if (!proposals.containsKey(proposal['user']['department'])) {
               proposals.addAll({
-                proposal['user']['department']: Proposal.fromJson(proposal,
-                    ProposalState.fromJson(proposal['proposal_states'][0]))
+                proposal['user']['department']: Proposal.fromJson(
+                  proposal,
+                  ProposalState.fromJson(
+                    proposal['proposal_states'][0],
+                  ),
+                ),
               });
             }
           }
@@ -111,10 +129,10 @@ class _OverviewState extends State<Overview> {
               5,
               manageState,
             ),
-            Section(
+            HandsOnSection(
               title: 'Hands-On Team',
               color: Colors.blue,
-              proposal: proposals['hands_on'],
+              proposals: healthChecks,
               6,
               manageState,
             ),
@@ -453,6 +471,126 @@ class _SectionState extends State<Section> {
         ),
         decoration:
             BoxDecoration(border: Border.all(width: 15, color: widget.color)),
+      ),
+      onTap: () {
+        //zoom in or out if window is tapped
+        (_selected == 0) ? _selected = widget.id : _selected = 0;
+        widget.notifyParent();
+      },
+    );
+  }
+}
+
+class HandsOnSection extends StatefulWidget {
+  HandsOnSection(
+    int this.id,
+    Function this.notifyParent, {
+    required String this.title,
+    required Color this.color,
+    required List<Proposal?> this.proposals,
+  });
+
+  final title;
+  final id;
+  final color;
+  final notifyParent;
+  final List<Proposal?> proposals;
+  @override
+  State<HandsOnSection> createState() => _HandsOnSectionState();
+}
+
+class _HandsOnSectionState extends State<HandsOnSection> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: Container(
+        child: SingleChildScrollView(
+          child: Center(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+              Padding(
+                padding: EdgeInsets.only(top: 10, left: 5, right: 5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: Text(
+                        widget.title,
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Theme.of(context).selectedRowColor),
+                      ),
+                    ),
+
+                    //show proposal
+
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Checks Completed',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).selectedRowColor,
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Center(
+                                    child:
+                                        //show part of title if title is too big, show everything when zoomed in
+                                        ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: widget.proposals.length,
+                                  itemBuilder: (context, index) {
+                                    Proposal prop = widget.proposals[index]!;
+                                    Color c = (prop.state!.state == 'DONE')
+                                        ? Colors.green
+                                        : Colors.red;
+                                    return ListTile(
+                                      leading: Icon(
+                                        prop.state!.state == 'DONE'
+                                            ? Icons.done
+                                            : Icons.close,
+                                        color: c,
+                                      ),
+                                      title: Text(
+                                        (prop.title.length < 35 ||
+                                                _selected == widget.id)
+                                            ? prop.title
+                                            : prop.title
+                                                .replaceRange(30, null, '...'),
+                                        style: TextStyle(
+                                          fontSize: 30,
+                                          color: Theme.of(context)
+                                              .selectedRowColor,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ]),
+          ),
+        ),
+        decoration: BoxDecoration(
+          border: Border.all(width: 15, color: widget.color),
+        ),
       ),
       onTap: () {
         //zoom in or out if window is tapped

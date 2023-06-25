@@ -355,7 +355,7 @@ void showProposal({required BuildContext context}) {
                           ? null
                           : () {
                               Proposal newProposal = Proposal(
-                                id: proposal!.id,
+                                id: (proposal == null) ? null : proposal.id,
                                 partId: selectedPart.id!,
                                 partName: selectedPart.name,
                                 partMeasurementUnit:

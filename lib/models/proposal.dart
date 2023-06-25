@@ -33,6 +33,7 @@ class Proposal {
   String partValueFrom;
   String partValueTo;
   ProposalState? state;
+  bool isHealthCheck = false;
 
   Proposal.empty()
       : description = '',
@@ -80,20 +81,23 @@ class Proposal {
     required this.partValueFrom,
     this.state,
     required this.partValueTo,
+    this.isHealthCheck = false,
   });
 
-  Proposal.fromJson(Map json, ProposalState this.state)
+  Proposal.fromJson(Map json, ProposalState this.state,
+      {bool isHealthCheck = false})
       : id = json['id'], // 201 -> 202
         proposalId = json['id'], //65
         proposalCreatedAt = json['created_at'] ?? null, //65
         poolId = json['proposal_pool_id'] ?? null,
         partId = json['part_id'] ?? null,
-        userId = json['user_id'] ?? null,
-        title = json['title'] ?? null,
-        description = json['description'] == null ? '' : json['description'],
-        reason = json['reason'] == null ? '' : json['reason'],
-        partValueFrom = json['part_value_from'] ?? null,
-        partValueTo = json['part_value_to'] ?? null;
+        userId = json['user_id'] ?? 0,
+        title = json['title'] ?? '',
+        description = json['description'] ?? '',
+        reason = json['reason'] ?? '',
+        partValueFrom = json['part_value_from'] ?? '',
+        partValueTo = json['part_value_to'] ?? '',
+        isHealthCheck = isHealthCheck;
   //userFullName = json['user__full_name'],
   //userRole = json['user__role'],
   //userDepartment = json['user__department'],
@@ -142,7 +146,7 @@ class ProposalState {
   ProposalState.fromJson(Map json)
       : id = json['id'],
         proposalId = json['proposal_id'],
-        changedByUserId = json['changed_by_user_id'],
+        changedByUserId = json['changed_by_user_id'] ?? 0,
         state = json['state'];
 
   Map toJson() {

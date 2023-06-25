@@ -133,13 +133,12 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
               builder: (RunMutation clearProposalsFunction, result) {
                 return TextButton(
                   onPressed: () {
+                    print('button pressed');
                     clearProposalsFunction({
-                      "proposal_pool": {
-                        "ended": false,
-                        "vehicle_id": 11,
-                        "session_id": 1
-                      }
+                      "vehicle_idd": 11,
+                      "session_idd": 1,
                     });
+                    print('function executed');
                   },
                   child: Text(
                     'Clear Proposals',
