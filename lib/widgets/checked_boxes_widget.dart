@@ -127,28 +127,28 @@ class CheckedBoxWidget extends StatelessWidget {
               ),
             )
             .toList(),
-        Container(
-          padding: EdgeInsets.all(10),
-          child: DropdownButton(
-            alignment: Alignment.centerLeft,
-            value: dropdownvalue,
-            items: checkboxList
-                .map((item) => DropdownMenuItem(
-                      child: Text(item.title),
-                      value: item,
-                    ))
-                .toList(),
-            onChanged: (CheckBoxClass? v) {
-              dropdownvalue = v!;
-              if (dropdownvalue == checkboxList[0]) {
-                setup.setXAxis('');
-              } else
-                setup.setXAxis(loggerNamesToPrintedNames.keys.firstWhere(
-                    (element) =>
-                        loggerNamesToPrintedNames[element] == v.title));
-            },
-          ),
-        ),
+        // Container(
+        //   padding: EdgeInsets.all(10),
+        //   child: DropdownButton(
+        //     alignment: Alignment.centerLeft,
+        //     value: dropdownvalue,
+        //     items: checkboxList
+        //         .map((item) => DropdownMenuItem(
+        //               child: Text(item.title),
+        //               value: item,
+        //             ))
+        //         .toList(),
+        //     onChanged: (CheckBoxClass? v) {
+        //       dropdownvalue = v!;
+        //       if (dropdownvalue == checkboxList[0]) {
+        //         setup.setXAxis('');
+        //       } else
+        //         setup.setXAxis(loggerNamesToPrintedNames.keys.firstWhere(
+        //             (element) =>
+        //                 loggerNamesToPrintedNames[element] == v.title));
+        //     },
+        //   ),
+        // ),
       ],
     );
   }

@@ -7,8 +7,8 @@ import '../../models/event.dart';
 import '../../queries.dart';
 
 class PopUpRaceSessionGrid extends StatefulWidget {
-  const PopUpRaceSessionGrid({super.key});
-
+  PopUpRaceSessionGrid(this.loadedData);
+  Function loadedData;
   @override
   State<PopUpRaceSessionGrid> createState() => _PopUpRaceSessionGridState();
 }
@@ -133,7 +133,7 @@ class _PopUpRaceSessionGridState extends State<PopUpRaceSessionGrid> {
                   print(event);
                 },
                 onSelected: (PlutoGridOnSelectedEvent) {
-                  Navigator.of(context).pop();
+                  // Navigator.of(context).pop();
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -141,7 +141,15 @@ class _PopUpRaceSessionGridState extends State<PopUpRaceSessionGrid> {
                         title: Text('Choose your Race'),
                         content: Container(
                           width: MediaQuery.of(context).size.width,
-                          child: PopUpRaceLapGrid(),
+                          child: Stack(children: [
+                            PopUpRaceLapGrid(widget.loadedData),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: Icon(Icons.arrow_back),
+                            ),
+                          ]),
                         ),
                         actions: [
                           TextButton(

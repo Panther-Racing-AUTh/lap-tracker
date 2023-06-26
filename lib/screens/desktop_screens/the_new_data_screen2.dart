@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/widgets/chart_widget.dart';
 import 'popupsession_race_grid.dart';
 
 class NewDataScreen extends StatefulWidget {
@@ -32,8 +33,15 @@ class _NewDataScreenState extends State<NewDataScreen>
     });
   }
 
+  void loadData() {
+    setState(() {
+      fetchedData = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -46,7 +54,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                   title: Text('Choose your Race'),
                   content: Container(
                     width: MediaQuery.of(context).size.width,
-                    child: PopUpRaceSessionGrid(),
+                    child: PopUpRaceSessionGrid(loadData),
                   ),
                   actions: [
                     TextButton(
@@ -65,6 +73,7 @@ class _NewDataScreenState extends State<NewDataScreen>
               minimumSize: const Size(150, 70),
               backgroundColor: Theme.of(context).primaryColor.withOpacity(0.8)),
         ),
+        if (fetchedData) EchartsPage(),
       ],
     );
   }

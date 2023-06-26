@@ -6,8 +6,8 @@ import '../../models/event.dart';
 import '../../queries.dart';
 
 class PopUpRaceLapGrid extends StatefulWidget {
-  const PopUpRaceLapGrid({super.key});
-
+  PopUpRaceLapGrid(this.loadedData);
+  Function loadedData;
   @override
   State<PopUpRaceLapGrid> createState() => _PopUpRaceLapGridState();
 }
@@ -110,7 +110,8 @@ class _PopUpRaceLapGridState extends State<PopUpRaceLapGrid> {
                 },
                 onSelected: (PlutoGridOnSelectedEvent) {
                   print('Panagiwth kane ta dika sou twra');
-                  Navigator.of(context).pop();
+                  widget.loadedData();
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 configuration: const PlutoGridConfiguration(),
               );
