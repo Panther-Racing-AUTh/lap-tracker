@@ -1,52 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/widgets/diagram_comparison_button.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 import '../../models/event.dart';
 import '../../queries.dart';
 
-class PopUpRaceGrid extends StatefulWidget {
-  const PopUpRaceGrid({super.key});
+class PopUpRaceLapGrid extends StatefulWidget {
+  const PopUpRaceLapGrid({super.key});
 
   @override
-  State<PopUpRaceGrid> createState() => _PopUpRaceGridState();
+  State<PopUpRaceLapGrid> createState() => _PopUpRaceLapGridState();
 }
 
-final List<PlutoColumn> columns = <PlutoColumn>[
+final List<PlutoColumn> lapcolumns = <PlutoColumn>[
   PlutoColumn(
     title: 'Date',
     field: 'date',
     type: PlutoColumnType.date(),
   ),
   PlutoColumn(
-    title: 'Racetrack',
-    field: 'racetrack',
-    type: PlutoColumnType.text(),
-  ),
-  PlutoColumn(
-    title: 'Country',
-    field: 'country',
-    type: PlutoColumnType.text(),
-  ),
-  PlutoColumn(
-    title: 'Session',
-    field: 'session',
-    type: PlutoColumnType.text(),
-  ),
-  PlutoColumn(
-    title: 'Description',
-    field: 'description',
-    type: PlutoColumnType.text(),
-  ),
-  PlutoColumn(
-    title: 'Session Type',
-    field: 'sessiontype',
+    title: 'Lap',
+    field: 'lap',
     type: PlutoColumnType.text(),
   ),
 ];
 
-class _PopUpRaceGridState extends State<PopUpRaceGrid> {
+class _PopUpRaceLapGridState extends State<PopUpRaceLapGrid> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,58 +57,60 @@ class _PopUpRaceGridState extends State<PopUpRaceGrid> {
                 events.add(Event.fromJson(event, sessions));
               }
 
-              final List<PlutoRow> fetchedRows = [];
+              final List<PlutoRow> lapfetchedRows = [];
 
               events.forEach(
                 (event) => {
                   event.sessions.forEach((session) {
-                    fetchedRows.add(
-                      PlutoRow(
-                        cells: {
-                          'date': PlutoCell(value: event.date),
-                          'session': PlutoCell(value: event.id),
-                          'racetrack': PlutoCell(value: session.raceTrack.name),
-                          'country':
-                              PlutoCell(value: session.raceTrack.country),
-                          'description': PlutoCell(value: event.description),
-                          'sessiontype': PlutoCell(value: session.type),
-                        },
-                      ),
-                    );
+                    session.laps.forEach((lap) {
+                      lapfetchedRows.add(
+                        PlutoRow(
+                          cells: {
+                            'date': PlutoCell(value: event.date),
+                            'lap': PlutoCell(value: lap.order),
+                          },
+                        ),
+                      );
+                    });
+                  })
+                },
+              );
+
+              events.forEach(
+                (event) => {
+                  event.sessions.forEach((session) {
+                    session.laps.forEach((lap) {
+                      print('The lap is ${lap.order}');
+                    });
                   })
                 },
               );
 
               /// columnGroups that can group columns can be omitted.
-              final List<PlutoColumnGroup> columnGroups = [
+              final List<PlutoColumnGroup> lapcolumnGroups = [
                 PlutoColumnGroup(
                   title: 'Date',
                   fields: ['date'],
                   expandedColumn: true,
                 ),
                 PlutoColumnGroup(
-                  title: 'Session',
-                  fields: ['session'],
+                  title: 'Lap',
+                  fields: ['lap'],
                   expandedColumn: true,
                 ),
-                PlutoColumnGroup(
-                  title: 'Racetrack',
-                  fields: ['racetrack'],
-                  expandedColumn: true,
-                ),
-                PlutoColumnGroup(
-                  title: 'Country',
-                  fields: ['country'],
-                  expandedColumn: true,
-                )
               ];
 
               return PlutoGrid(
-                columns: columns,
-                rows: fetchedRows,
-                columnGroups: columnGroups,
+                columns: lapcolumns,
+                rows: lapfetchedRows,
+                columnGroups: lapcolumnGroups,
+                mode: PlutoGridMode.select,
                 onChanged: (PlutoGridOnChangedEvent event) {
                   print(event);
+                },
+                onSelected: (PlutoGridOnSelectedEvent) {
+                  print('Panagiwth kane ta dika sou twra');
+                  Navigator.of(context).pop();
                 },
                 configuration: const PlutoGridConfiguration(),
               );

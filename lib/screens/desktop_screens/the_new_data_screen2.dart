@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'popup_race_grid.dart';
+import 'popupsession_race_grid.dart';
 
 class NewDataScreen extends StatefulWidget {
   const NewDataScreen({super.key});
@@ -46,7 +46,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                   title: Text('Choose your Race'),
                   content: Container(
                     width: MediaQuery.of(context).size.width,
-                    child: PopUpRaceGrid(),
+                    child: PopUpRaceSessionGrid(),
                   ),
                   actions: [
                     TextButton(
