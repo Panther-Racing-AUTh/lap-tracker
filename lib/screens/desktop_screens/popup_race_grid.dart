@@ -19,26 +19,31 @@ final List<PlutoColumn> columns = <PlutoColumn>[
     field: 'date',
     type: PlutoColumnType.date(),
   ),
-  // PlutoColumn(
-  //   title: 'Racetrack',
-  //   field: 'racetrack',
-  //   type: PlutoColumnType.text(),
-  // ),
-  // PlutoColumn(
-  //   title: 'Country',
-  //   field: 'country',
-  //   type: PlutoColumnType.text(),
-  // ),
+  PlutoColumn(
+    title: 'Racetrack',
+    field: 'racetrack',
+    type: PlutoColumnType.text(),
+  ),
+  PlutoColumn(
+    title: 'Country',
+    field: 'country',
+    type: PlutoColumnType.text(),
+  ),
   PlutoColumn(
     title: 'Session',
     field: 'session',
     type: PlutoColumnType.text(),
-  )
-  // PlutoColumn(
-  //   title: 'Working time',
-  //   field: 'working_time',
-  //   type: PlutoColumnType.time(),
-  // ),
+  ),
+  PlutoColumn(
+    title: 'Description',
+    field: 'description',
+    type: PlutoColumnType.text(),
+  ),
+  PlutoColumn(
+    title: 'Session Type',
+    field: 'sessiontype',
+    type: PlutoColumnType.text(),
+  ),
 ];
 
 class _PopUpRaceGridState extends State<PopUpRaceGrid> {
@@ -75,24 +80,23 @@ class _PopUpRaceGridState extends State<PopUpRaceGrid> {
 
               final List<PlutoRow> fetchedRows = [];
 
-              events.forEach((data) {
-                print('The date is ${data.date} ');
-              });
-
-              // events.forEach((data) {
-              //   print('The ID is ${data.id} ');
-              // });
-
               events.forEach(
-                (data) => {
-                  fetchedRows.add(
-                    PlutoRow(
-                      cells: {
-                        'date': PlutoCell(value: data.date),
-                        'session': PlutoCell(value: data.id)
-                      },
-                    ),
-                  ),
+                (event) => {
+                  event.sessions.forEach((session) {
+                    fetchedRows.add(
+                      PlutoRow(
+                        cells: {
+                          'date': PlutoCell(value: event.date),
+                          'session': PlutoCell(value: event.id),
+                          'racetrack': PlutoCell(value: session.raceTrack.name),
+                          'country':
+                              PlutoCell(value: session.raceTrack.country),
+                          'description': PlutoCell(value: event.description),
+                          'sessiontype': PlutoCell(value: session.type),
+                        },
+                      ),
+                    );
+                  })
                 },
               );
 
@@ -106,6 +110,16 @@ class _PopUpRaceGridState extends State<PopUpRaceGrid> {
                 PlutoColumnGroup(
                   title: 'Session',
                   fields: ['session'],
+                  expandedColumn: true,
+                ),
+                PlutoColumnGroup(
+                  title: 'Racetrack',
+                  fields: ['racetrack'],
+                  expandedColumn: true,
+                ),
+                PlutoColumnGroup(
+                  title: 'Country',
+                  fields: ['country'],
                   expandedColumn: true,
                 )
               ];

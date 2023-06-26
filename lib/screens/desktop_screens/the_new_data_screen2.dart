@@ -45,7 +45,7 @@ class _NewDataScreenState extends State<NewDataScreen>
                 return AlertDialog(
                   title: Text('Choose your Race'),
                   content: Container(
-                    width: 500,
+                    width: MediaQuery.of(context).size.width,
                     child: PopUpRaceGrid(),
                   ),
                   actions: [
