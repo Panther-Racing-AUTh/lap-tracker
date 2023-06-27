@@ -87,7 +87,7 @@ class _PopUpRaceSessionGridState extends State<PopUpRaceSessionGrid> {
                       PlutoRow(
                         cells: {
                           'date': PlutoCell(value: event.date),
-                          'session': PlutoCell(value: event.id),
+                          'session': PlutoCell(value: session.id),
                           'racetrack': PlutoCell(value: session.raceTrack.name),
                           'country':
                               PlutoCell(value: session.raceTrack.country),
@@ -132,8 +132,22 @@ class _PopUpRaceSessionGridState extends State<PopUpRaceSessionGrid> {
                 onChanged: (PlutoGridOnChangedEvent event) {
                   print(event);
                 },
-                onSelected: (PlutoGridOnSelectedEvent) {
+                onSelected: (PlutoGridOnSelectedEvent event) {
                   // Navigator.of(context).pop();
+                  print(event.cell);
+                  print(event.row!.cells);
+                  print(event.rowIdx);
+                  //&&&&&&&&&&&&&&
+                  print('Selected session Id is: ' +
+                      event.row!.cells['session']!.value.toString());
+                  //&&&&&&&&&&&&&&&
+                  Session? selectedSession;
+                  for (var event1 in events) {
+                    for (var session in event1.sessions) {
+                      if (session.id == event.row!.cells['session']!.value)
+                        selectedSession = session;
+                    }
+                  }
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -142,7 +156,10 @@ class _PopUpRaceSessionGridState extends State<PopUpRaceSessionGrid> {
                         content: Container(
                           width: MediaQuery.of(context).size.width,
                           child: Stack(children: [
-                            PopUpRaceLapGrid(widget.loadedData),
+                            PopUpRaceLapGrid(
+                              widget.loadedData,
+                              selectedSession,
+                            ),
                             IconButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
