@@ -82,6 +82,10 @@ class _PopUpRaceLapGridState extends State<PopUpRaceLapGrid> {
           widget.loadedData();
           Navigator.of(context).popUntil((route) => route.isFirst);
         },
+        onLoaded: (PlutoGridOnLoadedEvent event) {
+          //stateManager = event.stateManager;
+          event.stateManager.setShowColumnFilter(true);
+        },
         configuration: const PlutoGridConfiguration(),
       ),
     ));

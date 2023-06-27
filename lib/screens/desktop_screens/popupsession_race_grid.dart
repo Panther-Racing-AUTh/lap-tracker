@@ -134,13 +134,6 @@ class _PopUpRaceSessionGridState extends State<PopUpRaceSessionGrid> {
                 },
                 onSelected: (PlutoGridOnSelectedEvent event) {
                   // Navigator.of(context).pop();
-                  print(event.cell);
-                  print(event.row!.cells);
-                  print(event.rowIdx);
-                  //&&&&&&&&&&&&&&
-                  print('Selected session Id is: ' +
-                      event.row!.cells['session']!.value.toString());
-                  //&&&&&&&&&&&&&&&
                   Session? selectedSession;
                   for (var event1 in events) {
                     for (var session in event1.sessions) {
@@ -179,6 +172,10 @@ class _PopUpRaceSessionGridState extends State<PopUpRaceSessionGrid> {
                       );
                     },
                   );
+                },
+                onLoaded: (PlutoGridOnLoadedEvent event) {
+                  //stateManager = event.stateManager;
+                  event.stateManager.setShowColumnFilter(true);
                 },
                 configuration: const PlutoGridConfiguration(),
               );
