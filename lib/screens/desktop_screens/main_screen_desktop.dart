@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/models/proposal.dart';
 import 'package:flutter_complete_guide/queries.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen.dart';
+import 'package:flutter_complete_guide/screens/desktop_screens/history_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/the_new_data_screen2.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/proposal_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/vehicle_screen.dart';
@@ -72,7 +73,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
   double _calculateAvailableWidthOfScreen(double deviceScreenWidth) {
     if (showSidebar) {
       if (deviceScreenWidth > 1000) {
-        return deviceScreenWidth - 114;
+        return deviceScreenWidth - 138;
       }
       return deviceScreenWidth - 73;
     }
@@ -87,10 +88,11 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         _calculateAvailableWidthOfScreen(MediaQuery.of(context).size.width);
     //list of all pages
     _Allpages = [
-      DashBoardDesktop(width),
+      DashBoardDesktop(width - 24),
       ChatLandingPage(openChartInPage),
       NewDataScreen(),
       VehicleScreen(),
+      HistoryScreen(width),
       AdminPanel(),
       SingleChildScrollView(child: ProfileDesktop()),
       Settings(),
@@ -128,34 +130,36 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
               ),
 
             SizedBox(width: width * 0.005),
-            Mutation(
-              options: MutationOptions(document: gql(clearProposals)),
-              builder: (RunMutation clearProposalsFunction, result) {
-                return TextButton(
-                  onPressed: () {
-                    print('button pressed');
-                    clearProposalsFunction({
-                      "vehicle_idd": 11,
-                      "session_idd": 1,
-                    });
-                    print('function executed');
-                  },
-                  child: Text(
-                    'Clear Proposals',
-                    style: TextStyle(fontSize: 20, color: Colors.amber),
-                  ),
-                );
-              },
-            ),
-            TextButton(
-              onPressed: () {
-                showEventSetupDialog(context: context);
-              },
-              child: Text(
-                'Start Event',
-                style: TextStyle(fontSize: 20, color: Colors.purple),
+            if (setup.role == 'admin' || setup.role == 'chief_engineer')
+              Mutation(
+                options: MutationOptions(document: gql(clearProposals)),
+                builder: (RunMutation clearProposalsFunction, result) {
+                  return TextButton(
+                    onPressed: () {
+                      print('button pressed');
+                      clearProposalsFunction({
+                        "vehicle_idd": 11,
+                        "session_idd": 1,
+                      });
+                      print('function executed');
+                    },
+                    child: Text(
+                      'Clear Proposals',
+                      style: TextStyle(fontSize: 20, color: Colors.amber),
+                    ),
+                  );
+                },
               ),
-            )
+            if (setup.role == 'admin' || setup.role == 'chief_engineer')
+              TextButton(
+                onPressed: () {
+                  showEventSetupDialog(context: context);
+                },
+                child: Text(
+                  'Start Event',
+                  style: TextStyle(fontSize: 20, color: Colors.amber),
+                ),
+              )
             //display time based on role
             // if (width > 620 &&
             //     setup.role != 'default' &&
@@ -249,9 +253,11 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             child: SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                    minHeight: height -
-                        MediaQuery.of(context).padding.top -
-                        kToolbarHeight),
+                  minHeight: height -
+                      MediaQuery.of(context).padding.top -
+                      kToolbarHeight -
+                      10,
+                ),
                 child: IntrinsicHeight(
                   //side bar with pages
                   child: NavigationRail(
@@ -280,8 +286,9 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                       size: 27,
                     ),
                     unselectedIconTheme: IconThemeData(
-                        size: 27,
-                        color: Theme.of(context).textTheme.headline6!.color),
+                      size: 27,
+                      color: Theme.of(context).textTheme.headline6!.color,
+                    ),
                   ),
                 ),
               ),
@@ -362,18 +369,24 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     ),
     _widget(
       4,
+      icon: Icon(Icons.book),
+      text: 'History',
+      selectedIcon: Icon(Icons.book),
+    ),
+    _widget(
+      5,
       icon: Icon(Icons.admin_panel_settings_outlined),
       text: 'Admin Panel',
       selectedIcon: Icon(Icons.admin_panel_settings),
     ),
     _widget(
-      5,
+      6,
       icon: Icon(Icons.person_outlined),
       text: names.profile,
       selectedIcon: Icon(Icons.person),
     ),
     _widget(
-      6,
+      7,
       icon: Icon(Icons.settings_outlined),
       text: names.settings,
       selectedIcon: Icon(Icons.settings),
@@ -389,27 +402,27 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     if (role == 'engineer') {
       l.add(_Allpages[1]);
       l.add(_Allpages[2]);
-      l.add(_Allpages[5]);
       l.add(_Allpages[6]);
+      l.add(_Allpages[7]);
     }
 
     if (role == 'data_analyst') {
       l.add(_Allpages[2]);
-      l.add(_Allpages[5]);
       l.add(_Allpages[6]);
+      l.add(_Allpages[7]);
     }
 
     if (role == 'default') {
-      l.add(_Allpages[5]);
       l.add(_Allpages[6]);
+      l.add(_Allpages[7]);
     }
 
     if (role == 'hands_on_engineer') {
       l.add(_Allpages[0]);
       l.add(_Allpages[1]);
       l.add(_Allpages[2]);
-      l.add(_Allpages[5]);
       l.add(_Allpages[6]);
+      l.add(_Allpages[7]);
     }
 
     if (role == 'chief_engineer') {
@@ -417,8 +430,9 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       l.add(_Allpages[1]);
       l.add(_Allpages[2]);
       l.add(_Allpages[3]);
-      l.add(_Allpages[5]);
+      l.add(_Allpages[4]);
       l.add(_Allpages[6]);
+      l.add(_Allpages[7]);
     }
     return l;
   }
@@ -435,36 +449,38 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       l.add(allNavigationRailDestinations[4]);
       l.add(allNavigationRailDestinations[5]);
       l.add(allNavigationRailDestinations[6]);
+      l.add(allNavigationRailDestinations[7]);
     }
     if (role == 'engineer') {
       l.add(allNavigationRailDestinations[1]);
       l.add(allNavigationRailDestinations[2]);
-      l.add(allNavigationRailDestinations[5]);
       l.add(allNavigationRailDestinations[6]);
+      l.add(allNavigationRailDestinations[7]);
     }
     if (role == 'data_analyst') {
       l.add(allNavigationRailDestinations[2]);
-      l.add(allNavigationRailDestinations[5]);
       l.add(allNavigationRailDestinations[6]);
+      l.add(allNavigationRailDestinations[7]);
     }
     if (role == 'default') {
-      l.add(allNavigationRailDestinations[5]);
       l.add(allNavigationRailDestinations[6]);
+      l.add(allNavigationRailDestinations[7]);
     }
     if (role == 'hands_on_engineer') {
       l.add(allNavigationRailDestinations[0]);
       l.add(allNavigationRailDestinations[1]);
       l.add(allNavigationRailDestinations[2]);
-      l.add(allNavigationRailDestinations[5]);
       l.add(allNavigationRailDestinations[6]);
+      l.add(allNavigationRailDestinations[7]);
     }
     if (role == 'chief_engineer') {
       l.add(allNavigationRailDestinations[0]);
       l.add(allNavigationRailDestinations[1]);
       l.add(allNavigationRailDestinations[2]);
       l.add(allNavigationRailDestinations[3]);
-      l.add(allNavigationRailDestinations[5]);
+      l.add(allNavigationRailDestinations[4]);
       l.add(allNavigationRailDestinations[6]);
+      l.add(allNavigationRailDestinations[7]);
     }
 
     return l;

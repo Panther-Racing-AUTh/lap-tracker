@@ -53,7 +53,7 @@ class _PopUpRaceSessionGridState extends State<PopUpRaceSessionGrid> {
       body: Container(
           padding: const EdgeInsets.all(15),
           child: Subscription(
-            options: SubscriptionOptions(document: gql(getEvents)),
+            options: SubscriptionOptions(document: gql(getAllEvents)),
             builder: (result) {
               if (result.hasException) {
                 return Text(result.exception.toString());

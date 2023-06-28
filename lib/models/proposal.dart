@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Proposal {
   int? id;
   int? proposalId;
@@ -34,6 +32,7 @@ class Proposal {
   String partValueTo;
   ProposalState? state;
   bool isHealthCheck = false;
+  List<ProposalState>? states;
 
   Proposal.empty()
       : description = '',
@@ -82,6 +81,7 @@ class Proposal {
     this.state,
     required this.partValueTo,
     this.isHealthCheck = false,
+    this.states,
   });
 
   Proposal.fromJson(Map json, ProposalState this.state,
@@ -97,7 +97,8 @@ class Proposal {
         reason = json['reason'] ?? '',
         partValueFrom = json['part_value_from'] ?? '',
         partValueTo = json['part_value_to'] ?? '',
-        isHealthCheck = isHealthCheck;
+        isHealthCheck = isHealthCheck,
+        states = [];
   //userFullName = json['user__full_name'],
   //userRole = json['user__role'],
   //userDepartment = json['user__department'],
@@ -130,12 +131,14 @@ class ProposalState {
   int? proposalId;
   int changedByUserId;
   String state;
+  DateTime? createdAt;
 
   ProposalState({
     this.id,
     required this.proposalId,
     required this.changedByUserId,
     required this.state,
+    this.createdAt,
   });
 
   ProposalState.empty()
@@ -147,7 +150,10 @@ class ProposalState {
       : id = json['id'],
         proposalId = json['proposal_id'],
         changedByUserId = json['changed_by_user_id'] ?? 0,
-        state = json['state'];
+        state = json['state'],
+        createdAt = (json['created_at'] != null)
+            ? DateTime.parse(json['created_at'])
+            : null;
 
   Map toJson() {
     return {
@@ -163,6 +169,8 @@ class ProposalPool {
   int sessionId;
   int vehicleId;
   bool ended;
+  DateTime? createdAt;
+  List<Proposal> proposals = [];
 
   ProposalPool({
     required this.id,
@@ -172,8 +180,18 @@ class ProposalPool {
   });
 
   ProposalPool.fromJson(Map json)
-      : id = json['proposal_pool__id'],
-        sessionId = json['proposal_pool__session_id'],
-        vehicleId = json['proposal_pool__vehicle_id'],
-        ended = json['proposal_pool__ended'];
+      : id = json['id'],
+        sessionId = json['session_id'],
+        vehicleId = json['vehicle_id'],
+        ended = json['ended'],
+        createdAt = (json['created_at'] != null)
+            ? DateTime.parse(json['created_at'])
+            : null;
+
+  ProposalPool.empty()
+      : id = 0,
+        sessionId = 0,
+        vehicleId = 0,
+        ended = true,
+        proposals = [];
 }

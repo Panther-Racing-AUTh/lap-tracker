@@ -164,32 +164,6 @@ String insertEvent = """
 
 """;
 
-String getEvents = """
-  subscription getEvents {
-    event_date{
-      id
-      date
-      description
-      sessions {
-        id
-        type
-        racetrack {
-          id
-          name
-          country
-          country_code
-        }
-        
-        laps {
-          id
-          lap_order
-        }
-      }
-    }
-} 
-
-""";
-
 String getLastestProposalForDepartment = """
   query getLatestProposalForDepartment(\$department: String! ) {
     event_date(limit: 1, where: {id: {_eq: 1}}) {
@@ -221,4 +195,31 @@ String getLastestProposalForDepartment = """
       }
     }
   }
+""";
+
+String getAllEvents = """
+  subscription getAllEvents {
+    event_date{
+      id
+      description
+      date
+      sessions{
+        id
+        session_order
+        type
+        racetrack {
+          id
+          country_code
+          country
+          name
+        }
+       laps{
+          id
+          lap_order
+          created_at
+        }
+      }
+    }
+  }
+
 """;

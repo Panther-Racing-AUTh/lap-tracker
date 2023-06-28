@@ -107,3 +107,62 @@ Future taskDone({required ProposalState newState}) async {
       await supabase.from('proposal_state').insert(newState.toJson()).select();
   print(proposalState);
 }
+
+Future<List<ProposalPool>> getProposalsForSession(
+    {required int sessionId}) async {
+  List<ProposalPool> proposalPools = [];
+  final proposalPoolsIds = [];
+  final proposals = [];
+  final proposalsIds = [];
+  final proposalStates = [];
+
+  final proposalPoolsJson = await supabase
+      .from('proposal_pool')
+      .select()
+      .eq('session_id', sessionId)
+      .order('id');
+  for (var proposal in proposalPoolsJson) {
+    proposalPools.add(ProposalPool.fromJson(proposal));
+    proposalPoolsIds.add(proposal['id']);
+  }
+
+  final proposalsJson = await supabase
+      .from('proposal')
+      .select()
+      .in_('proposal_pool_id', proposalPoolsIds)
+      .order('id');
+
+  for (var proposal in proposalsJson) {
+    proposalsIds.add(proposal['id']);
+  }
+
+  final proposalStatesJson = await supabase
+      .from('proposal_state')
+      .select()
+      .in_('proposal_id', proposalsIds)
+      .order('id');
+
+  for (var proposalState in proposalStatesJson) {
+    proposalStates.add(ProposalState.fromJson(proposalState));
+  }
+  for (var proposal in proposalsJson) {
+    ProposalState s = proposalStates.firstWhere((state) {
+      return state.proposalId == proposal['id'];
+    }, orElse: () => ProposalState.empty());
+    proposals.add(Proposal.fromJson(proposal, s));
+  }
+
+  for (int i = 0; i < proposals.length; i++) {
+    for (int j = 0; j < proposalStates.length; j++) {
+      if (proposals[i].id == proposalStates[j].proposalId)
+        proposals[i].states.add(proposalStates[j]);
+    }
+  }
+  for (var proposalPool in proposalPools) {
+    for (var proposal in proposals) {
+      if (proposal.poolId == proposalPool.id)
+        proposalPool.proposals.add(proposal);
+    }
+  }
+  return proposalPools;
+}

@@ -18,6 +18,12 @@ class Event {
         date = DateTime.parse(json['date']),
         description = json['description'],
         sessions = sessions;
+
+  Event.empty()
+      : id = 0,
+        date = DateTime.now(),
+        description = '',
+        sessions = [];
 }
 
 class Session {
@@ -38,6 +44,12 @@ class Session {
         type = json['type'],
         raceTrack = RaceTrack.fromJson(json['racetrack']),
         laps = laps;
+
+  Session.empty()
+      : id = 0,
+        type = '',
+        raceTrack = RaceTrack(id: 0, name: '', country: '', countryCode: ''),
+        laps = [];
 }
 
 class Lap {
