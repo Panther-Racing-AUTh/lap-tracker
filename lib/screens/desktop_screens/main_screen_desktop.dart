@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_complete_guide/models/proposal.dart';
 import 'package:flutter_complete_guide/queries.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/history_screen.dart';
@@ -8,30 +6,20 @@ import 'package:flutter_complete_guide/screens/desktop_screens/the_new_data_scre
 import 'package:flutter_complete_guide/screens/desktop_screens/proposal_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/vehicle_screen.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
-import 'package:flutter_complete_guide/supabase/profile_functions.dart';
-import 'package:flutter_complete_guide/widgets/chat_widget.dart';
 import 'package:flutter_complete_guide/widgets/chats_total.dart';
-import 'package:flutter_complete_guide/screens/desktop_screens/create_new_vehicle_screen.dart';
-import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
 import 'package:flutter_complete_guide/widgets/desktop_widgets/proposals_desktop.dart';
-import 'package:flutter_complete_guide/widgets/desktop_widgets/data_desktop_widget.dart';
-import 'package:flutter_complete_guide/widgets/profile_preview.dart';
-import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
 import 'package:flutter_complete_guide/widgets/weather_widget.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
-import '../../models/vehicle.dart';
+import '../../models/event.dart';
 import '../../names.dart' as names;
 import '../../providers/app_setup.dart';
-import '../../supabase/proposal_functions.dart';
-import '../../widgets/desktop_widgets/charts_desktop_widget.dart';
-import '../../widgets/desktop_widgets/panther_desktop_widget.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
-import '../../widgets/diagram_comparison_button.dart';
+import '../../widgets/event_control.dart';
 import '../../widgets/event_setup.dart';
-import 'vehicle_setup_screen.dart';
-import 'package:intl/intl.dart';
+
+late int oldEventId;
 
 class MainScreenDesktop extends StatefulWidget {
   @override
@@ -50,7 +38,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
     super.initState();
 
     AppSetup setup = Provider.of<AppSetup>(context, listen: false);
-
+    oldEventId = setup.eventDate.id;
     _pageController = PageController(initialPage: setup.mainScreenDesktopIndex);
   }
 
@@ -98,222 +86,295 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       Settings(),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: kToolbarHeight + 10,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // show/hide sidebar button
-            IconButton(
-              icon: Icon((showSidebar)
-                  ? Icons.keyboard_double_arrow_left
-                  : Icons.keyboard_double_arrow_right),
-              onPressed: () => setState(() => showSidebar = !showSidebar),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            //ProfilePreview(),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Container(),
-            ),
-            //display weather information based on role
-            if (setup.role != 'default' && setup.role != 'data_analyst')
-              WeatherWidget(
-                appbar: true,
-                screenWidth: width,
-              ),
+    return Subscription(
+      options: SubscriptionOptions(document: gql(getCurrentProposalPool)),
+      builder: (result) {
+        if (result.hasException) {
+          return Text(result.exception.toString());
+        }
+        if (result.isLoading) {
+          return Center(
+            child: const CircularProgressIndicator(),
+          );
+        }
 
-            SizedBox(width: width * 0.005),
-            if (setup.role == 'admin' || setup.role == 'chief_engineer')
-              Mutation(
-                options: MutationOptions(document: gql(clearProposals)),
-                builder: (RunMutation clearProposalsFunction, result) {
-                  return TextButton(
-                    onPressed: () {
-                      print('button pressed');
-                      clearProposalsFunction({
-                        "vehicle_idd": 11,
-                        "session_idd": 1,
-                      });
-                      print('function executed');
-                    },
-                    child: Text(
-                      'Clear Proposals',
-                      style: TextStyle(fontSize: 20, color: Colors.amber),
-                    ),
-                  );
-                },
-              ),
-            if (setup.role == 'admin' || setup.role == 'chief_engineer')
-              TextButton(
-                onPressed: () {
-                  showEventSetupDialog(context: context);
-                },
-                child: Text(
-                  'Start Event',
-                  style: TextStyle(fontSize: 20, color: Colors.amber),
+        print(result.data);
+        if (result.data!['event_date'][0]['sessions'].isNotEmpty) {
+          setup.eventDate = Event.fromJson(result.data!['event_date'][0], []);
+
+          print('event date id:' + setup.eventDate.id.toString());
+          setup.session = Session.fromJson(
+              result.data!['event_date'][0]['sessions'][0], []);
+          print('session id:' + setup.session.id.toString());
+          setup.currentProposalPoolId = result.data!['event_date'][0]
+              ['sessions'][0]['proposal_pools'][0]['id'];
+        } else
+          setup.eventDate = Event.empty();
+        if (setup.eventDate.id != oldEventId) {
+          _Allpages.replaceRange(
+            0,
+            1,
+            [DashBoardDesktop(width - 24)],
+          );
+          oldEventId = setup.eventDate.id;
+        }
+        return Scaffold(
+          appBar: AppBar(
+            toolbarHeight: kToolbarHeight + 10,
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // show/hide sidebar button
+                IconButton(
+                  icon: Icon((showSidebar)
+                      ? Icons.keyboard_double_arrow_left
+                      : Icons.keyboard_double_arrow_right),
+                  onPressed: () => setState(() => showSidebar = !showSidebar),
                 ),
-              )
-            //display time based on role
-            // if (width > 620 &&
-            //     setup.role != 'default' &&
-            //     setup.role != 'data_analyst')
-            //   StreamBuilder(
-            //     stream: Stream.periodic(const Duration(seconds: 1)),
-            //     builder: (context, snapshot) {
-            //       return Text(
-            //           DateFormat('MM/dd/yyyy hh:mm:ss').format(DateTime.now()));
-            //     },
-            //   ),
-          ],
-        ),
+                SizedBox(
+                  width: 10,
+                ),
+                //ProfilePreview(),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(),
+                ),
+                //display weather information based on role
+                if (setup.role != 'default' && setup.role != 'data_analyst')
+                  WeatherWidget(
+                    appbar: true,
+                    screenWidth: width,
+                  ),
 
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        //title: Text('Panther Racing AUTh'),
-        actions: [
-          //open proposal popup button
-          if (setup.role == 'engineer')
-            TextButton(
-              onPressed: () {
-                showProposal(context: context);
-              },
-              child: Text(
-                'OPEN PROPOSAL',
-                style: TextStyle(color: Colors.white),
-              ),
+                if (setup.role == 'engineer')
+                  Row(
+                    children: [
+                      SizedBox(width: width * 0.005),
+                      Text(
+                        setup.eventDate.id == 0
+                            ? 'No Active Events'
+                            : setup.eventDate.description,
+                        style: TextStyle(
+                          color: setup.eventDate.id == 0
+                              ? Colors.grey
+                              : Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                SizedBox(width: width * 0.005),
+                if (setup.role == 'admin' || setup.role == 'chief_engineer')
+                  Mutation(
+                    options: MutationOptions(document: gql(clearProposals)),
+                    builder: (RunMutation clearProposalsFunction, result) {
+                      return TextButton(
+                        onPressed: () {
+                          print('button pressed');
+                          clearProposalsFunction({
+                            "vehicle_idd": 11,
+                            "session_idd": setup.session.id,
+                          });
+                          print('function executed');
+                        },
+                        child: Text(
+                          'Clear Proposals',
+                          style: TextStyle(fontSize: 20, color: Colors.amber),
+                        ),
+                      );
+                    },
+                  ),
+                if (setup.role == 'admin' || setup.role == 'chief_engineer')
+                  TextButton(
+                      onPressed: () {
+                        (setup.eventDate.id == 0)
+                            ? showEventSetupDialog(context: context)
+                            : showEventControlDialog(context: context);
+                      },
+                      child: (setup.eventDate.id == 0)
+                          ? Text(
+                              'Start Event',
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.amber),
+                            )
+                          : Row(
+                              children: [
+                                Text(
+                                  setup.eventDate.description,
+                                  style: TextStyle(
+                                      color: Colors.amber, fontSize: 20),
+                                ),
+                                SizedBox(width: 5),
+                                CircleAvatar(
+                                  radius: 5,
+                                  backgroundColor: Colors.green,
+                                )
+                              ],
+                            ))
+                //display time based on role
+                // if (width > 620 &&
+                //     setup.role != 'default' &&
+                //     setup.role != 'data_analyst')
+                //   StreamBuilder(
+                //     stream: Stream.periodic(const Duration(seconds: 1)),
+                //     builder: (context, snapshot) {
+                //       return Text(
+                //           DateFormat('MM/dd/yyyy hh:mm:ss').format(DateTime.now()));
+                //     },
+                //   ),
+              ],
             ),
 
-          SizedBox(width: 10),
-          //button for user information
-          IconButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('INFO', style: TextStyle(fontSize: 30)),
-                      actions: [
-                        Container(
-                            child: Column(
-                          children: [
-                            Row(
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+            //title: Text('Panther Racing AUTh'),
+            actions: [
+              //open proposal popup button
+              if (setup.role == 'engineer')
+                TextButton(
+                  onPressed: () {
+                    (setup.eventDate.id != 0)
+                        ? showProposal(context: context)
+                        : null;
+                  },
+                  child: Text(
+                    'OPEN PROPOSAL',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+
+              SizedBox(width: 10),
+              //button for user information
+              IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('INFO', style: TextStyle(fontSize: 30)),
+                          actions: [
+                            Container(
+                                child: Column(
                               children: [
-                                Text('Username: ',
-                                    style: TextStyle(fontSize: 20)),
-                                Text(setup.username,
-                                    style: TextStyle(fontSize: 20))
+                                Row(
+                                  children: [
+                                    Text('Username: ',
+                                        style: TextStyle(fontSize: 20)),
+                                    Text(setup.username,
+                                        style: TextStyle(fontSize: 20))
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Email: ',
+                                        style: TextStyle(fontSize: 20)),
+                                    Text(setup.userEmail,
+                                        style: TextStyle(fontSize: 20))
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Department: ',
+                                        style: TextStyle(fontSize: 20)),
+                                    Text(setup.userDepartment,
+                                        style: TextStyle(fontSize: 20))
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Role: ',
+                                        style: TextStyle(fontSize: 20)),
+                                    Text(setup.role,
+                                        style: TextStyle(fontSize: 20))
+                                  ],
+                                )
                               ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Email: ', style: TextStyle(fontSize: 20)),
-                                Text(setup.userEmail,
-                                    style: TextStyle(fontSize: 20))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Department: ',
-                                    style: TextStyle(fontSize: 20)),
-                                Text(setup.userDepartment,
-                                    style: TextStyle(fontSize: 20))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Role: ', style: TextStyle(fontSize: 20)),
-                                Text(setup.role, style: TextStyle(fontSize: 20))
-                              ],
-                            )
+                            ))
                           ],
-                        ))
-                      ],
+                        );
+                      },
                     );
                   },
-                );
-              },
-              icon: Icon(Icons.info)),
-          //sign out button
-          IconButton(
-              onPressed: () => signOut(context), icon: Icon(Icons.exit_to_app)),
-          SizedBox(width: 5),
-        ],
-      ),
-      body: Row(
-        //row with the menu blocks
-        children: <Widget>[
-          Visibility(
-            visible: showSidebar,
-            child: SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: height -
-                      MediaQuery.of(context).padding.top -
-                      kToolbarHeight -
-                      10,
-                ),
-                child: IntrinsicHeight(
-                  //side bar with pages
-                  child: NavigationRail(
-                    selectedIndex: setup.mainScreenDesktopInd,
-                    groupAlignment: -1,
-                    onDestinationSelected: (value) {
-                      setState(() {
-                        setup.setIndex(value);
-                        _pageController.jumpToPage(value);
-                      });
-                    },
-                    labelType: NavigationRailLabelType.all,
-                    //dynamically display the available pages based on user role
-                    destinations: dynamicList(setup.role),
-                    backgroundColor:
-                        Theme.of(context).primaryColor.withOpacity(0.15),
-                    selectedLabelTextStyle: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 20,
+                  icon: Icon(Icons.info)),
+              //sign out button
+              IconButton(
+                  onPressed: () => signOut(context),
+                  icon: Icon(Icons.exit_to_app)),
+              SizedBox(width: 5),
+            ],
+          ),
+          body: Row(
+            //row with the menu blocks
+            children: <Widget>[
+              Visibility(
+                visible: showSidebar,
+                child: SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: height -
+                          MediaQuery.of(context).padding.top -
+                          kToolbarHeight -
+                          10,
                     ),
-                    unselectedLabelTextStyle: TextStyle(
-                        color: Theme.of(context).textTheme.headline6!.color,
-                        fontSize: 20),
-                    selectedIconTheme: IconThemeData(
-                      color: Theme.of(context).primaryColor,
-                      size: 27,
-                    ),
-                    unselectedIconTheme: IconThemeData(
-                      size: 27,
-                      color: Theme.of(context).textTheme.headline6!.color,
+                    child: IntrinsicHeight(
+                      //side bar with pages
+                      child: NavigationRail(
+                        selectedIndex: setup.mainScreenDesktopInd,
+                        groupAlignment: -1,
+                        onDestinationSelected: (value) {
+                          setState(() {
+                            setup.setIndex(value);
+                            _pageController.jumpToPage(value);
+                          });
+                        },
+                        labelType: NavigationRailLabelType.all,
+                        //dynamically display the available pages based on user role
+                        destinations: dynamicList(setup.role),
+                        backgroundColor:
+                            Theme.of(context).primaryColor.withOpacity(0.15),
+                        selectedLabelTextStyle: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 20,
+                        ),
+                        unselectedLabelTextStyle: TextStyle(
+                            color: Theme.of(context).textTheme.headline6!.color,
+                            fontSize: 20),
+                        selectedIconTheme: IconThemeData(
+                          color: Theme.of(context).primaryColor,
+                          size: 27,
+                        ),
+                        unselectedIconTheme: IconThemeData(
+                          size: 27,
+                          color: Theme.of(context).textTheme.headline6!.color,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+
+              if (showSidebar)
+                VerticalDivider(
+                  width: 1,
+                  thickness: 1,
+                  color: Colors.black,
+                ),
+
+              //depending on the selected block above,
+              //a different widget is rendered on the right side of screen
+
+              Expanded(
+                child: PageView(
+                  children: _pagesCustom(setup.role),
+                  controller: _pageController,
+                  physics: NeverScrollableScrollPhysics(),
+                ),
+              ),
+            ],
           ),
-
-          if (showSidebar)
-            VerticalDivider(
-              width: 1,
-              thickness: 1,
-              color: Colors.black,
-            ),
-
-          //depending on the selected block above,
-          //a different widget is rendered on the right side of screen
-
-          Expanded(
-            child: PageView(
-              children: _pagesCustom(setup.role),
-              controller: _pageController,
-              physics: NeverScrollableScrollPhysics(),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 

@@ -121,6 +121,7 @@ Future<List<ProposalPool>> getProposalsForSession(
       .select()
       .eq('session_id', sessionId)
       .order('id');
+
   for (var proposal in proposalPoolsJson) {
     proposalPools.add(ProposalPool.fromJson(proposal));
     proposalPoolsIds.add(proposal['id']);
@@ -158,11 +159,13 @@ Future<List<ProposalPool>> getProposalsForSession(
         proposals[i].states.add(proposalStates[j]);
     }
   }
+
   for (var proposalPool in proposalPools) {
     for (var proposal in proposals) {
       if (proposal.poolId == proposalPool.id)
         proposalPool.proposals.add(proposal);
     }
   }
+
   return proposalPools;
 }

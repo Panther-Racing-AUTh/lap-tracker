@@ -9,9 +9,8 @@ import '../queries.dart';
 import '../supabase/proposal_functions.dart';
 
 class Overview extends StatefulWidget {
-  Overview(double this.width, int this.proposalPoolId);
+  Overview(double this.width);
   double width;
-  int proposalPoolId;
   @override
   State<Overview> createState() => _OverviewState();
 }
@@ -43,11 +42,12 @@ class _OverviewState extends State<Overview> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
+    AppSetup setup = Provider.of<AppSetup>(context);
+    // if (setup.currentProposalPoolId == 0) return Text('No pools are open...');
     return Subscription(
         options: SubscriptionOptions(
           document: gql(getProposalsFromProposalPool),
-          variables: {'proposal_pool_id': widget.proposalPoolId},
+          variables: {'proposal_pool_id': setup.currentProposalPoolId},
         ),
         builder: (result) {
           if (result.hasException) {
@@ -61,16 +61,16 @@ class _OverviewState extends State<Overview> {
               child: const CircularProgressIndicator(),
             );
           }
-          print('chief engineer dashboard');
-          print(result.data);
-          print(result.data!['proposal'].length);
+          // print('chief engineer dashboard');
+          // print(result.data);
+          // print(result.data!['proposal'].length);
           Map<String, Proposal> proposals = {};
           List<Proposal> healthChecks = [];
           for (var proposal in result.data!['proposal']) {
             // if (proposals.length > 6) break;
-            print(proposal['title']);
-            print(proposal['user']);
-            print(proposal['proposal_states'][0]);
+            // print(proposal['title']);
+            // print(proposal['user']);
+            // print(proposal['proposal_states'][0]);
             if (proposal['user'] == null) {
               healthChecks.add(
                 Proposal.fromJson(

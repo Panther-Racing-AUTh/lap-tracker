@@ -31,6 +31,7 @@ class Session {
   String type;
   RaceTrack raceTrack;
   List<Lap> laps;
+  bool isActive = false;
 
   Session({
     required this.id,

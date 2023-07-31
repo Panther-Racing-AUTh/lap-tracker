@@ -95,8 +95,23 @@ String clearProposals = """
 
 String getCurrentProposalPool = """
   subscription getCurrentProposalPool {
-    proposal_pool(order_by:{created_at: desc}){
+    event_date(order_by: {id: desc}, limit: 1){
       id
+      date
+      description
+      sessions (order_by: {id: asc}, limit: 1, where:{proposal_pools: {ended :{_eq: false}}}){
+        id
+      	racetrack{
+          id
+          name
+          country
+          country_code
+        }
+      	type
+        proposal_pools(order_by: {id: desc}, limit: 1, where:{ended: {_eq: false}}){
+          id
+        }
+      }
     }
   }
 
@@ -154,20 +169,30 @@ String getApprovedProposals = """
 """;
 
 String insertEvent = """
-  mutation insertEvent(\$description: String!, \$date: timestamp!) {
-    insert_event_date_one(object: {description: \$description, date: \$date}){
+  mutation insertEvent(\$description: String!, \$date: timestamp!, \$sessions: [session_insert_input!]!) {
+    update_proposal_pool(where: {}, _set:{ended:true}){
+    affected_rows
+    }
+    
+    insert_event_date_one(object: {description: \$description,
+      date: \$date,
+      sessions: {data: \$sessions } 
+    } ) {
       id
       description
       date
-    }
-  } 
+      sessions {
+        id
+      } 
+    }  
+  }
 
 """;
 
-String getLastestProposalForDepartment = """
-  query getLatestProposalForDepartment(\$department: String! ) {
-    event_date(limit: 1, where: {id: {_eq: 1}}) {
-      sessions(limit: 1, order_by: {session_order: desc }){
+String getLatestProposalForDepartment = """
+  query getLatestProposalForDepartment(\$department: String!, \$eventId: Int!, \$sessionId: Int! ) {
+    event_date(limit: 1, where: {id: {_eq: \$eventId}}) {
+      sessions(limit: 1, where: {id: {_eq: \$sessionId}}){
         proposal_pools(limit: 1, order_by: {id: desc }){
           id
           proposals(where: {user: {department: {_eq: \$department}} }, order_by: {id: desc }) {
@@ -222,4 +247,57 @@ String getAllEvents = """
     }
   }
 
+""";
+
+String getLatestSession = """
+  subscription getLatestSession {
+    event_date(order_by: {id: desc}, limit: 1){
+      id
+      date
+      description
+      sessions (order_by: {id: desc}, limit: 1){
+        id
+      }
+    }
+  }
+""";
+
+String getEventDetails = """
+  query getEventDetails(\$eventId: Int!) {
+    event_date(where:{id: {_eq: \$eventId } }){
+      id
+      date 
+      description
+      sessions{
+        id
+        type
+        racetrack {
+          id
+          name
+          country
+          country_code
+        }  
+        proposal_pools(where: {ended: {_eq: false}}) {
+          id
+          ended
+        }
+      }
+    }
+  }
+""";
+
+String selectSession = """
+  mutation selectSession(\$sessionId: Int!, \$eventId: Int!){
+    update_proposal_pool_many(updates:{_set:{ended: true}where:{_and: [{session_id:{_lt:\$sessionId}}, {session:{event_date_id:{_eq:\$eventId}}}]  } }){
+      affected_rows
+    }
+  }
+""";
+
+String endEvent = """
+  mutation endEvent(\$eventId: Int!){
+    update_proposal_pool_many(updates:{_set:{ended: true} where :{ session:{ event_date_id:{_eq:\$eventId} } } } ){
+      affected_rows
+    }
+  }
 """;

@@ -86,8 +86,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                             shrinkWrap: true,
                             itemCount: 2 * pools.length - 1,
                             itemBuilder: (context, index) {
-                              var currentPool =
-                                  pools.reversed.toList()[index ~/ 2];
+                              var currentPool = pools[index ~/ 2];
                               if (index.isEven)
                                 return TimelineTile(
                                   oppositeContents: Text(
@@ -241,9 +240,10 @@ class _SessionSelectorState extends State<SessionSelector> {
         ),
         TextButton(
           onPressed: () async {
+            print("selected session id is: " + _selectedSession.id.toString());
             final props =
                 await getProposalsForSession(sessionId: _selectedSession.id);
-
+            print('object');
             setState(() {
               pools = props;
               widget.refreshState();
@@ -267,13 +267,19 @@ class PoolDetails extends StatefulWidget {
 class _PoolDetailsState extends State<PoolDetails> {
   @override
   Widget build(BuildContext context) {
+    print('oh no');
     Event e = widget.events.firstWhere((element) =>
         element.sessions
             .firstWhere((element) => element.id == _selectedPool.sessionId)
             .id ==
         _selectedPool.sessionId);
+    print(e.id);
     Session s = e.sessions
         .firstWhere((element) => element.id == _selectedPool.sessionId);
+    print(_selectedEvent.id);
+    print(_selectedSession.id);
+    print(_selectedPool.id);
+    print(_selectedPool.proposals.length);
     return Container(
       height: MediaQuery.of(context).size.height,
       width: widget.width,

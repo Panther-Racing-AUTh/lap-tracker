@@ -57,8 +57,12 @@ void showProposal({required BuildContext context}) {
       //
       return new Query(
         options: QueryOptions(
-            document: gql(getLastestProposalForDepartment),
-            variables: {"department": setup.userDepartment}),
+            document: gql(getLatestProposalForDepartment),
+            variables: {
+              "department": setup.userDepartment,
+              "eventId": setup.eventDate.id,
+              "sessionId": setup.session.id
+            }),
         builder: (result, {fetchMore, refetch}) {
           if (result.hasException) {
             print('exception');

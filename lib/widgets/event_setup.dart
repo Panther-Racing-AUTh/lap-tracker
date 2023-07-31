@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/main.dart';
+import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
+import 'package:flutter_complete_guide/widgets/vehicle_selector.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 import '../queries.dart';
+
+List sessionsFinal = [TextEditingController(text: 'Session 1')];
 
 showEventSetupDialog({
   required BuildContext context,
 }) {
+  AppSetup setup = Provider.of<AppSetup>(context, listen: false);
   showDialog(
     context: context,
     builder: (context) {
@@ -29,10 +35,51 @@ showEventSetupDialog({
             builder: (RunMutation insertEvent, result) {
               return TextButton(
                 onPressed: () {
+                  print('hello world');
+                  List<Map<String, dynamic>> s = [];
+                  for (var sessionType in sessionsFinal) {
+                    s.add({
+                      "racetrack_id":
+                          setup.races2023[setup.raceSelectorIndex].id,
+                      "type": sessionType.text.toString(),
+                      "session_order": (sessionsFinal.indexWhere(
+                                  (element) => element == sessionType) +
+                              1)
+                          .toString(),
+                      "proposal_pools": {
+                        "data": {
+                          "vehicle_id":
+                              setup.vehicles[setup.vehicleSelectorIndex].id,
+                          "proposals": {
+                            "data": [
+                              {
+                                "title": "Health Check 1",
+                                "description": "",
+                                "reason": ""
+                              },
+                              {
+                                "title": "Health Check 2",
+                                "description": "",
+                                "reason": ""
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    });
+                  }
+                  print(s);
                   insertEvent({
                     "description": eventDescriptionController.text,
-                    "timestamp": DateTime.now()
+                    "date": DateTime.now().toString(),
+                    "sessions": s,
                   });
+                  print({
+                    "description": eventDescriptionController.text,
+                    "date": DateTime.now(),
+                    "sessions": s,
+                  });
+                  Navigator.of(context).pop();
                 },
                 child: Text('Save'),
               );
@@ -50,8 +97,10 @@ showEventSetupDialog({
               ),
               SizedBox(height: height * 0.02),
               Center(child: RaceTrackSelector()),
+              SizedBox(height: height * 0.02),
+              Center(child: VehicleSelector()),
               SizedBox(height: height * 0.005 - 1),
-              Container(height: height * 0.65, child: SessionList())
+              Container(height: height * 0.6, child: SessionList())
             ],
           ),
         ),
@@ -86,6 +135,7 @@ class _SessionListState extends State<SessionList> {
       sum += sessions.length;
     }
     key = sum;
+    sessionsFinal = sessionTypes;
   }
 
   deleteSession({required int id}) {
@@ -101,10 +151,12 @@ class _SessionListState extends State<SessionList> {
       sessionTypes.add(TextEditingController());
       sessions.add(
         SessionTile(
-            id: sessions.length,
-            controller: sessionTypes[sessionTypes.length - 1],
-            deleteSessionFunction: deleteSession),
+          id: sessions.length,
+          controller: sessionTypes[sessionTypes.length - 1],
+          deleteSessionFunction: deleteSession,
+        ),
       );
+      updateKey();
     });
   }
 
@@ -116,7 +168,7 @@ class _SessionListState extends State<SessionList> {
         list.add(SizedBox(height: 10));
       }
     }
-    print(list);
+
     return list;
   }
 
