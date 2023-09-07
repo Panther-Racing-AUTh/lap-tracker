@@ -301,3 +301,20 @@ String endEvent = """
     }
   }
 """;
+
+String getUserProfileStream = """
+  subscription getUserProfile(\$userId: Int!){
+    users(where: { id: {_eq: \$userId}}){
+    id
+    role
+    uuid
+    about
+    email
+    active
+    provider
+    full_name
+    department
+    
+  }
+}
+""";

@@ -18,6 +18,7 @@ import '../../providers/app_setup.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
 import '../../widgets/event_control.dart';
 import '../../widgets/event_setup.dart';
+import '../../widgets/profile_preview.dart';
 
 late int oldEventId;
 
@@ -98,7 +99,6 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           );
         }
 
-        print(result.data);
         if (result.data!['event_date'][0]['sessions'].isNotEmpty) {
           setup.eventDate = Event.fromJson(result.data!['event_date'][0], []);
 
@@ -110,6 +110,10 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
               ['sessions'][0]['proposal_pools'][0]['id'];
         } else
           setup.eventDate = Event.empty();
+
+        print(result.data);
+        print(setup.session.id);
+        print(setup.eventDate.id);
         if (setup.eventDate.id != oldEventId) {
           _Allpages.replaceRange(
             0,
@@ -135,7 +139,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                 SizedBox(
                   width: 10,
                 ),
-                //ProfilePreview(),
+                ProfilePreview(),
                 SizedBox(
                   width: 10,
                 ),
@@ -171,17 +175,24 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                     options: MutationOptions(document: gql(clearProposals)),
                     builder: (RunMutation clearProposalsFunction, result) {
                       return TextButton(
-                        onPressed: () {
-                          print('button pressed');
-                          clearProposalsFunction({
-                            "vehicle_idd": 11,
-                            "session_idd": setup.session.id,
-                          });
-                          print('function executed');
-                        },
+                        onPressed: (setup.eventDate.id != 0)
+                            ? () {
+                                print('button pressed');
+                                clearProposalsFunction({
+                                  "vehicle_idd": 11,
+                                  "session_idd": setup.session.id,
+                                });
+                                print('function executed');
+                              }
+                            : null,
                         child: Text(
                           'Clear Proposals',
-                          style: TextStyle(fontSize: 20, color: Colors.amber),
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: ((setup.eventDate.id != 0)
+                                ? Colors.amber
+                                : Colors.grey),
+                          ),
                         ),
                       );
                     },

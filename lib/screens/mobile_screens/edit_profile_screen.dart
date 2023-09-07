@@ -12,7 +12,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  Person newProfile = Person(name: '', about: '', department: '', role: '');
+  Person newProfile = Person.empty();
   final _globalKey = GlobalKey<FormState>();
 
   late Future<List> dataFuture;

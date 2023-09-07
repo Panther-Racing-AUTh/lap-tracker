@@ -8,7 +8,7 @@ final supabase = Supabase.instance.client;
 Future<List> getUserProfile({required int id}) async {
   final data = await supabase
       .from('users')
-      .select('full_name, role, about, department')
+      .select('full_name, role, about, department, uuid')
       .eq('id', id)
       .single();
   var image = supabase.storage
@@ -26,15 +26,15 @@ Future<List> getUserProfile({required int id}) async {
   return [
     admins,
     Person(
-      name: data['full_name'],
-      role: data['role'],
-      about: data['about'],
-      department: data['department'],
-      image: await validateImage(image)
-          ? image
-          : image.split('users/').first + 'users/default.webp',
-      department_image: dept_image,
-    )
+        name: data['full_name'],
+        role: data['role'],
+        about: data['about'],
+        department: data['department'],
+        image: await validateImage(image)
+            ? image
+            : image.split('users/').first + 'users/default.webp',
+        department_image: dept_image,
+        uuid: data['uuid'])
   ];
 }
 

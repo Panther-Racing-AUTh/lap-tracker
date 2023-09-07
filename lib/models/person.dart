@@ -1,12 +1,13 @@
 class Person {
-  int id;
-  String name;
-  String role;
-  String about;
+  late int id;
+  late String name;
+  late String role;
+  late String about;
   late String linkedin;
-  String department;
-  String image;
-  String department_image;
+  late String department;
+  late String image;
+  late String department_image;
+  late String uuid;
 
   Person(
       {this.id = 0,
@@ -14,19 +15,35 @@ class Person {
       required this.role,
       required this.about,
       required this.department,
+      required this.uuid,
       this.image = '',
       this.department_image = ''});
 
-  Person.fromJson(Map json)
-      : id = json['id'] ?? 0,
-        name = json['full_name'] ?? 'Default Full Name',
-        role = json['role'] ?? 'Default Role',
-        about = json['about'] ?? 'Default About',
-        department = json['department'] ?? 'Default Department',
-        image =
-            'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/users/40a8216a-d486-42c5-bf96-85e8bf5664d6.jpeg',
-        department_image =
-            'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/departments/electronics.jpeg';
+  Person.fromJson(Map json) {
+    this.id = json['id'] ?? 0;
+    this.name = json['full_name'] ?? 'Default Full Name';
+    this.role = json['role'] ?? 'Default Role';
+    this.about = json['about'] ?? 'Default About';
+    this.department = json['department'] ?? 'Default Department';
+    this.uuid = json['uuid'];
+    this.image =
+        'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/users/' +
+            uuid +
+            '.jpeg';
+    this.department_image =
+        'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/departments/' +
+            department +
+            '.jpeg';
+  }
+
+  Person.empty()
+      : id = 0,
+        about = 'default about',
+        department = 'default department',
+        name = 'default name',
+        role = 'default role',
+        department_image = 'default department image link',
+        image = 'default image link';
 
   static Map toMap(Person person) {
     return {

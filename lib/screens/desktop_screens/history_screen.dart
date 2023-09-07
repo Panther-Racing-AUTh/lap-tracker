@@ -268,11 +268,32 @@ class _PoolDetailsState extends State<PoolDetails> {
   @override
   Widget build(BuildContext context) {
     print('oh no');
-    Event e = widget.events.firstWhere((element) =>
-        element.sessions
-            .firstWhere((element) => element.id == _selectedPool.sessionId)
-            .id ==
+    print(widget.events[5].sessions[0].id);
+    print(widget.events[5].sessions[1].id);
+    print(_selectedPool.sessionId);
+
+    widget.events.forEach(
+      (event) {
+        print('event with id: ' + event.id.toString());
+        event.sessions.forEach((session) {
+          print('session with id: ' +
+              session.id.toString() +
+              ' == ' +
+              _selectedPool.sessionId.toString());
+        });
+      },
+    );
+
+    Event e = widget.events.firstWhere((event) =>
+        event.sessions.firstWhere(
+          (session) => session.id == _selectedPool.sessionId,
+          orElse: () {
+            print('no session found');
+            return Session.empty();
+          },
+        ).id ==
         _selectedPool.sessionId);
+    print('no event');
     print(e.id);
     Session s = e.sessions
         .firstWhere((element) => element.id == _selectedPool.sessionId);

@@ -88,19 +88,24 @@ showEventSetupDialog({
         ],
         content: Container(
           width: MediaQuery.of(context).size.width * 0.7,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: ListView(
+            shrinkWrap: true,
             children: [
-              myTextField(
-                controller: eventDescriptionController,
-                label: 'Event Description',
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  myTextField(
+                    controller: eventDescriptionController,
+                    label: 'Event Description',
+                  ),
+                  SizedBox(height: height * 0.02),
+                  Center(child: RaceTrackSelector()),
+                  SizedBox(height: height * 0.02),
+                  Center(child: VehicleSelector()),
+                  SizedBox(height: height * 0.005 - 1),
+                  SessionList()
+                ],
               ),
-              SizedBox(height: height * 0.02),
-              Center(child: RaceTrackSelector()),
-              SizedBox(height: height * 0.02),
-              Center(child: VehicleSelector()),
-              SizedBox(height: height * 0.005 - 1),
-              Container(height: height * 0.6, child: SessionList())
             ],
           ),
         ),
@@ -148,7 +153,8 @@ class _SessionListState extends State<SessionList> {
 
   addSession() {
     setState(() {
-      sessionTypes.add(TextEditingController());
+      sessionTypes.add(TextEditingController(
+          text: 'Session ' + (sessionTypes.length + 1).toString()));
       sessions.add(
         SessionTile(
           id: sessions.length,
@@ -178,7 +184,7 @@ class _SessionListState extends State<SessionList> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Container(
-      height: height,
+      height: height * 0.5,
       child: Column(
         children: [
           SafeArea(
