@@ -25,11 +25,12 @@ class Person {
     this.role = json['role'] ?? 'Default Role';
     this.about = json['about'] ?? 'Default About';
     this.department = json['department'] ?? 'Default Department';
-    this.uuid = json['uuid'];
-    this.image =
-        'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/users/' +
+    this.uuid = json['uuid'] ?? "0";
+    this.image = (json['uuid'] != null)
+        ? 'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/users/' +
             uuid +
-            '.jpeg';
+            '.jpeg'
+        : '';
     this.department_image =
         'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/departments/' +
             department +

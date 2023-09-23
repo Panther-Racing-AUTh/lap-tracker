@@ -12,7 +12,7 @@ class NewDataScreen extends StatefulWidget {
 late TextEditingController dateController;
 bool isLoadingRacetrack = false;
 bool isLoadingChart = false;
-bool fetchedData = false;
+bool fetchedData = true;
 
 class _NewDataScreenState extends State<NewDataScreen>
     with AutomaticKeepAliveClientMixin<NewDataScreen> {

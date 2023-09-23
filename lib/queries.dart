@@ -49,6 +49,7 @@ String getUsersNotOnChannel = """
       full_name
       department
       role
+      uuid
     }
   }
 """;

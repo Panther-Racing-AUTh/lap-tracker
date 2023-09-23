@@ -157,6 +157,8 @@ Future addUserToChat({
         ),
         builder: (QueryResult result,
             {VoidCallback? refetch, FetchMore? fetchMore}) {
+          print('pressed button to see users not on chat');
+          print('channelId = ' + channelId.toString());
           if (result.hasException) {
             print(result.exception.toString());
             return Text(result.exception.toString());
