@@ -249,7 +249,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             //title: Text('Panther Racing AUTh'),
             actions: [
               //open proposal popup button
-              if (setup.role == 'engineer')
+              if (setup.role == 'engineer' || setup.role == 'hands_on_engineer')
                 TextButton(
                   onPressed: () {
                     (setup.eventDate.id != 0)

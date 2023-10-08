@@ -76,6 +76,7 @@ class _HistoryScreenState extends State<HistoryScreen>
               child: (pools.isNotEmpty)
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Visibility(
                           visible: _selectedPool.id != 0,
