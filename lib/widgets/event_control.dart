@@ -82,18 +82,23 @@ showEventControlDialog({
                     child: const CircularProgressIndicator(),
                   );
                 }
-                sessions.clear();
+
+                print(result.data);
                 if (!result.source!.isEager) {
                   for (int i = 0;
                       i < result.data!['event_date'][0]['sessions'].length;
                       i++) {
+                    print(i);
                     var session = result.data!['event_date'][0]['sessions'][i];
+                    print(session);
                     sessions.add(Session.fromJson(session, []));
+                    print(sessions[i].id);
                     if (session['proposal_pools'].isNotEmpty)
                       sessions[i].isActive = true;
                   }
-
+                  _selected = -1;
                   calculateActiveSessionOfEvent();
+                  print(_selected);
                   return StatefulBuilder(
                     builder: (context, setState) {
                       return Column(

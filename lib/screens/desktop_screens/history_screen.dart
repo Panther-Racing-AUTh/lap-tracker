@@ -40,7 +40,7 @@ class _HistoryScreenState extends State<HistoryScreen>
             child: const CircularProgressIndicator(),
           );
         }
-
+        print(result.data);
         List<Event> events = [];
         for (var event in result.data!['event_date']) {
           List<Session> sessions = [];
@@ -268,8 +268,7 @@ class _PoolDetailsState extends State<PoolDetails> {
   @override
   Widget build(BuildContext context) {
     print('oh no');
-    print(widget.events[5].sessions[0].id);
-    print(widget.events[5].sessions[1].id);
+
     print(_selectedPool.sessionId);
 
     widget.events.forEach(
@@ -313,6 +312,11 @@ class _PoolDetailsState extends State<PoolDetails> {
             'Session Type: ' + s.type,
             style: TextStyle(fontSize: 25),
           ),
+          if (s.vehicleName != null)
+            Text(
+              'Vehicle: ' + s.vehicleName!,
+              style: TextStyle(fontSize: 25),
+            ),
           Text(
             'Date: ' + _selectedPool.createdAt.toString(),
             style: TextStyle(fontSize: 20),

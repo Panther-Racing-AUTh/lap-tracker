@@ -145,7 +145,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   @override
   void initState() {
     super.initState();
-    cityName = 'Thessaloniki';
+    cityName = 'Alcaniz';
     getData(cityName);
   }
 

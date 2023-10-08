@@ -1,4 +1,5 @@
 import 'package:flutter_complete_guide/models/race.dart';
+import 'package:flutter_complete_guide/models/vehicle.dart';
 
 class Event {
   int id;
@@ -31,6 +32,7 @@ class Session {
   String type;
   RaceTrack raceTrack;
   List<Lap> laps;
+  String? vehicleName;
   bool isActive = false;
 
   Session({
@@ -44,6 +46,9 @@ class Session {
       : id = json['id'],
         type = json['type'],
         raceTrack = RaceTrack.fromJson(json['racetrack']),
+        vehicleName = (json['proposal_pools'].isEmpty)
+            ? null
+            : json['proposal_pools'][0]['vehicle']['name'] ?? null,
         laps = laps;
 
   Session.empty()

@@ -48,8 +48,7 @@ showEventSetupDialog({
                           .toString(),
                       "proposal_pools": {
                         "data": {
-                          "vehicle_id":
-                              setup.vehicles[setup.vehicleSelectorIndex].id,
+                          "vehicle_id": setup.proposalVehicle.id,
                           "proposals": {
                             "data": [
                               {

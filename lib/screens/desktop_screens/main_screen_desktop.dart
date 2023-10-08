@@ -13,6 +13,7 @@ import 'package:flutter_complete_guide/widgets/weather_widget.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../models/event.dart';
+import '../../models/vehicle.dart';
 import '../../names.dart' as names;
 import '../../providers/app_setup.dart';
 import '../../widgets/desktop_widgets/profile_desktop_widget.dart';
@@ -121,6 +122,12 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             [DashBoardDesktop(width - 24)],
           );
           oldEventId = setup.eventDate.id;
+
+          if (result.data!['event_date'][0]['sessions'].isNotEmpty) {
+            setup.proposalVehicle = Vehicle.fromJsonHasura(
+                result.data!['event_date'][0]['sessions'][0]['proposal_pools']
+                    [0]['vehicle']);
+          }
         }
         return Scaffold(
           appBar: AppBar(
@@ -179,7 +186,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                             ? () {
                                 print('button pressed');
                                 clearProposalsFunction({
-                                  "vehicle_idd": 11,
+                                  "vehicle_idd": setup.proposalVehicle.id,
                                   "session_idd": setup.session.id,
                                 });
                                 print('function executed');

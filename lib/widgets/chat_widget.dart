@@ -140,13 +140,16 @@ class _ChatWidgetState extends State<ChatWidget> {
               );
             }
             print('tried to build widget');
+            print(result.data);
             List<Message> messages = [];
             for (var message in result.data!['message'])
               messages.add(
                 Message.fromJson(
                   message,
                   setup.supabase_id == message['user_id'],
-                  'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/users/40a8216a-d486-42c5-bf96-85e8bf5664d6.jpeg',
+                  'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/users/' +
+                      message['user']['uuid'] +
+                      '.jpeg',
                 ),
               );
             return Padding(

@@ -13,7 +13,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'view/graphql_view.dart';
 
 final graphqlEndpoint = 'https://funny-sculpin-82.hasura.app/v1/graphql';
-final subscriptionEndpoint = 'ws://funny-sculpin-82.hasura.app/v1/graphql';
+final subscriptionEndpoint = 'wss://funny-sculpin-82.hasura.app/v1/graphql';
 Future<void> main() async {
   await initHiveForFlutter();
 

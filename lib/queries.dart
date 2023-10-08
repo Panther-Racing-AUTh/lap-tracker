@@ -69,6 +69,9 @@ String getMessagesForChannel = """
       id
       content
       user_id
+      user{
+        uuid
+      }
       channel_id
       type
     }
@@ -110,7 +113,33 @@ String getCurrentProposalPool = """
         }
       	type
         proposal_pools(order_by: {id: desc}, limit: 1, where:{ended: {_eq: false}}){
+        vehicle{
           id
+          name
+          year
+          description
+          systems{
+            id
+            name
+            description
+            subsystems{
+              id
+              name
+              description
+              parts{
+                id
+                name
+                measurement_unit
+                part_values{
+                  id
+                  value
+                }
+              }
+            }
+          }
+          
+        }  
+        id
         }
       }
     }
@@ -145,7 +174,7 @@ String getProposalsFromProposalPool = """
 
 String getApprovedProposals = """
   subscription getApprovedProposals {
-    proposal_pool(order_by: {id: desc}, limit:1){
+    proposal_pool(order_by: {id: asc}, limit:1, where: {ended:{_eq:false}}){
       id
       proposals(where: {_or: [{proposal_states: {state: {_eq:"APPROVED"} } }, {user_id: {_is_null:true} } ]}) {
         id
@@ -225,12 +254,17 @@ String getLatestProposalForDepartment = """
 
 String getAllEvents = """
   subscription getAllEvents {
-    event_date{
+    event_date(where: {id: {_gt:1}}) {
       id
       description
       date
       sessions{
         id
+        proposal_pools(order_by: {id: desc}, limit: 1){
+          vehicle{
+            name
+          }
+        }
         session_order
         type
         racetrack {
@@ -271,6 +305,7 @@ String getEventDetails = """
       description
       sessions{
         id
+        
         type
         racetrack {
           id
@@ -280,6 +315,9 @@ String getEventDetails = """
         }  
         proposal_pools(where: {ended: {_eq: false}}) {
           id
+          vehicle{
+            name
+          }
           ended
         }
       }

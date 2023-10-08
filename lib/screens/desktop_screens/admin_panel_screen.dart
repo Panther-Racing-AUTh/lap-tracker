@@ -132,12 +132,12 @@ class _AdminPanelState extends State<AdminPanel>
                             )),
                             //'created at' field
                             DataCell(
-                              Text(DateTime.parse(users[0]['created_at'])
+                              Text(DateTime.parse(users[i]['created_at'])
                                   .toString()),
                             ),
                             //'last modified at' field
                             DataCell(Text(
-                                DateTime.parse(users[0]['last_modified'])
+                                DateTime.parse(users[i]['last_modified'])
                                     .toString())),
                             DataCell(
                               //decorative button

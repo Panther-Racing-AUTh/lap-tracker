@@ -35,7 +35,11 @@ class _DashBoardDesktopState extends State<DashBoardDesktop>
     //show the proposal screen to the admin and chief engineer,
     //the task page to the hands on engineer
     return (setup.eventDate.id == 0)
-        ? Text('No pools are open...')
+        ? Center(
+            child: Text(
+            'No active sessions...',
+            style: TextStyle(fontSize: 20),
+          ))
         : (setup.role == 'admin' || setup.role == 'chief_engineer')
             ? Overview(widget.width)
             : HandsOnScreen();

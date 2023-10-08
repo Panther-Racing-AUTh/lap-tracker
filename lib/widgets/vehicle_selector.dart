@@ -34,7 +34,7 @@ class _VehicleSelectorState extends State<VehicleSelector> {
         PopupMenuButton<Vehicle>(
           child: Row(
             children: [
-              Text(vehicles[setup.raceSelectorIndex].name),
+              Text(vehicles[setup.vehicleSelectorIndex].name),
               Icon(Icons.arrow_drop_down),
             ],
           ),
@@ -51,10 +51,11 @@ class _VehicleSelectorState extends State<VehicleSelector> {
               () {
                 index = vehicles
                     .indexWhere((element) => element.name == value!.name);
+                setup.vehicleSelectorIndex = index;
+                setup.proposalVehicle = setup.vehicles[index];
               },
             );
-
-            setup.vehicleSelectorIndex = index;
+            print('current index is ' + index.toString());
           },
         ),
       ],

@@ -36,7 +36,9 @@ class DeviceManager with ChangeNotifier {
   }
 
   String getRoute() {
-    if (mode == 'desktop') return '/main-desktop';
-    return '/main-mobile';
+    // if (mode == 'desktop') return '/main-desktop';
+    // return '/main-mobile';
+
+    return '/main-desktop';
   }
 }
