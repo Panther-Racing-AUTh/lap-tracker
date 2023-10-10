@@ -262,7 +262,7 @@ String getLatestProposalForDepartment = """
 
 String getAllEvents = """
   subscription getAllEvents {
-    event_date {
+    event_date(order_by: {id: desc}) {
       id
       description
       date
