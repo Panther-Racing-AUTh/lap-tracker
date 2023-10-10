@@ -39,6 +39,13 @@ showEventSetupDialog({
                   List<Map<String, dynamic>> s = [];
                   for (var sessionType in sessionsFinal) {
                     s.add({
+                      "laps": {
+                        "data": [
+                          {
+                            "lap_order": "1",
+                          }
+                        ],
+                      },
                       "racetrack_id":
                           setup.races2023[setup.raceSelectorIndex].id,
                       "type": sessionType.text.toString(),
@@ -52,15 +59,40 @@ showEventSetupDialog({
                           "proposals": {
                             "data": [
                               {
-                                "title": "Health Check 1",
-                                "description": "",
-                                "reason": ""
+                                'title': "Visible damages and leaks",
+                                'description': "",
+                                'reason': ""
                               },
                               {
-                                "title": "Health Check 2",
-                                "description": "",
-                                "reason": ""
-                              }
+                                'title': "Bolts tightness",
+                                'description': "",
+                                'reason': ""
+                              },
+                              {
+                                'title': "Fuel level",
+                                'description': "",
+                                'reason': ""
+                              },
+                              {
+                                'title': "Brake pad condition",
+                                'description': "",
+                                'reason': ""
+                              },
+                              {
+                                'title': "Tire pressure",
+                                'description': "",
+                                'reason': ""
+                              },
+                              {
+                                'title': "Chain tension and lubrication",
+                                'description': "",
+                                'reason': ""
+                              },
+                              {
+                                'title': "Data recovery",
+                                'description': "",
+                                'reason': ""
+                              },
                             ]
                           }
                         }

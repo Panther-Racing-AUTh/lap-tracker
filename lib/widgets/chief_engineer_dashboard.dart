@@ -289,6 +289,8 @@ class _SectionState extends State<Section> {
                                           changedByUserId: setup.supabase_id,
                                           state: 'APPROVED',
                                         ),
+                                        proposal: Proposal.empty(),
+                                        affectPart: false,
                                       );
                                     },
                             ),
@@ -310,6 +312,8 @@ class _SectionState extends State<Section> {
                                           changedByUserId: setup.supabase_id,
                                           state: 'DECLINED',
                                         ),
+                                        proposal: Proposal.empty(),
+                                        affectPart: false,
                                       );
                                     },
                             ),

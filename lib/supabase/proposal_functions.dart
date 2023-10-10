@@ -76,16 +76,38 @@ Future getproposals() async {
   final proposals = await supabase.from('t_v_proposals').select().order('id');
 }
 
-Future changeProposalState({required ProposalState newState}) async {
+Future changeProposalState({
+  required ProposalState newState,
+  required Proposal proposal,
+  required bool affectPart,
+}) async {
   print('changeProposalState: proposal_state\t' + newState.toJson().toString());
   Map<String, dynamic> stateReq = {
     'proposal_id': newState.proposalId,
     'changed_by_user_id': newState.changedByUserId,
     'state': newState.state,
   };
+  print(proposal.toJson().toString());
   print(stateReq);
   var proposalState =
       await supabase.from('proposal_state').insert(stateReq).select();
+  if (affectPart) {
+    var newValue = proposal.partValueTo.split(' ')[0];
+
+    var newPartValue = await supabase.from('part_values').insert({
+      'part_id': proposal.partId,
+      'value': int.parse(newValue)
+    }).select('id, part_id, value');
+    print('\\\\\\\\\\');
+    print(newPartValue);
+    print('\\\\\\\\\\');
+    var response = await supabase
+        .from('part')
+        .update({'current_value_id': newPartValue[0]['id']})
+        .eq('id', newPartValue[0]['part_id'])
+        .select();
+    print(response);
+  }
 }
 
 Future sendProposal({required Proposal proposal}) async {

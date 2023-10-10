@@ -104,8 +104,15 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           setup.eventDate = Event.fromJson(result.data!['event_date'][0], []);
 
           print('event date id:' + setup.eventDate.id.toString());
+          print(result.data);
           setup.session = Session.fromJson(
-              result.data!['event_date'][0]['sessions'][0], []);
+            result.data!['event_date'][0]['sessions'][0],
+            [
+              Lap.fromJson(
+                result.data!['event_date'][0]['sessions'][0]['laps'][0],
+              )
+            ],
+          );
           print('session id:' + setup.session.id.toString());
           setup.currentProposalPoolId = result.data!['event_date'][0]
               ['sessions'][0]['proposal_pools'][0]['id'];
@@ -185,9 +192,18 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                         onPressed: (setup.eventDate.id != 0)
                             ? () {
                                 print('button pressed');
+                                print(
+                                    (int.parse(setup.session.laps[0].order) + 1)
+                                        .toString());
                                 clearProposalsFunction({
                                   "vehicle_idd": setup.proposalVehicle.id,
                                   "session_idd": setup.session.id,
+                                  "current_proposal_pool_id":
+                                      setup.currentProposalPoolId + 1,
+                                  "lap_orderr":
+                                      (int.parse(setup.session.laps[0].order) +
+                                              1)
+                                          .toString(),
                                 });
                                 print('function executed');
                               }

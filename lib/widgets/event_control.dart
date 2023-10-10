@@ -21,7 +21,7 @@ showEventControlDialog({
       builder: (context) {
         final width = MediaQuery.of(context).size.width;
         final height = MediaQuery.of(context).size.height;
-
+        sessions = [];
         return AlertDialog(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

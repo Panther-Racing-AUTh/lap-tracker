@@ -79,18 +79,22 @@ String getMessagesForChannel = """
 """;
 
 String clearProposals = """
-  mutation clearProposals(\$vehicle_idd: Int!, \$session_idd: Int!) {
-  
-  update_proposal_pool(where:{} _set: {ended:true}){
-    affected_rows
-  }
+  mutation clearProposals(\$vehicle_idd: Int!, \$session_idd: Int!, \$current_proposal_pool_id: Int!, \$lap_orderr: String!) {
   
   insert_proposal_pool_one(object: {
     session_id: \$session_idd,
     vehicle_id: \$vehicle_idd,
     ended: false,
-    proposals: {data: [{ title: "Health Check 1", description: "", reason: ""},{ title: "Health Check 2", description: "", reason: ""}]}
+    proposals: {data: [{ title: "Visible damages and leaks", description: "", reason: ""},{ title: "Bolts tightness", description: "", reason: ""},{ title: "Fuel level", description: "", reason: ""},{ title: "Brake pad condition", description: "", reason: ""},{ title: "Tire pressure", description: "", reason: ""},{ title: "Chain tension and lubrication", description: "", reason: ""},{ title: "Data recovery", description: "", reason: ""}]}
   }){
+    id
+  }
+  
+  update_proposal_pool(where:{id: {_lt:\$current_proposal_pool_id}} _set: {ended:true}){
+    affected_rows
+  }
+  
+  insert_lap_one(object:{lap_order:\$lap_orderr, session_id: \$session_idd}){
     id
   }
   
@@ -105,6 +109,10 @@ String getCurrentProposalPool = """
       description
       sessions (order_by: {id: asc}, limit: 1, where:{proposal_pools: {ended :{_eq: false}}}){
         id
+        laps(order_by: {id: desc}){
+          id
+          lap_order
+        }
       	racetrack{
           id
           name
@@ -254,7 +262,7 @@ String getLatestProposalForDepartment = """
 
 String getAllEvents = """
   subscription getAllEvents {
-    event_date(where: {id: {_gt:1}}) {
+    event_date {
       id
       description
       date
@@ -273,7 +281,7 @@ String getAllEvents = """
           country
           name
         }
-       laps{
+        laps{
           id
           lap_order
           created_at

@@ -20,11 +20,12 @@ List<Proposal> healthChecks = [];
 String global = '';
 
 class _HandsOnScreenState extends State<HandsOnScreen> {
-  void checked(ProposalState newState) {
+  void checked(ProposalState newState, Proposal proposal, bool affectPart) {
     // // print('checked');
     // // print('newState.state : ' + newState.state);
     setState(() {
-      changeProposalState(newState: newState);
+      changeProposalState(
+          newState: newState, proposal: proposal, affectPart: affectPart);
     });
   }
 
@@ -208,14 +209,14 @@ class CustomListTile extends StatefulWidget {
   CustomListTile({
     required int this.id,
     required String this.task,
-    required Function(ProposalState) this.completed,
+    required Function(ProposalState, Proposal, bool) this.completed,
     Proposal? this.proposal,
     this.isHealthCheck = false,
   });
 
   int id;
   String task;
-  Function(ProposalState) completed;
+  Function(ProposalState, Proposal, bool) completed;
   Proposal? proposal;
   bool isHealthCheck;
 
@@ -247,6 +248,8 @@ class _CustomListTileState extends State<CustomListTile> {
                 changedByUserId: setup.supabase_id, //hands on team id
                 state: 'DONE',
               ),
+              widget.proposal!,
+              true,
             );
           } else {
             widget.completed(
@@ -255,6 +258,8 @@ class _CustomListTileState extends State<CustomListTile> {
                 changedByUserId: setup.supabase_id,
                 state: 'DONE',
               ),
+              widget.proposal!,
+              false,
             );
           }
           print('Health Check done.');
