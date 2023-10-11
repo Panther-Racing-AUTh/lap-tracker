@@ -60,7 +60,7 @@ class _HistoryScreenState extends State<HistoryScreen>
           children: [
             Container(
               width: widget.width * 0.2 - 16,
-              height: MediaQuery.of(context).size.height,
+              height: MediaQuery.of(context).size.height * 0.9,
               child: SingleChildScrollView(
                 child: SessionSelector(
                   events,
@@ -193,6 +193,7 @@ class _SessionSelectorState extends State<SessionSelector> {
             ),
             ListView.builder(
               shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               itemCount: widget.events.length,
               itemBuilder: (context, index) {
                 final event = widget.events[index];
@@ -218,6 +219,7 @@ class _SessionSelectorState extends State<SessionSelector> {
               style: TextStyle(fontSize: 20),
             ),
             ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: _selectedEvent.sessions.length,
               itemBuilder: (context, index) {

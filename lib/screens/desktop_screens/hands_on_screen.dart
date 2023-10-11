@@ -148,57 +148,61 @@ class _HandsOnScreenState extends State<HandsOnScreen> {
         print(incomingProposals);
         print(healthChecks);
         print(healthChecks[0].state!.state);
-        return Column(
-          // shrinkWrap: true,
-          children: [
-            ListTile(
-              title: Text('Health Checks'),
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: healthChecks.length,
-              itemBuilder: (context, index) {
-                return CustomListTile(
-                  id: index + 1,
-                  task: healthChecks[index].title,
-                  proposal: healthChecks[index],
-                  completed: checked,
-                  isHealthCheck: true,
-                );
-                // sendTaskComplete: sendTaskComplete);
-              },
-            ),
-            ListTile(
-              title: Text('Tasks'),
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: incomingProposals.length,
-              itemBuilder: ((context, index) {
-                Proposal prop = incomingProposals[index];
-                print(prop.id);
-                print(prop.state!.state);
-                // prop.proposalId = tasks[index].key;
-                // prop.state!.proposalId = tasks[index].key;
+        return SingleChildScrollView(
+          child: Column(
+            // shrinkWrap: true,
+            children: [
+              ListTile(
+                title: Text('Health Checks'),
+              ),
+              ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: healthChecks.length,
+                itemBuilder: (context, index) {
+                  return CustomListTile(
+                    id: index + 1,
+                    task: healthChecks[index].title,
+                    proposal: healthChecks[index],
+                    completed: checked,
+                    isHealthCheck: true,
+                  );
+                  // sendTaskComplete: sendTaskComplete);
+                },
+              ),
+              ListTile(
+                title: Text('Tasks'),
+              ),
+              ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: incomingProposals.length,
+                itemBuilder: ((context, index) {
+                  Proposal prop = incomingProposals[index];
+                  print(prop.id);
+                  print(prop.state!.state);
+                  // prop.proposalId = tasks[index].key;
+                  // prop.state!.proposalId = tasks[index].key;
 
-                // // // print('\nindex');
-                // // // print(index);
-                // // // print(tasks[index].value.value);
-                // // // print(prop.toJson());
-                // // // print('\n');
-                // // // print(incomingProposals[index].toJson());
-                // // // print('\n');
+                  // // // print('\nindex');
+                  // // // print(index);
+                  // // // print(tasks[index].value.value);
+                  // // // print(prop.toJson());
+                  // // // print('\n');
+                  // // // print(incomingProposals[index].toJson());
+                  // // // print('\n');
 
-                return CustomListTile(
-                  id: index + 1,
-                  task: prop.title,
-                  completed: checked,
-                  proposal: prop,
-                );
-                // sendTaskComplete: sendTaskComplete);
-              }),
-            ),
-          ],
+                  return CustomListTile(
+                    id: index + 1,
+                    task: prop.title,
+                    completed: checked,
+                    proposal: prop,
+                  );
+                  // sendTaskComplete: sendTaskComplete);
+                }),
+              ),
+            ],
+          ),
         );
       },
     );

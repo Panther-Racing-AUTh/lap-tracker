@@ -25,6 +25,8 @@ class Overview extends StatefulWidget {
 //6: show hands-on team
 
 int _selected = 0;
+double boxHeight = 0;
+double boxWidth = 0;
 
 class _OverviewState extends State<Overview> {
   late final _stream;
@@ -143,6 +145,8 @@ class _OverviewState extends State<Overview> {
                   width: widget.width,
                   child: LayoutBuilder(
                     builder: (context, constraints) {
+                      boxHeight = constraints.maxHeight / 2;
+                      boxWidth = constraints.maxWidth / 3;
                       return Column(
                         children: [
                           Row(
@@ -276,8 +280,12 @@ class _SectionState extends State<Section> {
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green),
-                              child: Text('APPROVE',
-                                  style: TextStyle(fontSize: 35)),
+                              child: Text(
+                                'APPROVE',
+                                style: TextStyle(
+                                  fontSize: customFontSize(boxWidth),
+                                ),
+                              ),
                               onPressed: (widget.proposal!.state == 'DONE')
                                   ? null
                                   : () {
@@ -299,7 +307,8 @@ class _SectionState extends State<Section> {
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red),
                               child: Text('REJECT',
-                                  style: TextStyle(fontSize: 35)),
+                                  style: TextStyle(
+                                      fontSize: customFontSize(boxWidth))),
                               onPressed: (widget.proposal!.state == 'DONE')
                                   ? null
                                   : () {
@@ -551,6 +560,7 @@ class _HandsOnSectionState extends State<HandsOnSection> {
                                     child:
                                         //show part of title if title is too big, show everything when zoomed in
                                         ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemCount: widget.proposals.length,
                                   itemBuilder: (context, index) {
@@ -603,4 +613,11 @@ class _HandsOnSectionState extends State<HandsOnSection> {
       },
     );
   }
+}
+
+double customFontSize(double boxWidth) {
+  if (boxWidth > 400) {
+    return 35;
+  } else
+    return 20;
 }

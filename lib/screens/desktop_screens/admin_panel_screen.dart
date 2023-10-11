@@ -64,97 +64,101 @@ class _AdminPanelState extends State<AdminPanel>
             }
           }
 
-          return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                //table columns
-                DataTable(
-                    headingRowColor: MaterialStateProperty.resolveWith(
-                        (states) => Colors.grey.shade200),
-                    columns: [
-                      DataColumn(label: Text("No")),
-                      DataColumn(label: Text("Profile")),
-                      DataColumn(label: Text("Department")),
-                      DataColumn(label: Text("Team Role")),
-                      DataColumn(label: Text("Role")),
-                      DataColumn(label: Text("Created At")),
-                      DataColumn(label: Text("Last Modified At")),
-                      DataColumn(
-                          //button to apply role changes
-                          label: TextButton(
-                        child: Text('Apply'),
-                        onPressed: () {
-                          //for each user the role is changed
-                          for (int i = 0; i < users.length; i++) {
-                            users[i]['role']['role'] = roles
-                                .firstWhere(
-                                  (element) =>
-                                      users[i]['role']['role'] ==
-                                      element.role_name,
-                                )
-                                .id;
-                          }
-                          List<Map> newMap = [];
-                          users.forEach((element) {
-                            //replace the old user role with new one and change 'last modified' field
-                            newMap.add({
-                              'id': element['primary_id'],
-                              'last_modified': DateTime.now().toString(),
-                              'role_id': element['role']['role'],
+          return SingleChildScrollView(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  //table columns
+                  DataTable(
+                      headingRowColor: MaterialStateProperty.resolveWith(
+                          (states) => Colors.grey.shade200),
+                      columns: [
+                        DataColumn(label: Text("No")),
+                        DataColumn(label: Text("Profile")),
+                        DataColumn(label: Text("Department")),
+                        DataColumn(label: Text("Team Role")),
+                        DataColumn(label: Text("Role")),
+                        DataColumn(label: Text("Created At")),
+                        DataColumn(label: Text("Last Modified At")),
+                        DataColumn(
+                            //button to apply role changes
+                            label: TextButton(
+                          child: Text('Apply'),
+                          onPressed: () {
+                            //for each user the role is changed
+                            for (int i = 0; i < users.length; i++) {
+                              users[i]['role']['role'] = roles
+                                  .firstWhere(
+                                    (element) =>
+                                        users[i]['role']['role'] ==
+                                        element.role_name,
+                                  )
+                                  .id;
+                            }
+                            List<Map> newMap = [];
+                            users.forEach((element) {
+                              //replace the old user role with new one and change 'last modified' field
+                              newMap.add({
+                                'id': element['primary_id'],
+                                'last_modified': DateTime.now().toString(),
+                                'role_id': element['role']['role'],
+                              });
                             });
-                          });
-                          //update roles on database
-                          updateUserRoles(newMap);
-                        },
-                      )),
-                    ],
-                    rows: [
-                      for (int i = 0; i < users.length; i++)
-                        DataRow(
-                          //row with information for each user
-                          cells: [
-                            DataCell(Text((i + 1).toString())),
-                            //user name
-                            DataCell(Text(users[i]['user']['full_name'])),
-                            //user department
-                            DataCell(Text(users[i]['user']['department'])),
-                            //user role
-                            DataCell(Text(users[i]['user']['role'])),
-                            //dropdown button for user role reassigning
-                            DataCell(DropdownButton(
-                              value: currentValue[i],
-                              items: allRolesDropdown,
-                              onChanged: ((Role? value) {
-                                setState(() {
-                                  users[i]['role']['role'] = value!.role_name;
-                                });
-                              }),
-                            )),
-                            //'created at' field
-                            DataCell(
-                              Text(DateTime.parse(users[i]['created_at'])
-                                  .toString()),
-                            ),
-                            //'last modified at' field
-                            DataCell(Text(
-                                DateTime.parse(users[i]['last_modified'])
-                                    .toString())),
-                            DataCell(
-                              //decorative button
-                              IconButton(
-                                disabledColor: Theme.of(context).primaryColor,
-                                onPressed: (users[i]['role']['role'] == 'admin')
-                                    ? null
-                                    : () {},
-                                icon: Icon((users[i]['role']['role'] == 'admin')
-                                    ? Icons.shield_sharp
-                                    : Icons.edit),
+                            //update roles on database
+                            updateUserRoles(newMap);
+                          },
+                        )),
+                      ],
+                      rows: [
+                        for (int i = 0; i < users.length; i++)
+                          DataRow(
+                            //row with information for each user
+                            cells: [
+                              DataCell(Text((i + 1).toString())),
+                              //user name
+                              DataCell(Text(users[i]['user']['full_name'])),
+                              //user department
+                              DataCell(Text(users[i]['user']['department'])),
+                              //user role
+                              DataCell(Text(users[i]['user']['role'])),
+                              //dropdown button for user role reassigning
+                              DataCell(DropdownButton(
+                                value: currentValue[i],
+                                items: allRolesDropdown,
+                                onChanged: ((Role? value) {
+                                  setState(() {
+                                    users[i]['role']['role'] = value!.role_name;
+                                  });
+                                }),
+                              )),
+                              //'created at' field
+                              DataCell(
+                                Text(DateTime.parse(users[i]['created_at'])
+                                    .toString()),
                               ),
-                            ),
-                          ],
-                        ),
-                    ])
-              ]);
+                              //'last modified at' field
+                              DataCell(Text(
+                                  DateTime.parse(users[i]['last_modified'])
+                                      .toString())),
+                              DataCell(
+                                //decorative button
+                                IconButton(
+                                  disabledColor: Theme.of(context).primaryColor,
+                                  onPressed:
+                                      (users[i]['role']['role'] == 'admin')
+                                          ? null
+                                          : () {},
+                                  icon: Icon(
+                                      (users[i]['role']['role'] == 'admin')
+                                          ? Icons.shield_sharp
+                                          : Icons.edit),
+                                ),
+                              ),
+                            ],
+                          ),
+                      ])
+                ]),
+          );
         }
         return Center(child: CircularProgressIndicator());
       },
