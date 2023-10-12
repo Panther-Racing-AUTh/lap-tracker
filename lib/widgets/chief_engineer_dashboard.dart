@@ -52,11 +52,15 @@ class _OverviewState extends State<Overview> {
           variables: {'proposal_pool_id': setup.currentProposalPoolId},
         ),
         builder: (result) {
+          print('result has exception');
+          print(result.hasException);
           if (result.hasException) {
             print('exception');
             print(result.exception);
             return Text(result.exception.toString());
           }
+          print('result loading ');
+          print(result.isLoading);
           if (result.isLoading) {
             print('loading');
             return Center(
@@ -68,6 +72,11 @@ class _OverviewState extends State<Overview> {
           // print(result.data!['proposal'].length);
           Map<String, Proposal> proposals = {};
           List<Proposal> healthChecks = [];
+          print("starting");
+          print(result.source);
+          print(result.source!.isEager);
+
+          // print(result.data);
           for (var proposal in result.data!['proposal']) {
             // if (proposals.length > 6) break;
             // print(proposal['title']);
@@ -93,6 +102,7 @@ class _OverviewState extends State<Overview> {
               });
             }
           }
+
           print('done');
           //all six windows of each department initialization with custom widget
           late List<Widget> windows = [
@@ -118,9 +128,9 @@ class _OverviewState extends State<Overview> {
               manageState,
             ),
             Section(
-              title: 'Intake & Exhaust',
+              title: 'Drivetrain',
               color: Colors.red,
-              proposal: proposals['intake_exhaust'],
+              proposal: proposals['drivetrain'],
               4,
               manageState,
             ),
@@ -139,7 +149,8 @@ class _OverviewState extends State<Overview> {
               manageState,
             ),
           ];
-
+          print(result.data);
+          print("ending");
           return (_selected == 0)
               ? Container(
                   width: widget.width,

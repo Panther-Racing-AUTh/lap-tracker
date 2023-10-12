@@ -90,7 +90,7 @@ String clearProposals = """
     id
   }
   
-  update_proposal_pool(where:{id: {_lt:\$current_proposal_pool_id}} _set: {ended:true}){
+  update_proposal_pool(where:{_and: [{id: {_lt:\$current_proposal_pool_id}}, {session_id:{_eq:\$session_idd}}] } _set: {ended:true}){
     affected_rows
   }
   
@@ -182,7 +182,7 @@ String getProposalsFromProposalPool = """
 
 String getApprovedProposals = """
   subscription getApprovedProposals {
-    proposal_pool(order_by: {id: asc}, limit:1, where: {ended:{_eq:false}}){
+    proposal_pool(order_by: [{id: desc},{session_id: desc}], limit:1, where: {ended:{_eq:false}}){
       id
       proposals(where: {_or: [{proposal_states: {state: {_eq:"APPROVED"} } }, {user_id: {_is_null:true} } ]}) {
         id

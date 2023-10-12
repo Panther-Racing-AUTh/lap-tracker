@@ -14,7 +14,7 @@ class VehicleSelector extends StatefulWidget {
 }
 
 class _VehicleSelectorState extends State<VehicleSelector> {
-  late int index;
+  int index = 0;
 
   @override
   void initState() {

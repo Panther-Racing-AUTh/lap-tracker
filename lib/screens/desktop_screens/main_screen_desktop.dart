@@ -104,7 +104,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
           setup.eventDate = Event.fromJson(result.data!['event_date'][0], []);
 
           print('event date id:' + setup.eventDate.id.toString());
-          print(result.data);
+          // print(result.data);
           setup.session = Session.fromJson(
             result.data!['event_date'][0]['sessions'][0],
             [
@@ -119,9 +119,9 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
         } else
           setup.eventDate = Event.empty();
 
-        print(result.data);
-        print(setup.session.id);
-        print(setup.eventDate.id);
+        // print(result.data);
+        // print(setup.session.id);
+        // print(setup.eventDate.id);
         if (setup.eventDate.id != oldEventId) {
           _Allpages.replaceRange(
             0,

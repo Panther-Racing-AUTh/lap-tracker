@@ -28,7 +28,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     dept_electronics,
     dept_aerodynamics,
     dept_suspension,
-    dept_intake_exhaust,
+    dept_drivetrain,
     dept_frame_subframe,
     dept_social_media,
     dept_public_relations,
@@ -91,7 +91,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 else if (value == items[2])
                                   newProfile.department = 'suspension';
                                 else if (value == items[3])
-                                  newProfile.department = 'intake_exhaust';
+                                  newProfile.department = 'drivetrain';
                                 else if (value == items[4])
                                   newProfile.department = 'frame';
                                 else if (value == items[5])
@@ -231,7 +231,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (p.department == 'electronics') return items[0];
     if (p.department == 'aerodynamics') return items[1];
     if (p.department == 'suspension') return items[2];
-    if (p.department == 'intake_exhaust') return items[3];
+    if (p.department == 'drivetrain') return items[3];
     if (p.department == 'frame') return items[4];
     if (p.department == 'social_media_manager') return items[5];
     if (p.department == 'public_relations')
