@@ -114,8 +114,18 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
             ],
           );
           print('session id:' + setup.session.id.toString());
+          if (setup.currentProposalPoolId !=
+              result.data!['event_date'][0]['sessions'][0]['proposal_pools'][0]
+                  ['id']) {
+            _Allpages.replaceRange(
+              0,
+              1,
+              [DashBoardDesktop(width - 24)],
+            );
+          }
           setup.currentProposalPoolId = result.data!['event_date'][0]
               ['sessions'][0]['proposal_pools'][0]['id'];
+          print("proposal pool id: " + setup.currentProposalPoolId.toString());
         } else
           setup.eventDate = Event.empty();
 

@@ -182,7 +182,7 @@ String getProposalsFromProposalPool = """
 
 String getApprovedProposals = """
   subscription getApprovedProposals {
-    proposal_pool(order_by: [{id: desc},{session_id: desc}], limit:1, where: {ended:{_eq:false}}){
+    proposal_pool(order_by: [{id: asc},{session_id: desc}], limit:1, where: {ended:{_eq:false}}){
       id
       proposals(where: {_or: [{proposal_states: {state: {_eq:"APPROVED"} } }, {user_id: {_is_null:true} } ]}) {
         id
