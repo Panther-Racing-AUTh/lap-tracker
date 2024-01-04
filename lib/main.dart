@@ -27,6 +27,7 @@ Future<void> main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+  print('main');
   runApp(MyApp());
 }
 

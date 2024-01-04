@@ -1,8 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/supabase/profile_functions.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:universal_io/io.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/message.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
