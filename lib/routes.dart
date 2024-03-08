@@ -26,6 +26,10 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => SigninScreen(),
         );
+      case '/https://pwqrcfdxmgfavontopyn.supabase.co/auth/v1/callback':
+        return MaterialPageRoute(
+          builder: (_) => SigninScreen(),
+        );
       case '/main':
         return MaterialPageRoute(
           builder: (_) => MainScreenDesktop(),

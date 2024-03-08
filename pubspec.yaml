@@ -29,6 +29,7 @@ dependencies:
   url_launcher: ^6.1.10
   supabase_flutter: ^1.0.0
   flutter_web_auth: ^0.5.0
+  google_sign_in:
   pluto_grid: ^5.4.6
   faker: ^2.0.0
   syncfusion_flutter_datagrid: ^21.1.37

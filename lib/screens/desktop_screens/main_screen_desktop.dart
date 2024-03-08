@@ -92,6 +92,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       options: SubscriptionOptions(document: gql(getCurrentProposalPool)),
       builder: (result) {
         if (result.hasException) {
+          print(result);
           return Text(result.exception.toString());
         }
         if (result.isLoading) {
