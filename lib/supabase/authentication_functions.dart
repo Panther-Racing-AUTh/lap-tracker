@@ -171,11 +171,17 @@ Future<void> signInWithOAuth(BuildContext context,
 Future<String> getUserRole({required int id}) async {
   final users = await supabase
       .from('user_roles')
-      .select('''role: role_id (role)''')
-      .eq('user_id', id)
-      .single();
-
-  return users['role']['role'];
+      .select('''role: role_id (role)''').eq('user_id', id);
+  print('users: ');
+  print(users);
+  if (users.toList().isEmpty) {
+    await supabase.from('user_roles').insert({
+      'user_id': id,
+      'role_id': 4,
+    });
+    return 'default';
+  }
+  return users[0]['role']['role'];
 }
 
 Future<String> getUserRoleAuto() async {
