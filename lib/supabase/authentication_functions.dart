@@ -26,10 +26,12 @@ Future<void> insertUser({
       .order('created_at');
 
   print(user);
+  print("Inserted User");
   await supabase.from('user_roles').insert({
     'user_id': user[0]['id'],
     'role_id': 4,
   });
+  print("Inserted User Role");
 }
 
 //login already existing user
@@ -222,11 +224,12 @@ Future<void> signOut(BuildContext context) async {
 }
 
 Future<Map> getCurrentUserIdInt() async {
+  print(
+      "Supabase Current User ID: " + supabase.auth.currentUser!.id.toString());
   final userData = await supabase
       .from('users')
       .select('id, email, full_name, role, department')
       .eq('uuid', supabase.auth.currentUser!.id)
       .single();
-
   return userData;
 }

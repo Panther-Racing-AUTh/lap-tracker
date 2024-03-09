@@ -12,10 +12,22 @@ returns trigger as $$
 	end;
 $$ language plpgsql security definer;
 
+-- the function that assigns role to user right after creation
+create or replace function public.handle_new_user2()
+returns trigger as $$
+	begin
+		insert into public.user_roles (user_id, role_id)
+		values (new.id, 4);
+		return new;
+	end;
+$$ language plpgsql security definer;
+
 -- trigger the function every time a user is created
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+  after insert on public.users
+  for each row execute procedure public.handle_new_user2();
 
 ----------------------------------------
 --    triggers for proposal system    --

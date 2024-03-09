@@ -29,7 +29,7 @@ class _SettingsState extends State<Settings>
         decoration: BoxDecoration(
           border: Border.all(
             color: (selectedColor == id)
-                ? Theme.of(context).selectedRowColor
+                ? Theme.of(context).secondaryHeaderColor
                 : Colors.transparent,
             width: 3,
           ),

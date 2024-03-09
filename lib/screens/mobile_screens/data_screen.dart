@@ -17,6 +17,8 @@ class _DataScreenState extends State<DataScreen> {
           text: data,
           context: context,
         ),
-        body: DataDesktopWidget());
+        body: Container()
+        // DataDesktopWidget()
+        );
   }
 }

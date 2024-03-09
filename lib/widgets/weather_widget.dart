@@ -176,7 +176,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                         children: [
                           Text('D ',
                               style: TextStyle(
-                                  color: Theme.of(context).selectedRowColor,
+                                  color: Theme.of(context).secondaryHeaderColor,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold)),
                           SizedBox(
@@ -188,11 +188,11 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                                       hourly = !hourly;
                                     }),
                                 activeColor:
-                                    Theme.of(context).selectedRowColor),
+                                    Theme.of(context).secondaryHeaderColor),
                           ),
                           Text(' H',
                               style: TextStyle(
-                                  color: Theme.of(context).selectedRowColor,
+                                  color: Theme.of(context).secondaryHeaderColor,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold)),
                         ],
@@ -200,7 +200,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                       GestureDetector(
                         child: Text(cityName + ' (' + cityCountry + ')',
                             style: TextStyle(
-                                color: Theme.of(context).selectedRowColor,
+                                color: Theme.of(context).secondaryHeaderColor,
                                 fontSize: 20)),
                         onTap: _changeLocation,
                       ),
@@ -240,7 +240,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Theme.of(context).selectedRowColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                 ),
               ),
               padding: EdgeInsets.all(10),
@@ -257,14 +257,14 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                             Text(
                               cityName + ' (' + cityCountry + ')',
                               style: TextStyle(
-                                color: Theme.of(context).selectedRowColor,
+                                color: Theme.of(context).secondaryHeaderColor,
                                 fontSize: 27,
                               ),
                             ),
                             Text(
                               '$currentTemperature˚',
                               style: TextStyle(
-                                color: Theme.of(context).selectedRowColor,
+                                color: Theme.of(context).secondaryHeaderColor,
                                 fontSize: 55,
                               ),
                               textAlign: TextAlign.start,
@@ -281,20 +281,20 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                           children: [
                             Icon(
                               weatherIcon,
-                              color: Theme.of(context).selectedRowColor,
+                              color: Theme.of(context).secondaryHeaderColor,
                               size: 30,
                             ),
                             Text(
                               description,
                               style: TextStyle(
-                                color: Theme.of(context).selectedRowColor,
+                                color: Theme.of(context).secondaryHeaderColor,
                                 fontSize: 20,
                               ),
                             ),
                             Text(
                               'H:$dailyHighTemperature˚ L:$dailyLowTemperature˚',
                               style: TextStyle(
-                                color: Theme.of(context).selectedRowColor,
+                                color: Theme.of(context).secondaryHeaderColor,
                                 fontSize: 20,
                               ),
                             )
@@ -411,7 +411,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               Text(
                 hour.toString().padLeft(2, '0'),
                 style: TextStyle(
-                  color: Theme.of(context).selectedRowColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   fontSize: appbar ? 15 : 23,
                 ),
               ),
@@ -424,13 +424,13 @@ class _WeatherWidgetState extends State<WeatherWidget> {
             children: [
               Icon(
                 icon,
-                color: Theme.of(context).selectedRowColor,
+                color: Theme.of(context).secondaryHeaderColor,
                 size: appbar ? 20 : 35,
               ),
               Text(
                 '$temperature˚',
                 style: TextStyle(
-                  color: Theme.of(context).selectedRowColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   fontSize: appbar ? 20 : 23,
                 ),
               ),
@@ -441,13 +441,13 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               children: [
                 Icon(
                   Icons.water_drop,
-                  color: Theme.of(context).selectedRowColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   size: 24,
                 ),
                 Text(
                   '$precipitation mm',
                   style: TextStyle(
-                    color: Theme.of(context).selectedRowColor,
+                    color: Theme.of(context).secondaryHeaderColor,
                     fontSize: 23,
                   ),
                 ),
@@ -458,13 +458,13 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               children: [
                 Icon(
                   Icons.air,
-                  color: Theme.of(context).selectedRowColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   size: 24,
                 ),
                 Text(
                   '$windSpeed km/h',
                   style: TextStyle(
-                    color: Theme.of(context).selectedRowColor,
+                    color: Theme.of(context).secondaryHeaderColor,
                     fontSize: 23,
                   ),
                 ),
@@ -475,13 +475,13 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               children: [
                 Icon(
                   Icons.compare_arrows,
-                  color: Theme.of(context).selectedRowColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   size: 24,
                 ),
                 Text(
                   '$windDirection˚',
                   style: TextStyle(
-                    color: Theme.of(context).selectedRowColor,
+                    color: Theme.of(context).secondaryHeaderColor,
                     fontSize: 23,
                   ),
                 ),
@@ -490,7 +490,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
           Text(
             names.humidity + ': $humidity%',
             style: TextStyle(
-              color: Theme.of(context).selectedRowColor,
+              color: Theme.of(context).secondaryHeaderColor,
               fontSize: appbar ? 12 : 18,
             ),
           ),
@@ -537,7 +537,8 @@ class _WeatherWidgetState extends State<WeatherWidget> {
             children: [
               Text(day,
                   style: TextStyle(
-                      color: Theme.of(context).selectedRowColor, fontSize: 18)),
+                      color: Theme.of(context).secondaryHeaderColor,
+                      fontSize: 18)),
               SizedBox(height: 1),
               Text(
                 'H:' +
@@ -547,17 +548,18 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                     dailyLowTemperatures[i].round().toString() +
                     '˚',
                 style: TextStyle(
-                    color: Theme.of(context).selectedRowColor, fontSize: 16),
+                    color: Theme.of(context).secondaryHeaderColor,
+                    fontSize: 16),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.water_drop_rounded,
-                      size: 17, color: Theme.of(context).selectedRowColor),
+                      size: 17, color: Theme.of(context).secondaryHeaderColor),
                   SizedBox(width: 3),
                   Text(dailyPrecipitation[i].toString() + 'mm',
                       style: TextStyle(
-                          color: Theme.of(context).selectedRowColor,
+                          color: Theme.of(context).secondaryHeaderColor,
                           fontSize: 14))
                 ],
               )

@@ -270,7 +270,7 @@ class _SectionState extends State<Section> {
                           style: TextStyle(
                             fontSize: 30,
                             color: (widget.proposal == null)
-                                ? Theme.of(context).selectedRowColor
+                                ? Theme.of(context).secondaryHeaderColor
                                 : (widget.proposal!.state!.state == 'APPROVED')
                                     ? Colors.green
                                     : (widget.proposal!.state!.state == 'NEW')
@@ -348,7 +348,7 @@ class _SectionState extends State<Section> {
                     widget.title,
                     style: TextStyle(
                         fontSize: 20,
-                        color: Theme.of(context).selectedRowColor),
+                        color: Theme.of(context).secondaryHeaderColor),
                   ),
                 ),
                 //show message if no proposal is made
@@ -368,7 +368,8 @@ class _SectionState extends State<Section> {
                               style: TextStyle(
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).selectedRowColor),
+                                  color:
+                                      Theme.of(context).secondaryHeaderColor),
                             ),
                             SizedBox(height: 5),
                             Padding(
@@ -384,8 +385,8 @@ class _SectionState extends State<Section> {
                                           .replaceRange(30, null, '...'),
                                   style: TextStyle(
                                       fontSize: 30,
-                                      color:
-                                          Theme.of(context).selectedRowColor),
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor),
                                 ),
                               ),
                             ),
@@ -407,16 +408,16 @@ class _SectionState extends State<Section> {
                                     style: TextStyle(
                                         fontSize: 25,
                                         fontWeight: FontWeight.bold,
-                                        color:
-                                            Theme.of(context).selectedRowColor),
+                                        color: Theme.of(context)
+                                            .secondaryHeaderColor),
                                   ),
                                   SizedBox(height: 5),
                                   Text(
                                     (widget.proposal!.description),
                                     style: TextStyle(
                                         fontSize: 30,
-                                        color:
-                                            Theme.of(context).selectedRowColor),
+                                        color: Theme.of(context)
+                                            .secondaryHeaderColor),
                                   ),
                                 ],
                               ),
@@ -426,7 +427,8 @@ class _SectionState extends State<Section> {
                               widget.proposal!.partName ?? 'part name',
                               style: TextStyle(
                                   fontSize: 25,
-                                  color: Theme.of(context).selectedRowColor),
+                                  color:
+                                      Theme.of(context).secondaryHeaderColor),
                             ),
                             //show proposal part current value
                             Row(
@@ -436,23 +438,23 @@ class _SectionState extends State<Section> {
                                   widget.proposal!.partValueFrom,
                                   style: TextStyle(
                                       fontSize: 20,
-                                      color:
-                                          Theme.of(context).selectedRowColor),
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor),
                                 ),
                                 Text(
                                   '  -->  ',
                                   style: TextStyle(
                                       fontSize: 20,
-                                      color:
-                                          Theme.of(context).selectedRowColor),
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor),
                                 ),
                                 //show proposal part suggested value
                                 Text(
                                   widget.proposal!.partValueTo,
                                   style: TextStyle(
                                       fontSize: 20,
-                                      color:
-                                          Theme.of(context).selectedRowColor),
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor),
                                 ),
                               ],
                             ),
@@ -471,7 +473,8 @@ class _SectionState extends State<Section> {
                                 style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).selectedRowColor),
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor),
                               ),
                               SizedBox(height: 5),
                               Text(
@@ -482,7 +485,8 @@ class _SectionState extends State<Section> {
                                         .replaceRange(35, null, '...'),
                                 style: TextStyle(
                                     fontSize: 20,
-                                    color: Theme.of(context).selectedRowColor),
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor),
                               ),
                             ],
                           ),
@@ -543,7 +547,7 @@ class _HandsOnSectionState extends State<HandsOnSection> {
                         widget.title,
                         style: TextStyle(
                             fontSize: 20,
-                            color: Theme.of(context).selectedRowColor),
+                            color: Theme.of(context).secondaryHeaderColor),
                       ),
                     ),
 
@@ -561,7 +565,7 @@ class _HandsOnSectionState extends State<HandsOnSection> {
                                 style: TextStyle(
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).selectedRowColor,
+                                  color: Theme.of(context).secondaryHeaderColor,
                                 ),
                               ),
                               SizedBox(height: 5),
@@ -595,7 +599,7 @@ class _HandsOnSectionState extends State<HandsOnSection> {
                                         style: TextStyle(
                                           fontSize: 30,
                                           color: Theme.of(context)
-                                              .selectedRowColor,
+                                              .secondaryHeaderColor,
                                         ),
                                       ),
                                     );
