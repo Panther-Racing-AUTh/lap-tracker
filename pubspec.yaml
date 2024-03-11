@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+3
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=3.0.0 <3.4.0"
 
 dependencies:
   flutter:
@@ -31,7 +31,7 @@ dependencies:
   flutter_web_auth: ^0.5.0
   google_sign_in:
   faker: ^2.0.0
-  syncfusion_flutter_datagrid: ^21.1.37
+  syncfusion_flutter_datagrid: ^21.2.10
   video_player: ^2.4.10
   keymap: ^0.0.91
   flutter_device_type:

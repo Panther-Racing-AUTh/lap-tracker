@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen_desktop.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/admin_panel_screen.dart';
 import './screens/splash_screen.dart';
 import 'screens/desktop_screens/main_screen_desktop.dart';
 import './screens/signin_screen.dart';
@@ -66,6 +67,10 @@ class RouteGenerator {
       case '/profile/edit':
         return MaterialPageRoute(
           builder: (_) => EditProfileScreen(),
+        );
+      case '/admin-panel-mobile':
+        return MaterialPageRoute(
+          builder: (_) => AdminPanel(),
         );
       default:
         return MaterialPageRoute(

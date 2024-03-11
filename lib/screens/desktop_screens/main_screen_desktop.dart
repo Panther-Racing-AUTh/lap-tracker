@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/queries.dart';
-import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen.dart';
+import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen_desktop.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/history_screen.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/the_new_data_screen2.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/proposal_screen.dart';
@@ -83,7 +83,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
       NewDataScreen(),
       VehicleScreen(),
       HistoryScreen(width),
-      AdminPanel(),
+      AdminPanelDesktop(),
       SingleChildScrollView(child: ProfileDesktop()),
       Settings(),
     ];

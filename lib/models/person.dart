@@ -1,3 +1,5 @@
+import 'package:flutter_complete_guide/models/role.dart';
+
 class Person {
   late int id;
   late String name;
@@ -8,7 +10,9 @@ class Person {
   late String image;
   late String department_image;
   late String uuid;
-
+  late String created_at;
+  late String last_modified;
+  late Role appRole;
   Person(
       {this.id = 0,
       required this.name,
@@ -31,10 +35,11 @@ class Person {
             uuid +
             '.jpeg'
         : '';
-    this.department_image =
-        'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/departments/' +
-            department +
-            '.jpeg';
+    if (department != null)
+      this.department_image =
+          'https://pwqrcfdxmgfavontopyn.supabase.co/storage/v1/object/public/departments/' +
+              department +
+              '.jpeg';
   }
 
   Person.empty()
