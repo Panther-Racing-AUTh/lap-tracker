@@ -10,7 +10,7 @@ import 'screens/mobile_screens/data_screen.dart';
 import 'screens/mobile_screens/profile_screen.dart';
 import 'screens/mobile_screens/settings_screen.dart';
 import 'screens/mobile_screens/chart_screen.dart';
-import 'screens/mobile_screens/panther_screen.dart';
+import 'screens/mobile_screens/calendar_screen.dart';
 import 'screens/mobile_screens/edit_profile_screen.dart';
 import 'package:flutter_complete_guide/names.dart';
 
@@ -60,9 +60,9 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => ChartScreen(),
         );
-      case '/panther':
+      case '/calendar':
         return MaterialPageRoute(
-          builder: (_) => PantherScreen(),
+          builder: (_) => CalendarScreen(),
         );
       case '/profile/edit':
         return MaterialPageRoute(
