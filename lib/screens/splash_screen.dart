@@ -65,14 +65,14 @@ class _SplashScreenState extends State<SplashScreen> {
                   )
                 : Container(),
           ),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                signOut(context);
-              },
-              child: Text("Sign Out"),
-            ),
-          ),
+          // Center(
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       signOut(context);
+          //     },
+          //     child: Text("Sign Out"),
+          //   ),
+          // ),
         ],
       ),
     );

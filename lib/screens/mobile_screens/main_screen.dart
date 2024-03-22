@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/drawer_model.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/block_widget.dart';
 import '../../widgets/main_appbar.dart';
@@ -76,8 +77,10 @@ class MainScreen extends StatelessWidget {
             text: panther,
             context: context,
           ),
+          // drawer: DrawerModel(context),
           // The main menu icons
           body: Container(
+            // color: Colors.pink,
             padding: const EdgeInsets.all(25),
             //Created a big column that includes the 6 menu boxes
             child: GridView(
@@ -88,8 +91,9 @@ class MainScreen extends StatelessWidget {
                 childAspectRatio: 0.7,
               ),
               scrollDirection: Axis.vertical,
-              children:
-                  dynamicBlocks(allBlocks: allBlocks, role: appSetup.role),
+              children: (appSetup.supabase_id == -1)
+                  ? [Center(child: CircularProgressIndicator())]
+                  : dynamicBlocks(allBlocks: allBlocks, role: appSetup.role),
             ),
           ),
         );

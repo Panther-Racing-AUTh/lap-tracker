@@ -124,6 +124,7 @@ class AppSetup extends ChangeNotifier {
     username = l['full_name'];
     userEmail = l['email'];
     userDepartment = l['department'];
+    notifyListeners();
     return true;
   }
 

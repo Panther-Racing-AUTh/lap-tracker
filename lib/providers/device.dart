@@ -8,8 +8,11 @@ class DeviceManager with ChangeNotifier {
   bool isPhone = false;
   bool isTablet = false;
   bool isDesktop = false;
+  bool isMobileWeb = false;
 
   DeviceManager() {
+    print('kisWeb = ' + kIsWeb.toString());
+    print('targetPlatform = ' + defaultTargetPlatform.toString());
     if (defaultTargetPlatform != TargetPlatform.android &&
         defaultTargetPlatform != TargetPlatform.iOS) {
       isDesktop = true;
@@ -19,6 +22,12 @@ class DeviceManager with ChangeNotifier {
       mode = 'mobile';
     } else if (Device.get().isPhone) {
       isPhone = true;
+      mode = 'mobile';
+    }
+    if (kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS)) {
+      isMobileWeb = true;
       mode = 'mobile';
     }
   }
@@ -36,9 +45,9 @@ class DeviceManager with ChangeNotifier {
   }
 
   String getRoute() {
+    if (isMobileWeb) return '/main-mobile';
     if (mode == 'desktop') return '/main-desktop';
-    return '/main-mobile';
-
+    if (isDesktop) return '/main-mobile';
     return '/main-desktop';
   }
 }

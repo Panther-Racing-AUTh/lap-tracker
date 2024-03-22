@@ -209,6 +209,8 @@ Future<void> signOut(BuildContext context) async {
   Navigator.of(context).popUntil((route) => route.isFirst);
   Navigator.of(context).pushReplacementNamed('/signin');
   BuildContext? dcontext;
+  a.supabase_id = -1;
+  a.role = 'a';
   showDialog(
     barrierDismissible: false,
     builder: (ctx) {

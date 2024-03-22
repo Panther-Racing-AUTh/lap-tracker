@@ -163,7 +163,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         ? Container(
             //height: 50,
             decoration: BoxDecoration(
-              color: Theme.of(context).backgroundColor,
+              color: Theme.of(context).colorScheme.background,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(

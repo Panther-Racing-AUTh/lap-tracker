@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/providers/device.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/routes.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/providers/meeting_provider.dart';
 import 'package:provider/provider.dart' as provider;
 import 'providers/theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -48,6 +49,9 @@ class MyApp extends StatelessWidget {
           provider.ChangeNotifierProvider<AppSetup>(
             create: (_) => AppSetup(),
           ),
+          provider.ChangeNotifierProvider<MeetingProvider>(
+            create: (_) => MeetingProvider(),
+          )
         ],
         child: MaterialAppWithTheme(),
       ),

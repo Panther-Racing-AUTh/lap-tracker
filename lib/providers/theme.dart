@@ -59,7 +59,9 @@ ThemeData darkTheme(MaterialColor c) => ThemeData(
       primaryColor: c,
       iconTheme: IconThemeData(color: Colors.white),
       secondaryHeaderColor: Colors.white,
-      backgroundColor: Colors.black,
+      colorScheme:  ColorScheme.dark(
+        background: Colors.black,
+      ),
     );
 
 ThemeData lightTheme(MaterialColor c) => ThemeData(
@@ -73,5 +75,7 @@ ThemeData lightTheme(MaterialColor c) => ThemeData(
       iconTheme: IconThemeData(color: c),
       primaryIconTheme: IconThemeData(color: c),
       secondaryHeaderColor: Colors.black,
-      backgroundColor: Colors.grey.shade300,
+      colorScheme: ColorScheme.light(
+        background: Colors.grey.shade300,
+      ),
     );

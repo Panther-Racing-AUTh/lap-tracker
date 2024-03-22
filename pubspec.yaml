@@ -48,6 +48,7 @@ dependencies:
   timelines: ^0.1.0
   graphql_flutter: ^5.1.2
   table_calendar: ^3.0.8
+  syncfusion_flutter_calendar: ^21.2.3
 
 
    
