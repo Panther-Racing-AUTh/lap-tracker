@@ -45,8 +45,6 @@ class DeviceManager with ChangeNotifier {
     //   isMobileWeb = true;
     //   mode = 'mobile';
     // }
-
-    print('exiting devicemanager constructor');
   }
 
   void setToDesktopMode() {

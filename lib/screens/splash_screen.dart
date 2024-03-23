@@ -39,13 +39,9 @@ class _SplashScreenState extends State<SplashScreen> {
     AppSetup a = Provider.of<AppSetup>(context, listen: false);
     print('v2');
     DeviceManager device = Provider.of<DeviceManager>(context, listen: false);
-    print("Heloo wor");
     if (await session) {
-      print("Heloo wor");
       await Future.value(a.setValuesAuto());
-      print("Heloo wor");
     }
-    print("Heloo wor");
     await Future.delayed(const Duration(seconds: 1));
 
     Navigator.of(context)
