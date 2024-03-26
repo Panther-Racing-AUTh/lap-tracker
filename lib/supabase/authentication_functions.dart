@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/supabase/chat_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -107,12 +108,16 @@ Future<void> signInWithOAuth(BuildContext context,
   AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
   DeviceManager device = p.Provider.of<DeviceManager>(context, listen: false);
   bool userExists = false;
+  bool _isAuthorized = false;
   User user;
   if (supabase.auth.currentSession != null) {
     user = Supabase.instance.client.auth.currentSession!.user;
     //userExists = await userExistsinDb(password: user.email.toString());
   }
-  print(0);
+  const List<String> scopes = <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ];
   // supabase.auth.signInWithOAuth(provider,
   //     redirectTo: 'https://pwqrcfdxmgfavontopyn.supabase.co/auth/v1/callback');
 
@@ -130,27 +135,49 @@ Future<void> signInWithOAuth(BuildContext context,
 
   // Google sign in on Android will work without providing the Android
   // Client ID registered on Google Cloud.
-
+  GoogleSignIn _googleSignInWeb = GoogleSignIn(
+    // Optional clientId
+    // clientId: 'your-client_id.apps.googleusercontent.com',
+    scopes: scopes,
+  );
   final GoogleSignIn googleSignIn = GoogleSignIn(
     clientId: iosClientId,
     serverClientId: webClientId,
   );
+
+  _googleSignInWeb.onCurrentUserChanged
+      .listen((GoogleSignInAccount? account) async {
+// #docregion CanAccessScopes
+    // In mobile, being authenticated means being authorized...
+    bool isAuthorized = account != null;
+    // However, on web...
+    if (kIsWeb) {
+      isAuthorized = await _googleSignInWeb.canAccessScopes(scopes);
+    }
+  });
+  // _googleSignInWeb.signInSilently();
+
+  final googleUser = await _googleSignInWeb.signInSilently();
   print(1);
-  final googleUser = await googleSignIn.signIn();
-  print(2);
   final googleAuth = await googleUser!.authentication;
-  print(3);
+  print(2);
+
   final accessToken = googleAuth.accessToken;
+  print(3);
+
+  var idToken = googleAuth.idToken;
   print(4);
-  final idToken = googleAuth.idToken;
+
+  // if (accessToken == null) {
+  //   throw 'No Access Token found.';
+  // }
   print(5);
 
-  if (accessToken == null) {
-    throw 'No Access Token found.';
-  }
   if (idToken == null) {
     throw 'No ID Token found.';
   }
+  print(6);
+
   await supabase.auth.signInWithIdToken(
     provider: Provider.google,
     idToken: idToken,
