@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
-import 'package:platform_detector/platform_detector.dart';
 
 //stores data related to the device specifications
 
@@ -62,7 +61,7 @@ class DeviceManager with ChangeNotifier {
   String getRoute() {
     // if (isMobileWeb) return '/main-mobile';
     if (mode == 'desktop') return '/main-desktop';
-    if (mode == 'mobile') return '/main-mobile';
+    if (mode == 'mobile') return '/pre_release';
 
     return '/main-desktop';
     // print('returning mobile screen route');

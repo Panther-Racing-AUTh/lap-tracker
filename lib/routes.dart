@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen_desktop.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/admin_panel_screen.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/pre_release_screen.dart';
 import './screens/splash_screen.dart';
 import 'screens/desktop_screens/main_screen_desktop.dart';
 import './screens/signin_screen.dart';
@@ -44,6 +45,8 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => ProfileScreen(),
         );
+      case '/pre_release':
+        return MaterialPageRoute(builder: (_) => PreReleaseScreen());
       case '/settings':
         return MaterialPageRoute(
           builder: (_) => SettingsScreen(),

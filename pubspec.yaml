@@ -52,9 +52,11 @@ dependencies:
   platform_detector: ^0.2.0
   universal_html: ^2.2.3
 
-   
-  
-    
+  carousel_slider: ^4.2.1
+
+
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -94,7 +96,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/
+    - assets/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

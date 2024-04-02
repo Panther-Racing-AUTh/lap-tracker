@@ -7,6 +7,86 @@ import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/pro
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+
+
+enum RacingTeamRoles {
+  category,
+  driver,
+  engineer,
+  mechanic,
+  pitCrewMember,
+  teamManager,
+  strategist,
+  dataAnalyst,
+  aerodynamicist,
+  performanceEngineer,
+  raceDirector,
+}
+
+extension RacingTeamRolesExtension on RacingTeamRoles {
+  String getString() {
+    switch (this) {
+      case RacingTeamRoles.category:
+        return 'Category';
+      case RacingTeamRoles.driver:
+        return 'Driver';
+      case RacingTeamRoles.engineer:
+        return 'Engineer';
+      case RacingTeamRoles.mechanic:
+        return 'Mechanic';
+      case RacingTeamRoles.pitCrewMember:
+        return 'Pit Crew Member';
+      case RacingTeamRoles.teamManager:
+        return 'Team Manager';
+      case RacingTeamRoles.strategist:
+        return 'Strategist';
+      case RacingTeamRoles.dataAnalyst:
+        return 'Data Analyst';
+      case RacingTeamRoles.aerodynamicist:
+        return 'Aerodynamicist';
+      case RacingTeamRoles.performanceEngineer:
+        return 'Performance Engineer';
+      case RacingTeamRoles.raceDirector:
+        return 'Race Director';
+      default:
+        return '';
+    }
+  }
+
+  int getInt() {
+    return this.index;
+  }
+
+  Color getColors() {
+    switch (this) {
+      case RacingTeamRoles.category:
+        return Colors.grey;
+      case RacingTeamRoles.driver:
+        return Colors.blue;
+      case RacingTeamRoles.engineer:
+        return Colors.red;
+      case RacingTeamRoles.mechanic:
+        return Colors.green;
+      case RacingTeamRoles.pitCrewMember:
+        return Colors.orange;
+      case RacingTeamRoles.teamManager:
+        return Colors.yellow;
+      case RacingTeamRoles.strategist:
+        return Colors.purple;
+      case RacingTeamRoles.dataAnalyst:
+        return Colors.pink;
+      case RacingTeamRoles.aerodynamicist:
+        return Colors.cyan;
+      case RacingTeamRoles.performanceEngineer:
+        return Colors.deepOrange;
+      case RacingTeamRoles.raceDirector:
+        return Colors.indigo;
+      default:
+        return Colors.black;
+    }
+  }
+}
+
 enum RepeatOption {
   noRepeat,
   daily,
