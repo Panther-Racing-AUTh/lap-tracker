@@ -1,15 +1,16 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/calendar_models/meeting_data_source_model.dart';
 import 'package:flutter_complete_guide/names.dart';
+import 'package:flutter_complete_guide/providers/calendar_providers/appointment.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/about_screen.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/drawer_model.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/models/meeting_data_source_model.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/providers/meeting_provider.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/wdgets/add_meeting_form_widget.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/wdgets/show_meeting_form_widget.dart';
+import 'package:flutter_complete_guide/models/drawer_model.dart';
+import 'package:flutter_complete_guide/widgets/calendar_widgets/add_meeting_form_widget.dart';
+import 'package:flutter_complete_guide/widgets/calendar_widgets/show_meeting_form_widget.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/profile_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/settings_screen.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
+import 'package:flutter_complete_guide/supabase/calendar_functions.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -82,34 +83,34 @@ extension TeamRolesExtension on TeamRoles{
 
     }
   }
-  Color getColor() {
+  int getColor() {
     switch (this) {
       case TeamRoles.all:
-        return Colors.blue;
+        return Colors.blue.value; // Convert Colors.blue to int value
       case TeamRoles.rider:
-        return Colors.orange;
+        return Colors.orange.value; // Convert Colors.orange to int value
       case TeamRoles.mechanic:
-        return Colors.brown;
+        return Colors.brown.value; // Convert Colors.brown to int value
       case TeamRoles.chiefMechanic:
-        return Colors.grey;
+        return Colors.grey.value; // Convert Colors.grey to int value
       case TeamRoles.suspensionSpecialist:
-        return Colors.green;
+        return Colors.green.value; // Convert Colors.green to int value
       case TeamRoles.engineSpecialist:
-        return Colors.purple;
+        return Colors.purple.value; // Convert Colors.purple to int value
       case TeamRoles.electronicsSpecialist:
-        return Colors.yellow;
+        return Colors.yellow.value; // Convert Colors.yellow to int value
       case TeamRoles.logistics:
-        return Colors.lightBlueAccent;
+        return Colors.lightBlueAccent.value; // Convert Colors.lightBlueAccent to int value
       case TeamRoles.management:
-        return Colors.pink;
+        return Colors.pink.value; // Convert Colors.pink to int value
       case TeamRoles.sponsors:
-        return Colors.amber;
+        return Colors.amber.value; // Convert Colors.amber to int value
       case TeamRoles.marketing:
-        return Colors.cyan;
+        return Colors.cyan.value; // Convert Colors.cyan to int value
       case TeamRoles.events:
-        return Colors.teal;
-
-
+        return Colors.teal.value; // Convert Colors.teal to int value
+      default:
+        return Colors.transparent.value; // Default to transparent color (should not occur)
     }
   }
 
@@ -186,7 +187,7 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends State<CalendarScreen> with WidgetsBindingObserver{
   late int viewIndex;
   late CalendarController _calendarController;
   List<CalendarResource> resourceColl = <CalendarResource>[];
@@ -201,6 +202,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
+
     selectedTeamRole=TeamRoles.all;
     resourceColl.add(CalendarResource(
       displayName: 'John',
@@ -208,15 +211,39 @@ class _CalendarScreenState extends State<CalendarScreen> {
       color: Colors.red,
     ));
     final meetingProvider = Provider.of<MeetingProvider>(context, listen: false);
-    print(meetingProvider.meetings.length);
-    if(meetingProvider.meetings.length==0){
-      _getCalendarDataSource(meetingProvider.meetings);
-    }
+
     viewIndex = 2;
+    meetingProvider.meetings.clear();
+    loadAppointments();
     _calendarController = CalendarController();
     super.initState();
   }
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
+
+
+
+  Future<void> loadAppointments() async {
+    final meetingProvider = Provider.of<MeetingProvider>(context, listen: false);
+
+    meetingProvider.meetings.clear();
+    List<Map<String,dynamic>> temp=await getAppointments();
+    meetingProvider.meetings.addAll(AllAppointmentsFromMap(temp));
+    setState(() {
+    });
+  }
+  Future<void> loadNewAppointments() async {
+    final meetingProvider = Provider.of<MeetingProvider>(context, listen: false);
+
+    List<Map<String,dynamic>> temp=await getNewAppointments(meetingProvider.meetings.last.id as int);
+    meetingProvider.meetings.addAll(AllAppointmentsFromMap(temp));
+    setState(() {
+    });
+  }
 
   void openCard(BuildContext context,CalendarTapDetails calendarTapDetails,List<Appointment> meetings) {
     showModalBottomSheet(
@@ -503,8 +530,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 children: List.generate(
                   TeamRoles.values.length,
                       (index) {
+                    print(TeamRoles.values[index].getColor());
                     return ListTile(
-                      leading: Icon(selectedTeamRole.name==TeamRoles.values[index].name ? Icons.circle : Icons.circle_outlined,color: TeamRoles.values[index].getColor(),),
+                      leading: Icon(selectedTeamRole.name==TeamRoles.values[index].name ? Icons.circle : Icons.circle_outlined,color: Color(TeamRoles.values[index].getColor()),),
                       title: Text(TeamRoles.values[index].getString()),
                       onTap: () {
                         selectedTeamRole=TeamRoles.values[index];
@@ -535,6 +563,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final meetingProvider = Provider.of<MeetingProvider>(context, listen: false);
+
     return Consumer<MeetingProvider>(
       builder: (context, value, child) {
         return  Scaffold(
@@ -561,184 +590,198 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           drawer: DrawerModel(context,DrawerIndexValue.calendar.getInt()),
 
-          body: Container(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              children: [
-                Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
+          body: WillPopScope(
+            onWillPop: () async {
+              // Handle back button press here
+              print('Back button pressed');
+              // You can perform custom actions here before allowing navigation
+              return true; // Return true to allow navigation, false to prevent navigation
 
-                    children: [
-                      SizedBox(width: 8,),
-                      MaterialButton(
-                        minWidth: 30,
-                        onPressed: () {
-                          setState(() {
-                            _showPopupMenu(context);
-                          });
-                        },
-                        child: Icon(Icons.filter_alt,color: Colors.grey,),
-                      ),
-                      Spacer(),
-                      MaterialButton(
-                        minWidth: 30,
-                        shape: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.purple)),
-                        onPressed: () {
-                          setState(() {
-                            viewIndex = 0;
-                            _calendarController.view = getView(viewIndex);
-                          });
-                        },
-                        child: Text("day"),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      MaterialButton(
-                        minWidth: 30,
-                        shape: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.purple)),
-                        onPressed: () {
-                          setState(() {
-                            viewIndex = 1;
-                            _calendarController.view = getView(viewIndex);
-                          });
-                        },
-                        child: Text("Week"),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      MaterialButton(
-                        minWidth: 30,
-                        shape: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.purple)),
-                        onPressed: () {
-                          setState(() {
-                            viewIndex = 2;
-                            _calendarController.view = getView(viewIndex);
-                          });
-                        },
-                        child: Text("Month"),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Stack(
+            },
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+
                       children: [
-                        SfCalendar(
-                          controller: _calendarController,
-                          view: CalendarView.month,
-                          dataSource: AppointmentDataSource(getList()),
-                          allowViewNavigation: true,
-                          allowDragAndDrop: true,
-                          appointmentBuilder: (BuildContext context, CalendarAppointmentDetails appointmentDetails) {
-                            final Appointment appointment = appointmentDetails.appointments.first;
-                            if (viewIndex != 2 && viewIndex!=1 && appointment.isAllDay==false && appointment.startTime.day == appointment.endTime.day) {
-                              return Container(
-                                padding: EdgeInsets.symmetric(vertical: 5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-
-                                  color: appointment.color,
-                                ),
-                                child: Wrap(
-                                  clipBehavior: Clip.hardEdge,
-                                  children: [
-                                    Center(
-                                      child: Text(
-                                        appointment.subject,
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Center(
-                                      child: Text(
-                                          'Start Time: ${DateFormat('hh:mm a').format(appointment.startTime)}',
-                                          style: TextStyle(color: Colors.white)
-                                      ),
-                                    ),
-                                    Center(
-                                      child: Text(
-                                          'End Time: ${DateFormat('hh:mm a').format(appointment.endTime)}',
-                                          style: TextStyle(color: Colors.white)
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }else{
-                              return Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: appointment.color,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    appointment.subject,
-                                    style: TextStyle(color: Colors.white,fontSize: 10),
-                                  ),
-                                ),
-                              );
-                            }
+                        SizedBox(width: 8,),
+                        MaterialButton(
+                          minWidth: 30,
+                          onPressed: () {
+                            setState(() {
+                              _showPopupMenu(context);
+                            });
                           },
-                          timeSlotViewSettings: TimeSlotViewSettings(
-                            timeIntervalHeight: 80, // Adjust the height of each time slot
-                          ),
-                          dragAndDropSettings: DragAndDropSettings(allowNavigation: true,allowScroll: true,showTimeIndicator: true,autoNavigateDelay: Duration(seconds: 3)),
+                          child: Icon(Icons.filter_alt,color: Colors.grey,),
+                        ),
+                        Spacer(),
+                        MaterialButton(
+                          minWidth: 30,
+                          shape: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: Colors.purple)),
+                          onPressed: () {
+                            setState(() {
+                              viewIndex = 0;
+                              _calendarController.view = getView(viewIndex);
+                            });
+                          },
+                          child: Text("day"),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        MaterialButton(
+                          minWidth: 30,
+                          shape: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: Colors.purple)),
+                          onPressed: () {
+                            setState(() {
+                              viewIndex = 1;
 
-                          monthViewSettings: MonthViewSettings(appointmentDisplayMode:MonthAppointmentDisplayMode.appointment),
-                          allowAppointmentResize: true, // Enable resizing of appointments
-                          onDragEnd: dragEnd,
-                          onTap: (calendarTapDetails)  async{
-                            if (viewIndex == 2) {
-                              setState(() {
-                                viewIndex = 0;
-                                _calendarController.view = getView(viewIndex);
-                              });
-                            } else if (viewIndex == 0) {
-                              try{
-                                if (calendarTapDetails.appointments!.isNotEmpty) {
-                                  final Appointment meeting = calendarTapDetails.appointments!.first;
-                                  await Navigator.push(context, MaterialPageRoute(builder: (context) => ShowMeetingForm(appointment: meeting),));
+                              _calendarController.view = getView(viewIndex);
+                            });
+                          },
+                          child: Text("Week"),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        MaterialButton(
+                          minWidth: 30,
+                          shape: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: Colors.purple)),
+                          onPressed: () {
+                            setState(() {
+                              viewIndex = 2;
+
+                              _calendarController.view = getView(viewIndex);
+                            });
+                          },
+                          child: Text("Month"),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Stack(
+                        children: [
+                          SfCalendar(
+                            controller: _calendarController,
+                            view: CalendarView.month,
+                            dataSource: AppointmentDataSource(getList()),
+                            allowViewNavigation: true,
+                            allowDragAndDrop: true,
+                            appointmentBuilder: (BuildContext context, CalendarAppointmentDetails appointmentDetails) {
+                              final Appointment appointment = appointmentDetails.appointments.first;
+                              if (viewIndex != 2 && viewIndex!=1 && appointment.isAllDay==false && appointment.startTime.day == appointment.endTime.day) {
+                                return Container(
+                                  padding: EdgeInsets.symmetric(vertical: 5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+
+                                    color: appointment.color,
+                                  ),
+                                  child: Wrap(
+                                    clipBehavior: Clip.hardEdge,
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          appointment.subject,
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Center(
+                                        child: Text(
+                                            'Start Time: ${DateFormat('hh:mm a').format(appointment.startTime)}',
+                                            style: TextStyle(color: Colors.white)
+                                        ),
+                                      ),
+                                      Center(
+                                        child: Text(
+                                            'End Time: ${DateFormat('hh:mm a').format(appointment.endTime)}',
+                                            style: TextStyle(color: Colors.white)
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }else{
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: appointment.color,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      appointment.subject,
+                                      style: TextStyle(color: Colors.white,fontSize: 10),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            timeSlotViewSettings: TimeSlotViewSettings(
+                              timeIntervalHeight: 80, // Adjust the height of each time slot
+                            ),
+                            dragAndDropSettings: DragAndDropSettings(allowNavigation: true,allowScroll: true,showTimeIndicator: true,autoNavigateDelay: Duration(seconds: 3)),
+
+                            monthViewSettings: MonthViewSettings(appointmentDisplayMode:MonthAppointmentDisplayMode.appointment),
+                            allowAppointmentResize: true, // Enable resizing of appointments
+                            onDragEnd: dragEnd,
+                            onTap: (calendarTapDetails)  async{
+                              if (viewIndex == 2) {
+                                setState(() {
+                                  viewIndex = 0;
+                                  _calendarController.view = getView(viewIndex);
+                                });
+                              } else if (viewIndex == 0) {
+                                try{
+                                  if (calendarTapDetails.appointments!.isNotEmpty) {
+                                    final Appointment meeting = calendarTapDetails.appointments!.first;
+                                    await Navigator.push(context,MaterialPageRoute(builder: (context) => ShowMeetingForm(appointment: meeting)));
+                                    setState(() {
+
+                                    });
+                                  }
+                                }catch(e){
+                                  CalendarTapDetails tempCal=calendarTapDetails;
+                                  await Navigator.push(context, MaterialPageRoute(builder: (context) =>AddMeetingForm(calendarTapDetails: tempCal,),));
                                   setState(() {
 
                                   });
                                 }
-                              }catch(e){
-                                CalendarTapDetails tempCal=calendarTapDetails;
-                                Navigator.push(context, MaterialPageRoute(builder: (context) =>AddMeetingForm(calendarTapDetails: tempCal,),));
                               }
-                            }
-                          },
-                        ),
-
-                        myTeamRole.name==TeamRoles.mechanic.name
-                            ? Positioned(
-                          bottom: 16, // Adjust bottom padding as needed
-                          right: 16, // Adjust right padding as needed
-                          child: FloatingActionButton(
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => AddMeetingForm(calendarTapDetails: CalendarTapDetails(
-                                  [], DateTime.now(), CalendarElement.appointment, CalendarResource(id: 0))),));
                             },
-                            child: Icon(Icons.add),
                           ),
-                        ) : Container(),
-                      ]
+
+                          myTeamRole.name==TeamRoles.mechanic.name
+                              ? Positioned(
+                            bottom: 16, // Adjust bottom padding as needed
+                            right: 16, // Adjust right padding as needed
+                            child: FloatingActionButton(
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => AddMeetingForm(calendarTapDetails: CalendarTapDetails(
+                                    [], DateTime.now(), CalendarElement.appointment, CalendarResource(id: 0))),));
+                              },
+                              child: Icon(Icons.add),
+                            ),
+                          ) : Container(),
+                        ]
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -785,7 +828,47 @@ class _CalendarScreenState extends State<CalendarScreen> {
           appointment.endTime = newEndTime;
         });
       }
+      updateAppointment(appointment as Appointment);
     }
+  }
+
+  List<Appointment> generateMonthlyRecurringAppointments({
+    required Appointment appointment,
+    required int dayOfMonth,
+    int interval = 1,
+    int? numberOfOccurrences,
+  }) {
+    List<Appointment> recurringAppointments = [];
+
+    DateTime startDate = appointment.startTime;
+    DateTime endDate = appointment.endTime ?? appointment.startTime.add(Duration(hours: 1));
+    int occurrencesCount = numberOfOccurrences ?? 12; // Default to 12 occurrences if not specified
+
+    for (int i = 0; i < occurrencesCount; i++) {
+      // Calculate the start and end times for each occurrence
+      DateTime startTime = DateTime(startDate.year, startDate.month + (i * interval), dayOfMonth,
+          startDate.hour, startDate.minute);
+      DateTime endTime = DateTime(endDate.year, endDate.month + (i * interval), dayOfMonth,
+          endDate.hour, endDate.minute);
+
+      // Create a new appointment for the current occurrence
+      Appointment recurringAppointment = Appointment(
+        startTime: startTime,
+        endTime: endTime,
+        subject: appointment.subject,
+        color: appointment.color,
+        notes: appointment.notes,
+        location: appointment.location,
+        isAllDay: appointment.isAllDay,
+        startTimeZone: appointment.startTimeZone,
+        endTimeZone: appointment.endTimeZone,
+      );
+
+      // Add the recurring appointment to the list
+      recurringAppointments.add(recurringAppointment);
+    }
+
+    return recurringAppointments;
   }
 
 
@@ -798,7 +881,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }else{
       meetingProvider.roleMeetings.clear();
 
-      return meetingProvider.buildRoleMeetingList(selectedTeamRole.getColor());
+      return meetingProvider.buildRoleMeetingList(Color(selectedTeamRole.getColor()));
     }
 
 

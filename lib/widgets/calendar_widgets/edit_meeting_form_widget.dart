@@ -2,8 +2,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/date_time_picker_widget.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/providers/meeting_provider.dart';
+import 'package:flutter_complete_guide/providers/calendar_providers/appointment.dart';
+import 'package:flutter_complete_guide/widgets/calendar_widgets/date_time_picker_widget.dart';
+import 'package:flutter_complete_guide/supabase/calendar_functions.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -154,34 +155,34 @@ extension TeamRolesExtension on TeamRoles{
 
     }
   }
-  Color getColor() {
+  int getColor() {
     switch (this) {
       case TeamRoles.all:
-        return Colors.blue;
+        return Colors.blue.value; // Convert Colors.blue to int value
       case TeamRoles.rider:
-        return Colors.orange;
+        return Colors.orange.value; // Convert Colors.orange to int value
       case TeamRoles.mechanic:
-        return Colors.brown;
+        return Colors.brown.value; // Convert Colors.brown to int value
       case TeamRoles.chiefMechanic:
-        return Colors.grey;
+        return Colors.grey.value; // Convert Colors.grey to int value
       case TeamRoles.suspensionSpecialist:
-        return Colors.green;
+        return Colors.green.value; // Convert Colors.green to int value
       case TeamRoles.engineSpecialist:
-        return Colors.purple;
+        return Colors.purple.value; // Convert Colors.purple to int value
       case TeamRoles.electronicsSpecialist:
-        return Colors.yellow;
+        return Colors.yellow.value; // Convert Colors.yellow to int value
       case TeamRoles.logistics:
-        return Colors.lightBlueAccent;
+        return Colors.lightBlueAccent.value; // Convert Colors.lightBlueAccent to int value
       case TeamRoles.management:
-        return Colors.pink;
+        return Colors.pink.value; // Convert Colors.pink to int value
       case TeamRoles.sponsors:
-        return Colors.amber;
+        return Colors.amber.value; // Convert Colors.amber to int value
       case TeamRoles.marketing:
-        return Colors.cyan;
+        return Colors.cyan.value; // Convert Colors.cyan to int value
       case TeamRoles.events:
-        return Colors.teal;
-
-
+        return Colors.teal.value; // Convert Colors.teal to int value
+      default:
+        return Colors.transparent.value; // Default to transparent color (should not occur)
     }
   }
 
@@ -277,7 +278,7 @@ class _EditMeetingFormState extends State<EditMeetingForm> {
   void initState() {
     super.initState();
     isAllDay=widget.appointment.isAllDay;
-    selectedRole=getTeamRolesFromString(widget.appointment.color!);
+    selectedRole=getTeamRolesFromString(widget.appointment.color);
     selectedTeamLocation =getTeamLocationFromString(widget.appointment.location!);
     selectedRepeatOption=RepeatOption.noRepeat;
     // Initialize start time and end time with current date and time
@@ -295,7 +296,7 @@ class _EditMeetingFormState extends State<EditMeetingForm> {
   }
   TeamRoles getTeamRolesFromString(Color roleString) {
     return TeamRoles.values.firstWhere(
-          (element) => element.getColor() == roleString,
+          (element) => element.getColor() == roleString.value,
       orElse: () => TeamRoles.all, // Provide a default value or handle the case where no match is found
     );
   }
@@ -354,7 +355,7 @@ class _EditMeetingFormState extends State<EditMeetingForm> {
               itemBuilder: (BuildContext context, int index) {
                 TeamRoles option = TeamRoles.values[index];
                 return ListTile(
-                  leading: index== selectedRole.index ? Icon(Icons.circle,color: option.getColor(),size: 24,) : Icon(Icons.circle_outlined,color: option.getColor(),size: 20) ,
+                  leading: index== selectedRole.index ? Icon(Icons.circle,color: Color(option.getColor()),size: 24,) : Icon(Icons.circle_outlined,color: Color(option.getColor()),size: 20) ,
                   title: Text(option.getString()),
                   onTap: () {
                     setState(() {
@@ -424,19 +425,20 @@ class _EditMeetingFormState extends State<EditMeetingForm> {
               if (_formKey.currentState!.validate()) {
                 // Save the meeting and close the form
                 Appointment editMeeting = Appointment(
+                    id: widget.appointment.id,
                     startTime: _startTime,
                     endTime: _endTime,
                     subject: titleController.text=='' ? "No Title" : titleController.text,
-                    color: selectedRole.getColor(),
+                    color: Color(selectedRole.getColor()),
                     isAllDay: isAllDay,
                     notes: notesController.text,
                     location: selectedTeamLocation.getString(),
-                    resourceIds: <Object>['0001']
 
                   // Add other properties as needed
                 );
 
                 meetingProvider.meetings[meetingProvider.meetings.indexOf(widget.appointment)]=editMeeting;
+                updateAppointment(editMeeting);
                 // You can handle saving the meeting to a list or database here
                 setState(() {
 
@@ -664,7 +666,7 @@ class _EditMeetingFormState extends State<EditMeetingForm> {
                             width: MediaQuery.of(context).size.width * .1,
                             child:  Icon(
                               Icons.circle,
-                              color: selectedRole.getColor(),
+                              color: Color(selectedRole.getColor()),
                               size: 28,
                             ),
 

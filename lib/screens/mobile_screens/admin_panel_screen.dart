@@ -3,7 +3,7 @@ import 'package:flutter_complete_guide/models/person.dart';
 import 'package:flutter_complete_guide/models/role.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen_desktop.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/about_screen.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/drawer_model.dart';
+import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/profile_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/settings_screen.dart';
 import 'package:flutter_complete_guide/supabase/admin_functions.dart';

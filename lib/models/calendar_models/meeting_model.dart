@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/wdgets/edit_meeting_form_widget.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/calendar_screen.dart';
 
 class Meeting {
   final Object? id;

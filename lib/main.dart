@@ -1,10 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_complete_guide/providers/calendar_providers/appointment.dart';
 import 'package:flutter_complete_guide/providers/device.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
+import 'package:flutter_complete_guide/providers/feedback_providers/feedback.dart';
+import 'package:flutter_complete_guide/providers/settings_providers/settings.dart';
+import 'package:flutter_complete_guide/providers/weekly_report_providers/weekly_report.dart';
 import 'package:flutter_complete_guide/routes.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/providers/meeting_provider.dart';
+import 'package:flutter_complete_guide/providers/expenses_providers/expense_provider.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/weekly_report_files/models/provider.dart';
 import 'package:provider/provider.dart' as provider;
 import 'providers/theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -51,7 +56,20 @@ class MyApp extends StatelessWidget {
           ),
           provider.ChangeNotifierProvider<MeetingProvider>(
             create: (_) => MeetingProvider(),
-          )
+          ),
+          provider.ChangeNotifierProvider<ExpenseData>(
+            create: (_) => ExpenseData(),
+          ),
+
+          provider.ChangeNotifierProvider<FeedbackProvider1>(
+            create: (_) => FeedbackProvider1(),
+          ),
+          provider.ChangeNotifierProvider<WeeklyReportProvider>(
+            create: (_) => WeeklyReportProvider(),
+          ),
+          provider.ChangeNotifierProvider<SettingsProvider>(
+            create: (_) => SettingsProvider(),
+          ),
         ],
         child: MaterialAppWithTheme(),
       ),

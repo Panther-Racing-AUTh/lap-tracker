@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/providers/device.dart';
+import 'package:flutter_complete_guide/providers/settings_providers/settings.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_setup.dart';
 import '../providers/theme.dart';
@@ -49,6 +51,7 @@ class _SettingsState extends State<Settings>
         ),
       );
     }
+    SettingsProvider settingsProvider=Provider.of<SettingsProvider>(context);
 
     return Container(
       padding: EdgeInsets.only(bottom: 50),
@@ -171,8 +174,35 @@ class _SettingsState extends State<Settings>
               SizedBox(
                 height: 30,
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric( horizontal: 10,vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20)
+                    ),
+                      child: Text(settingsProvider.isNewHomepage ? "New \n Homepage" : "Old \nHomepage",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey.shade700),textAlign: TextAlign.center,)
+                  ),
+                  SizedBox(width: 20,),
+                  Switch(value: settingsProvider.isNewHomepage, onChanged: (value) {
+                    setState(() {
+                      settingsProvider.setIsNewHomepage(value);
+                    });
+
+                  },)
+                ],
+              ),
+              SizedBox(
+                height: 30,
+              ),
+
               if (!device.isDesktopMode() && !device.isPhone)
                 TextButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.blue.withOpacity(0.2))
+                  ),
                   child: Text(switch_desktop),
                   onPressed: () {
                     device.setToDesktopMode();

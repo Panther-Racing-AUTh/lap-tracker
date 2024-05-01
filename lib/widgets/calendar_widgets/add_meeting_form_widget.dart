@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/date_time_picker_widget.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/providers/meeting_provider.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/wdgets/edit_meeting_form_widget.dart';
+import 'package:flutter_complete_guide/providers/calendar_providers/appointment.dart';
+import 'package:flutter_complete_guide/widgets/calendar_widgets/date_time_picker_widget.dart';
+import 'package:flutter_complete_guide/widgets/calendar_widgets/edit_meeting_form_widget.dart';
+import 'package:flutter_complete_guide/supabase/calendar_functions.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -92,7 +93,7 @@ class _AddMeetingFormState extends State<AddMeetingForm> {
               itemBuilder: (BuildContext context, int index) {
                 TeamRoles option = TeamRoles.values[index];
                 return ListTile(
-                  leading: index== selectedRole.index ? Icon(Icons.circle,color: option.getColor(),size: 24,) : Icon(Icons.circle_outlined,color: option.getColor(),size: 20) ,
+                  leading: index== selectedRole.index ? Icon(Icons.circle,color: Color(option.getColor()),size: 24,) : Icon(Icons.circle_outlined,color: Color(option.getColor()),size: 20) ,
                   title: Text(option.getString()),
                   onTap: () {
                     setState(() {
@@ -165,7 +166,7 @@ class _AddMeetingFormState extends State<AddMeetingForm> {
                   startTime: _startTime,
                   endTime: _endTime,
                   subject: titleController.text=='' ? "No Title" : titleController.text,
-                  color: selectedRole.getColor(),
+                  color: Color(selectedRole.getColor()),
                   isAllDay: isAllDay,
                   notes: notesController.text,
                   location: selectedTeamLocation.getString(),
@@ -176,8 +177,8 @@ class _AddMeetingFormState extends State<AddMeetingForm> {
 
                   // Add other properties as needed
                 );
-                meetingProvider.addMeeting(newMeeting);
-                print(newMeeting.resourceIds!.first.toString());
+                meetingProvider.meetings.add(newMeeting);
+                insertAppointmentInBackground(newMeeting);
                 // You can handle saving the meeting to a list or database here
                 Navigator.pop(context, newMeeting);
               }
@@ -402,7 +403,7 @@ class _AddMeetingFormState extends State<AddMeetingForm> {
                           width: MediaQuery.of(context).size.width * .1,
                           child:  Icon(
                             Icons.circle,
-                            color: selectedRole.getColor(),
+                            color: Color(selectedRole.getColor()),
                             size: 28,
                           ),
 

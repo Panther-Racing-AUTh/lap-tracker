@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_complete_guide/models/calendar_models/carousel_model.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
+import 'package:flutter_complete_guide/providers/settings_providers/settings.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/about_screen.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/drawer_model.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/models/carousel_model.dart';
+import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/profile_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/settings_screen.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
@@ -147,6 +148,8 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     AppSetup appSetup = Provider.of<AppSetup>(context);
+    SettingsProvider settingsProvider=Provider.of<SettingsProvider>(context);
+
 
 
     final landscape =
@@ -205,9 +208,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
     ];
 
-    return LayoutBuilder(
-      builder: (context, Constraints) {
-        return Scaffold(
+    return Scaffold(
           appBar: AppBar(
 
             title: Text(panther),
@@ -229,119 +230,135 @@ class _MainScreenState extends State<MainScreen> {
               )
             ],
           ),
-          backgroundColor: Color(-16289889),
+          backgroundColor: settingsProvider.isNewHomepage ? Color(-16289889) : Colors.white,
           drawer: DrawerModel(context,DrawerIndexValue.home.getInt()),
           // The main menu icons
-          body: Container(
-            child: Stack(
-                children:[
-                  ListView(
+          body: ChangeNotifierProvider(
+            create: (context) => SettingsProvider(),
+            builder: (context, child) => settingsProvider.isNewHomepage ? Container(
+              child: Stack(
+                  children:[
+                    ListView(
 
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30.0),
-                        child: CutsomCarouselWidget(height: 150,itemList: getRoleList(role: appSetup.role)['item_list'],iconList: getRoleList(role: appSetup.role)['icon_list'],decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          gradient: LinearGradient(colors: [Colors.grey.shade700,Colors.grey.shade200],begin: Alignment.topLeft,end: Alignment.bottomRight),
-                        ),
-                          textStyle: TextStyle(
-                              fontSize: 20
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 30.0),
+                          child: CutsomCarouselWidget(height: 150,itemList: getRoleList(role: appSetup.role)['item_list'],iconList: getRoleList(role: appSetup.role)['icon_list'],decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: LinearGradient(colors: [Colors.grey.shade700,Colors.grey.shade200],begin: Alignment.topLeft,end: Alignment.bottomRight),
+                          ),
+                            textStyle: TextStyle(
+                                fontSize: 20
+                            ),
                           ),
                         ),
-                      ),
-                      Container(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Column(
-                            children: [
-                              Center(child: Text('Data',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                child: Row(
-                                  children: [
-                                    Spacer(),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                                      child: GestureDetector(
-                                          onTap: () {
-                                          },
-                                          child: Text('See All')
-                                      ),
-                                    )
-                                  ],
+                        Container(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Column(
+                              children: [
+                                Center(child: Text('Data',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                  child: Row(
+                                    children: [
+                                      Spacer(),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                                        child: GestureDetector(
+                                            onTap: () {
+                                            },
+                                            child: Text('See All')
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 300,
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.5),
-                                    borderRadius: BorderRadius.circular(25)
-                                ),
-                                margin: EdgeInsets.symmetric(horizontal: 10),
-                                child: Column(
-                                  children: [
+                                Container(
+                                  height: 300,
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(25)
+                                  ),
+                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                  child: Column(
+                                    children: [
 
 
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      Container(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Column(
-                            children: [
-                              Center(child: Text('Data',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                child: Row(
-                                  children: [
-                                    Spacer(),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                                      child: GestureDetector(
-                                          onTap: () {
-                                          },
-                                          child: Text('See All')
-                                      ),
-                                    )
-                                  ],
+                        Container(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Column(
+                              children: [
+                                Center(child: Text('Data',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                  child: Row(
+                                    children: [
+                                      Spacer(),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                                        child: GestureDetector(
+                                            onTap: () {
+                                            },
+                                            child: Text('See All')
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 300,
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.5),
-                                    borderRadius: BorderRadius.circular(25)
-                                ),
-                                margin: EdgeInsets.symmetric(horizontal: 10),
-                                child: Column(
-                                  children: [
+                                Container(
+                                  height: 300,
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(25)
+                                  ),
+                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                  child: Column(
+                                    children: [
 
 
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      )
+                        )
 
-                    ],
-                  ),
-                ]
+                      ],
+                    ),
+                  ]
 
 
+              ),
+            ) :
+            Container(
+              padding: const EdgeInsets.all(25),
+              //Created a big column that includes the 6 menu boxes
+              child: GridView(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: landscape ? 3 : 2,
+                  mainAxisSpacing: 50,
+                  crossAxisSpacing: 40,
+                  childAspectRatio: 0.7,
+                ),
+                scrollDirection: Axis.vertical,
+                children:
+                dynamicBlocks(allBlocks: allBlocks, role: appSetup.role),
+              ),
             ),
-          ),
+          )
         );
-      },
-    );
   }
 }
 

@@ -1,3 +1,4 @@
+/*
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +13,8 @@ import 'package:flutter_complete_guide/screens/mobile_screens/data_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/expenses_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/feedback_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/main_screen.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/pre_release_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/profile_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/settings_screen.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/weekly_report_screen.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
@@ -170,18 +169,7 @@ Widget DrawerModel(BuildContext context,int index){
         ),
          */
           Container(
-              margin: EdgeInsets.only(left: 25,top: 20,bottom: 2),
-              child: Text(
-                'Main',
-                style: TextStyle(
-                  fontSize: 23,
-                  color: Colors.grey.shade400,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 10,right: 10,top: 2,bottom: 20),
+            margin: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.grey.shade300
@@ -267,38 +255,12 @@ Widget DrawerModel(BuildContext context,int index){
 
                   },
                 ),
-                ListTile(
-                  leading: Icon(Icons.move_to_inbox_rounded,color: index==DrawerIndexValue.expenses.getInt() ? Colors.purple: Colors.black),
-                  title: Text('Weekly Report',style: TextStyle(color: index==DrawerIndexValue.expenses.getInt() ? Colors.purple: Colors.black),),
-                  onTap: () {
-                    Navigator.pop(context);
-                    print(index);
-                    if(index==DrawerIndexValue.home.getInt()){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => WeeklyReportScreen(),));
-                    }else{
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WeeklyReportScreen(),));
-                    }
-
-                  },
-                ),
 
               ],
             ),
           ),
-          
           Container(
-              margin: EdgeInsets.only(left: 25,top: 20,bottom: 2),
-              child: Text(
-                  'Settings',
-                  style: TextStyle(
-                    fontSize: 23,
-                    color: Colors.grey.shade400,
-                    fontWeight: FontWeight.bold,
-                  ),
-              )
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 10,right: 10,top: 2,bottom: 20),
+            margin: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.grey.shade300
@@ -336,9 +298,6 @@ Widget DrawerModel(BuildContext context,int index){
                   },
                 ),
 
-
-
-
                 ListTile(
                   leading: Icon(Icons.feedback,color: index==DrawerIndexValue.feedback.getInt() ? Colors.purple: Colors.black),
                   title: Text('Feedback',style: TextStyle(color: index==DrawerIndexValue.feedback.getInt() ? Colors.purple: Colors.black),),
@@ -354,62 +313,23 @@ Widget DrawerModel(BuildContext context,int index){
                       borderRadius: BorderRadius.circular(20)
                   ),
                 ),
-
-
+                ListTile(
+                  leading: Icon(Icons.info_outline_rounded,color: index==DrawerIndexValue.about.getInt() ? Colors.purple: Colors.black),
+                  title: Text('About',style: TextStyle(color: index==DrawerIndexValue.about.getInt() ? Colors.purple: Colors.black),),
+                  onTap: () {
+                    Navigator.pop(context);
+                    if(index==DrawerIndexValue.home.getInt()){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AboutScreen(),));
+                    }else{
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>AboutScreen(),));
+                    }
+                  },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)
+                  ),
+                ),
               ],
             ),
-          ),
-
-
-          Container(
-              margin: EdgeInsets.only(left: 25,top: 20,bottom: 2),
-              child: Text(
-                'Info',
-                style: TextStyle(
-                  fontSize: 23,
-                  color: Colors.grey.shade400,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-          ),
-          Container(
-              margin: EdgeInsets.only(left: 10,right: 10,top: 2,bottom: 20),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.grey.shade300
-              ),
-              child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.new_releases,color: index==DrawerIndexValue.admin.getInt() ? Colors.purple: Colors.black),
-                      title: Text('Future Releases',style: TextStyle(color: index==DrawerIndexValue.admin.getInt() ? Colors.purple: Colors.black),),
-                      onTap: () {
-                        Navigator.pop(context);
-                        if(index==DrawerIndexValue.home.getInt()){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => PreReleaseScreen(),));
-                        }else{
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PreReleaseScreen(),));
-                        }
-
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.info_outline_rounded,color: index==DrawerIndexValue.about.getInt() ? Colors.purple: Colors.black),
-                      title: Text('About',style: TextStyle(color: index==DrawerIndexValue.about.getInt() ? Colors.purple: Colors.black),),
-                      onTap: () {
-                        Navigator.pop(context);
-                        if(index==DrawerIndexValue.home.getInt()){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => AboutScreen(),));
-                        }else{
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>AboutScreen(),));
-                        }
-                      },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)
-                      ),
-                    ),
-                  ]
-              )
           ),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 10),
@@ -1018,7 +938,6 @@ Widget DrawerModel(BuildContext context,int index){
               leading: Icon(Icons.logout),
               title: Text('Logout'),
               onTap: () {
-                signOut(context);
                 Navigator.pop(context); // Close the drawer
               },
             ),
@@ -1031,3 +950,5 @@ Widget DrawerModel(BuildContext context,int index){
 }
 
 
+
+ */

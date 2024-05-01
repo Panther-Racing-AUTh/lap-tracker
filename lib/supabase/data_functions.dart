@@ -2,7 +2,7 @@ import 'package:flutter_complete_guide/models/race.dart';
 import 'package:flutter_complete_guide/models/telemetry.dart';
 import 'package:flutter_complete_guide/models/vehicle.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:math';
+
 
 final supabase = Supabase.instance.client;
 

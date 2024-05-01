@@ -61,7 +61,7 @@ class DeviceManager with ChangeNotifier {
   String getRoute() {
     // if (isMobileWeb) return '/main-mobile';
     if (mode == 'desktop') return '/main-desktop';
-    if (mode == 'mobile') return '/pre_release';
+    if (mode == 'mobile') return '/main-mobile';
 
     return '/main-desktop';
     // print('returning mobile screen route');

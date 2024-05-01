@@ -35,6 +35,7 @@ var profile = 'Profile';
 var chat = 'Chat';
 var data = 'Data';
 var calendar= 'Calendar';
+var expenses= 'Expenses';
 var feedback= 'Feedback';
 var settings = 'Settings';
 var edit_profile = "Edit Profile";

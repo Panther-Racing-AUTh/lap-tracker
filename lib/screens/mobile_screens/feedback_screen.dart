@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/feedback_models/feedback_model.dart';
 import 'package:flutter_complete_guide/names.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/wdgets/edit_meeting_form_widget.dart';
+import 'package:flutter_complete_guide/providers/feedback_providers/feedback.dart';
+import 'package:flutter_complete_guide/widgets/calendar_widgets/edit_meeting_form_widget.dart';
+import 'package:flutter_complete_guide/supabase/feedback_functions.dart';
+import 'package:provider/provider.dart';
 
 
 class FeedbackScreen extends StatefulWidget {
@@ -14,10 +18,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   TextEditingController feedbackText=TextEditingController(text: '');
   bool isSubmitted=false;
   RacingTeamRoles role=RacingTeamRoles.category;
+  double rating=0.0;
 
 
   @override
   Widget build(BuildContext context) {
+    final feedbackProvider=Provider.of<FeedbackProvider1>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
 
@@ -34,7 +41,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         centerTitle: true,
         title: Text(feedback),
       ),
-      body: isSubmitted ?
+      body: ChangeNotifierProvider(create:(context) =>  FeedbackProvider1(),builder: (context, child) => isSubmitted ?
       ListView(
           children:[
             Image.asset('assets/feedback.png'),
@@ -122,13 +129,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   SizedBox(height: 26.0),
                   Center(
                     child: Container(
-                      child: FiveStarRating(),
+                      child: FiveStarRating(rating: rating,),
                     ),
                   ),
 
                   SizedBox(height: 26.0),
                   TextFormField(
-                    maxLines: 5,
+                    minLines: 5,
+                    maxLines: 20,
                     controller: feedbackText,
                     decoration: InputDecoration(
                       hintText: 'Enter your feedback here...',
@@ -155,7 +163,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   // Add your feedback submission logic here
                   if(feedbackText.text!=''){
                     setState(() {
+
                       isSubmitted=true;
+                      FeedbackModel tempFeedback=FeedbackModel(user: 'user',starRate: feedbackProvider.star_rating, message: feedbackText.text);
+                      saveFeedback(tempFeedback);
                     });
                   }else {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -169,35 +180,47 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
             ),
           ]
-      ),
+      ),)
     );
   }
 }
 
 class FiveStarRating extends StatefulWidget {
+  double rating;
+
+
+  FiveStarRating({required this.rating});
+
   @override
   _FiveStarRatingState createState() => _FiveStarRatingState();
 }
 
 class _FiveStarRatingState extends State<FiveStarRating> {
-  double _rating = 0.0;
   double _starSize = 50.0;
 
   @override
+  void initState(){
+    super.initState();
+    widget.rating=0.0;
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final feedbackProvider=Provider.of<FeedbackProvider1>(context);
+    return ChangeNotifierProvider(create: (context) => FeedbackProvider1(),builder: (context, child) => GestureDetector(
       onTapDown: (details) {
         // Calculate the rating based on tap position
         setState(() {
-          _rating = ((details.localPosition.dx / _starSize + 1).clamp(0.0, 5.0)).floorToDouble();
-          print(_rating);
+          feedbackProvider.updateRatingValue(((details.localPosition.dx / _starSize + 1).clamp(0.0, 5.0)).floorToDouble());
+          print(feedbackProvider.star_rating);
         });
       },
       onPanUpdate: (details) {
         // Calculate the rating based on drag position
         setState(() {
-          _rating = ((details.localPosition.dx / _starSize + 1).clamp(0.0, 5.0)).floorToDouble();
-          print(_rating);
+          feedbackProvider.updateRatingValue(((details.localPosition.dx / _starSize + 1).clamp(0.0, 5.0)).floorToDouble());
+          print(feedbackProvider.star_rating);
         });
       },
       child: Stack(
@@ -211,14 +234,14 @@ class _FiveStarRatingState extends State<FiveStarRating> {
                   onTap: () {
                     // Set the rating when tapping on a star
                     setState(() {
-                      _rating = index + 1.0;
-                      print(_rating);
+                      feedbackProvider.star_rating = index + 1.0;
+                      print(feedbackProvider.star_rating);
                     });
                   },
                   child: Icon(
                     Icons.star,
                     size: _starSize,
-                    color: index < _rating.floor() ? Colors.yellow : Colors.grey,
+                    color: index < feedbackProvider.star_rating.floor() ? Colors.yellow : Colors.grey,
                   ),
                 );
               },
@@ -239,6 +262,6 @@ class _FiveStarRatingState extends State<FiveStarRating> {
           ),
         ],
       ),
-    );
+    ),);
   }
 }

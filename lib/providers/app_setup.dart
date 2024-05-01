@@ -141,4 +141,6 @@ class AppSetup extends ChangeNotifier {
   void setTrack(int value) {
     chartList[1] = value;
   }
+
 }
+

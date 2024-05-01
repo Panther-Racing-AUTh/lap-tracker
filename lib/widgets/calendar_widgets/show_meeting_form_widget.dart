@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/providers/meeting_provider.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/wdgets/edit_meeting_form_widget.dart';
+import 'package:flutter_complete_guide/providers/calendar_providers/appointment.dart';
+import 'package:flutter_complete_guide/widgets/calendar_widgets/edit_meeting_form_widget.dart';
+import 'package:flutter_complete_guide/supabase/calendar_functions.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -46,6 +47,7 @@ class _ShowMeetingFormState extends State<ShowMeetingForm> {
           value: 'Option 1',
           onTap: () {
               meetingProvider.meetings.remove(selectedAppointment);
+              removeAppointment(selectedAppointment);
               setState(() {
 
               });
@@ -108,7 +110,7 @@ class _ShowMeetingFormState extends State<ShowMeetingForm> {
               child: Icon(Icons.close)
           ),
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pop(context,true);
           },
         ),
       ),

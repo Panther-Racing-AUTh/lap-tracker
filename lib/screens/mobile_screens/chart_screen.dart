@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/names.dart';
-import 'package:flutter_complete_guide/screens/mobile_screens/calendar_files/drawer_model.dart';
+import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_complete_guide/widgets/chart_widget.dart';
 import '../../widgets/main_appbar.dart';
 

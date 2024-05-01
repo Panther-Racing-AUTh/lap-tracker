@@ -183,10 +183,10 @@ class AboutScreen extends StatelessWidget {
                 height: 100,
                 width: 150,
                 decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(20)
                 ),
-                child: Image.asset('assets/images/panther_logo_transparent-1.png',width: 150,height: 100,),
+                child: Image.asset('assets/panther_logo_transparent-1.png',width: 150,height: 100,),
               )
           );
         },
