@@ -46,6 +46,47 @@ Future<List<Map<String, dynamic>>> getWeeklyReportsFromUser(int user) async {
     return []; // Return empty list if an error occurs
   }
 }
+Future<Map<String, dynamic>> getFirstWeeklyReportFromUserAscendingByDate(int user, bool pickStartDate) async {
+  try {
+    final response = await supabase
+        .from('weekly_report')
+        .select()
+        .eq('user', user)
+        .order(pickStartDate ? 'start_date' : 'end_date', ascending: false)
+        .limit(1) // Limit the result to only one record
+        .execute();
+
+    // Extract the data from the response
+    final List<Map<String, dynamic>> data = (response.data as List).cast<Map<String, dynamic>>();
+
+    if (data.isNotEmpty) {
+      return data.first;
+    } else {
+      return Map(); // Return null if no data is found
+    }
+  } catch (error) {
+    print('Error fetching first weekly report data: $error');
+    return Map(); // Return null if an error occurs
+  }
+}
+
+Future<List<Map<String, dynamic>>> getWeeklyReportsFromUserAscendingByDate(int user,bool pickStartDate) async {
+  try {
+    final response = await supabase
+        .from('weekly_report')
+        .select()
+        .eq('user', user).order(pickStartDate ? 'start_date' : 'end_date',ascending: false) // Filter by user_id to fetch reports for a specific user
+        .execute();
+
+    // Extract the data from the response
+    final List<Map<String, dynamic>> data = (response.data as List).cast<Map<String, dynamic>>();
+
+    return data;
+  } catch (error) {
+    print('Error fetching weekly report data: $error');
+    return []; // Return empty list if an error occurs
+  }
+}
 Future<List<Map<String, dynamic>>> getWeeklyReportsAscendingById() async {
   try {
     final response = await supabase.from('weekly_report').select().order('id',ascending: true).execute();
@@ -62,7 +103,7 @@ Future<List<Map<String, dynamic>>> getWeeklyReportsAscendingById() async {
   }
 }
 
-Future<void> saveWeeklyReport(WeeklyReportListItemDate weeklyReport) async {
+Future<void> saveWeeklyReport(WeeklyReportItemList weeklyReport) async {
   try {
     final response = await supabase.from('weekly_report').insert(weeklyReport.toMap()).execute();
 

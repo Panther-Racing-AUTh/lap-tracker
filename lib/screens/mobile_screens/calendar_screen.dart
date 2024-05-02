@@ -676,6 +676,8 @@ class _CalendarScreenState extends State<CalendarScreen> with WidgetsBindingObse
                     child: Stack(
                         children: [
                           SfCalendar(
+                            firstDayOfWeek: 1, // Monday
+
                             controller: _calendarController,
                             view: CalendarView.month,
                             dataSource: AppointmentDataSource(getList()),

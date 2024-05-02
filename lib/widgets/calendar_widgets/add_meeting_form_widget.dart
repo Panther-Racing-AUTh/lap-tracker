@@ -175,6 +175,7 @@ class _AddMeetingFormState extends State<AddMeetingForm> {
 
 
 
+
                   // Add other properties as needed
                 );
                 meetingProvider.meetings.add(newMeeting);

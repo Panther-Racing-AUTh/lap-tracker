@@ -21,7 +21,8 @@ class Person {
       required this.department,
       required this.uuid,
       this.image = '',
-      this.department_image = ''});
+      this.department_image = '',
+      });
 
   Person.fromJson(Map json) {
     this.id = json['id'] ?? 0;
@@ -73,4 +74,5 @@ class Person {
   set setDepartment(String value) {
     department = value;
   }
+
 }

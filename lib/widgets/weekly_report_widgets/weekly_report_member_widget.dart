@@ -8,6 +8,7 @@ import 'package:flutter_complete_guide/providers/weekly_report_providers/weekly_
 import 'package:flutter_complete_guide/widgets/calendar_widgets/edit_meeting_form_widget.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/weekly_report_files/models/checklist_model.dart';
 import 'package:flutter_complete_guide/supabase/weekly_report_functions.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -27,6 +28,8 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
 
   bool isSaveable=false;
   bool isSubmitted=false;
+
+  bool isAlreadyReported=false;
   RacingTeamRoles role=RacingTeamRoles.category;
   late DateTime _startDate;
   late DateTime _endDate;
@@ -36,8 +39,32 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
 
   @override
   void initState(){
-    _startDate=DateTime.now();
-    _endDate=DateTime.now().add(Duration(days: 1));
+    _startDate=DateTime.now().subtract(Duration(days: (DateTime.now().weekday - 1)));
+    _endDate=_startDate.add(Duration(days: 6));
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    WeeklyReportProvider weeklyReportProvider=provider.Provider.of<WeeklyReportProvider>(context,listen: false);
+    AppSetup appSetup = provider.Provider.of<AppSetup>(context, listen: false);
+
+    weeklyReportProvider.setIsLoading(true);
+    final Map<String, dynamic> tempFetch=await getFirstWeeklyReportFromUserAscendingByDate(appSetup.supabase_id, false);
+    if(tempFetch.isNotEmpty){
+      final List<WeeklyReportItemList> tempList=[] ;
+      tempList.add(WeeklyReportItemList.fromMap(tempFetch));
+      isAlreadyReported = isInSpecificWeek(tempList, _startDate, _endDate);
+    }
+    weeklyReportProvider.setIsLoading(false);
+
+    // Check if a report exists for the current week
+    // After initializing the data, call setState to rebuild the widget
+    if (mounted) {
+      setState(() {
+        // Update the state variables based on the fetched data
+        // (e.g., set isAlreadyReported, etc.)
+      });
+    }
   }
 
   void _showDialog(){
@@ -150,9 +177,114 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
     return '${_twoDigits(date.day)}/${_twoDigits(date.month)}/${date.year}';
   }
 
+  Widget buildWeekDateContainer(DateTime selectedDate) {
+    DateTime monday = selectedDate.subtract(Duration(days: selectedDate.weekday - 1));
+    DateTime sunday = monday.add(Duration(days: 6));
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            children: [
+              Center(
+                child: Text('Start Date',style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.grey.shade400),),
+              ),
+              SizedBox(height: 4,),
+              Container(
+
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1,
+                  ),
+                ),
+                width: 130,
+                child: Center(
+                  child: Text(
+                    DateFormat('d MMM yyyy').format(monday),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+
+            ],
+          ),
+          Spacer(),
+          Column(
+            children: [
+              Center(
+                child: Text('End Date',style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.grey.shade400),),
+              ),
+              SizedBox(height: 4,),
+              Container(
+
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1,
+                  ),
+                ),
+                width: 130,
+                child: Center(
+                  child: Text(
+                    DateFormat('d MMM yyyy').format(sunday),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+
+            ],
+          ),
+
+
+        ],
+      ),
+    );
+  }
+
+
+
+
+  bool isInSpecificWeek(List<WeeklyReportItemList> reportList, DateTime startOfWeek, DateTime endOfWeek) {
+    print(reportList);
+    if(reportList.isEmpty){
+      return false;
+    }else{
+      WeeklyReportItemList tempReport=reportList.first;
+      print(tempReport.start_date.year);
+      print(startOfWeek.year);
+
+      if(tempReport.start_date.year == startOfWeek.year &&
+          tempReport.start_date.month == startOfWeek.month &&
+          tempReport.start_date.day == startOfWeek.day && tempReport.end_date.year == endOfWeek.year &&
+          tempReport.end_date.month == endOfWeek.month &&
+          tempReport.end_date.day == endOfWeek.day){
+        return true;
+      }else{
+        return false;
+      }
+    }
+  }
+  
+  
   @override
   Widget build(BuildContext context) {
-    final weeklyReportProvider=provider.Provider.of<WeeklyReportProvider>(context);
+    final weeklyReportProvider=provider.Provider.of<WeeklyReportProvider>(context,listen: false);
     final appSetup=provider.Provider.of<AppSetup>(context,listen: false);
 
     return provider.Consumer<WeeklyReportProvider>(
@@ -173,7 +305,68 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                 centerTitle: true,
                 title: Text('Feedback'),
               ),
-              body: isSubmitted ?
+              body: weeklyReportProvider.isLoading ? Container(
+                child: Center(child: CircularProgressIndicator()),
+              ) :
+              isAlreadyReported ?               ListView(
+                  children:[
+                    Image.asset('assets/feedback.png'),
+                    Container(
+
+                      margin: EdgeInsets.only(top:1,left: 15,right: 15),
+                      padding: EdgeInsets.symmetric(vertical: 30,horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 3,
+                            blurRadius: 10,
+                            offset: Offset(0,0), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'You already reported for this week!',
+                            style: TextStyle(fontSize: 22.0),
+                            textAlign: TextAlign.center,
+                          ),
+
+                          SizedBox(height: 6.0),
+                          Text(
+                            'See you next week',
+                            style: TextStyle(fontSize: 12.0),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 16.0),
+                          MaterialButton(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            color: Colors.green,
+                            textColor: Colors.white,
+                            onPressed: () {
+                              setState(() {
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: Text('Go Back',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                          ),
+
+                        ],
+                      ),
+                    ),
+
+                  ]
+              )
+
+                  : isSubmitted ?
               ListView(
                   children:[
                     Image.asset('assets/feedback.png'),
@@ -197,14 +390,14 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'Thanks for your feedback!',
+                            'Thanks for your Report!',
                             style: TextStyle(fontSize: 22.0),
                             textAlign: TextAlign.center,
                           ),
 
                           SizedBox(height: 6.0),
                           Text(
-                            'We will consider it carefully.',
+                            'See you next week!',
                             style: TextStyle(fontSize: 12.0),
                             textAlign: TextAlign.center,
                           ),
@@ -219,7 +412,6 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                             textColor: Colors.white,
                             onPressed: () {
                               setState(() {
-                                print(weeklyReportProvider.reports.first.name);
                               });
                               Navigator.pop(context);
                             },
@@ -256,12 +448,12 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'Welcome ${role.getString()}!',
+                            'Welcome ${appSetup.username}',
                             style: TextStyle(fontSize: 22.0),
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            'Weekly Report!',
+                            'Weekly Report',
                             style: TextStyle(fontSize: 12.0),
                             textAlign: TextAlign.center,
                           ),
@@ -277,76 +469,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                           SizedBox(height: 12.0),
                           Container(
                             margin: EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Column(
-                                  children: [
-                                    Center(
-                                      child: Text('Start Date',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.grey.shade400),),
-                                    ),
-                                    SizedBox(height: 4,),
-                                    GestureDetector(
-                                      onTap: () {
-                                        _selectDate(context, true);
-                                      },
-                                      child: Container(
-
-                                        padding: EdgeInsets.all(15),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(20),
-                                          border: Border.all(
-                                            color: Colors.black,
-                                            width: 1,
-                                          ),
-                                        ),
-                                        width: 130,
-                                        child: Center(
-                                          child: Text(
-                                            _startDate == null
-                                                ? 'No date selected'
-                                                : '${_formatDate(_startDate)}',style: TextStyle(fontSize: 16,),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Center(
-                                      child: Text('End Date',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.grey.shade400),),
-                                    ),
-                                    SizedBox(height: 4,),
-                                    GestureDetector(
-                                      onTap: () {
-                                        _selectDate(context, false);
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.all(15),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(20),
-                                          border: Border.all(
-                                            color: Colors.black,
-                                            width: 1,
-                                          ),
-                                        ),
-                                        width: 130,
-                                        child: Center(
-                                          child: Text(
-                                            _endDate == null
-                                                ? 'No date selected'
-                                                : '${_formatDate(_endDate)}',style: TextStyle(fontSize: 16,),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                  ],
-                                )
-                              ],
-                            ),
+                            child: buildWeekDateContainer(_startDate),
                           ),
                           SizedBox(height: 26.0),
                           Container(height: 1,width: MediaQuery.of(context).size.width,color: Colors.grey,),
@@ -459,7 +582,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                         textColor: Colors.white,
                         onPressed: () {
                           // Add your feedback submission logic here
-                          if(feedbackText.text==''){
+                          if(feedbackText.text=='' && checkList.isEmpty){
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('No Feedback'),
@@ -470,7 +593,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                           }else{
                             isSubmitted=true;
 
-                            WeeklyReportListItemDate tempItem=WeeklyReportListItemDate(userId: appSetup.supabase_id,start_date: _startDate,end_date: _endDate,message: feedbackText.text,check_list: checkList,);
+                            WeeklyReportItemList tempItem=WeeklyReportItemList(userId: appSetup.supabase_id,start_date: _startDate,end_date: _endDate,message: feedbackText.text ==''? 'No Message' : feedbackText.text,check_list: checkList,);
 
                             saveWeeklyReport(tempItem);
                           }

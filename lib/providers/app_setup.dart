@@ -38,6 +38,7 @@ class AppSetup extends ChangeNotifier {
   Event eventDate = Event.empty();
   int currentProposalPoolId = 0;
 
+
   // String proposalTitle = '';
   // String proposalDescription = '';
   // String proposalReason = '';
@@ -141,6 +142,7 @@ class AppSetup extends ChangeNotifier {
   void setTrack(int value) {
     chartList[1] = value;
   }
+
 
 }
 

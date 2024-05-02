@@ -5,14 +5,12 @@ class WeeklyReportItem extends StatelessWidget {
   final int userId;
   final String name;
   final String role;
-  final bool weeklyReportSubmitted;
-  final List<WeeklyReportListItemDate> reportList;
+  final List<WeeklyReportItemList> reportList;
 
   const WeeklyReportItem({
     required this.userId,
     required this.name,
     required this.role,
-    required this.weeklyReportSubmitted,
     required this.reportList
   });
   Map<String, dynamic> toMap() {
@@ -24,10 +22,10 @@ class WeeklyReportItem extends StatelessWidget {
   }
   factory WeeklyReportItem.fromMap(Map<String, dynamic> map) {
     // Extract data from the map and initialize WeeklyReportListItemDate list
-    List<WeeklyReportListItemDate> reportList = [];
-    if (map.containsKey('reportList') && map['reportList'] is List) {
-      reportList = (map['reportList'] as List)
-          .map((item) => WeeklyReportListItemDate.fromMap(item))
+    List<WeeklyReportItemList> reportList = [];
+    if (map.containsKey('check_list') && map['check_list'] is List) {
+      reportList = (map['check_list'] as List)
+          .map((item) => WeeklyReportItemList.fromMap(item))
           .toList();
     }
 
@@ -35,7 +33,6 @@ class WeeklyReportItem extends StatelessWidget {
       userId: map['id'],
       name: map['full_name'] ?? '',
       role: map['role'] ?? '',
-      weeklyReportSubmitted: map['weeklyReportSubmitted'] ?? false,
       reportList: reportList ?? [],
     );
   }
@@ -65,8 +62,6 @@ class WeeklyReportItem extends StatelessWidget {
 
             ],
           ),
-          Spacer(),
-          weeklyReportSubmitted ? Icon(Icons.circle,color: Colors.green.shade400,) : Icon(Icons.circle_outlined,color: Colors.grey),
 
         ],
       ),

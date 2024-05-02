@@ -7,14 +7,14 @@ import 'dart:convert'; // Import jsonEncode for JSON encoding
 import 'package:flutter/material.dart';
 
 
-class WeeklyReportListItemDate extends StatelessWidget {
+class WeeklyReportItemList extends StatelessWidget {
   final DateTime start_date;
   final DateTime end_date;
   final String message;
   final int userId;
   final List<String> check_list;
 
-  const WeeklyReportListItemDate({
+  const WeeklyReportItemList({
     required this.start_date,
     required this.end_date,
     required this.message,
@@ -28,16 +28,16 @@ class WeeklyReportListItemDate extends StatelessWidget {
       'end_date': DateFormat('yyyy-MM-dd HH:mm:ss').format(end_date),     // Format date/time as string
       'message': message,
       'user' : userId,
-      'report_list' : jsonEncode(check_list),
+      'check_list' : jsonEncode(check_list),
     };
   }
-  factory WeeklyReportListItemDate.fromMap(Map<String, dynamic> map) {
-    return WeeklyReportListItemDate(
+  factory WeeklyReportItemList.fromMap(Map<String, dynamic> map) {
+    return WeeklyReportItemList(
       start_date: DateTime.parse(map['start_date'] as String),
       end_date: DateTime.parse(map['end_date'] as String),
       message: map['message'] as String,
       userId: map['user'],
-      check_list: parseStringList(map['report_list']),
+      check_list: parseStringList(map['check_list']),
     );
   }
 
@@ -91,7 +91,7 @@ class WeeklyReportListItemDate extends StatelessWidget {
     return '$day-$month-$year';
   }
 
-  void _showMessageDetailsDialog(BuildContext context,WeeklyReportListItemDate itemDate) {
+  void _showMessageDetailsDialog(BuildContext context,WeeklyReportItemList itemDate) {
     // Simulated message details
 
 
@@ -131,10 +131,10 @@ class WeeklyReportListItemDate extends StatelessWidget {
 
 
 
-List<WeeklyReportListItemDate> WeeklyReportListItemDateListfromMap(List<Map<String, dynamic>> listMap) {
-  List<WeeklyReportListItemDate> temp=[];
+List<WeeklyReportItemList> WeeklyReportListItemDateListfromMap(List<Map<String, dynamic>> listMap) {
+  List<WeeklyReportItemList> temp=[];
   for(int i=0;i<listMap.length;i++){
-    temp.add(WeeklyReportListItemDate(userId: listMap[i]['user'] ,start_date: DateTime.parse(listMap[i]['start_date'] as String), end_date: DateTime.parse(listMap[i]['end_date'] as String), message: listMap[i]['message'] as String,check_list: parseStringList(listMap[i]['report_list']) ?? [],));
+    temp.add(WeeklyReportItemList(userId: listMap[i]['user'] ,start_date: DateTime.parse(listMap[i]['start_date'] as String), end_date: DateTime.parse(listMap[i]['end_date'] as String), message: listMap[i]['message'] as String,check_list: parseStringList(listMap[i]['check_list']) ,));
   }
   return temp;
 }

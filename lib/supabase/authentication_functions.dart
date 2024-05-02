@@ -263,7 +263,7 @@ Future<Map> getCurrentUserIdInt() async {
       "Supabase Current User ID: " + supabase.auth.currentUser!.id.toString());
   final userData = await supabase
       .from('users')
-      .select('id, email, full_name, role, department')
+      .select('id, email, full_name, role  ,department')
       .eq('uuid', supabase.auth.currentUser!.id)
       .single();
   return userData;
