@@ -292,92 +292,92 @@ class LoginState extends State<Login> {
             auth: 'Facebook',
           ),
           SizedBox(height: 20),
-          Container(
-            height: 70,
-            child: ListView(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      child: Text('Admin',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                      onPressed: () {
-                        userLogin(
-                            email: 'pantheradm1n1@gmail.com',
-                            password: 'pantheradmin123',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'engineer@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Engineer',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'data_analyst@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Data Analyst',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'default@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Default',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'hands_on_engineer@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Hands On Engineer',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'chief_engineer@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Chief Engineer',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          // Container(
+          //   height: 70,
+          //   child: ListView(
+          //     shrinkWrap: true,
+          //     scrollDirection: Axis.horizontal,
+          //     children: [
+          //       Row(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: [
+          //           TextButton(
+          //             child: Text('Admin',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'pantheradm1n1@gmail.com',
+          //                   password: 'pantheradmin123',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'engineer@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Engineer',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'data_analyst@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Data Analyst',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'default@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Default',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'hands_on_engineer@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Hands On Engineer',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'chief_engineer@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Chief Engineer',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ),
           Column(
             //'powered by panther' text
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -402,7 +402,7 @@ class LoginState extends State<Login> {
                   ],
                 ),
               ),
-              Text('v1.1.3')
+              Text('v1.2.0')
             ],
           ),
         ],
