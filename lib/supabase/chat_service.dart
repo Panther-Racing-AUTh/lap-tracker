@@ -17,7 +17,8 @@ final supabase = Supabase.instance.client;
 Future<List> getAllUsers() async {
   final users = await supabase
       .from('users')
-      .select('id, uuid, full_name ,role, department');
+      .select('id, uuid, full_name ,role, department')
+      .eq('active', true);
 
   for (var element in users) {
     var image = supabase.storage.from('users').getPublicUrl(

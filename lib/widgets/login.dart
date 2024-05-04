@@ -402,7 +402,7 @@ class LoginState extends State<Login> {
                   ],
                 ),
               ),
-              Text('v1.2.0')
+              Text('v1.3.0')
             ],
           ),
         ],
