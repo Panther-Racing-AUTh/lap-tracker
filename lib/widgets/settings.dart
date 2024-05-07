@@ -1,228 +1,205 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/providers/device.dart';
 import 'package:flutter_complete_guide/providers/settings_providers/settings.dart';
+import 'package:flutter_complete_guide/providers/theme.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/about_screen.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/profile_screen.dart';
+import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
+import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
 import 'package:provider/provider.dart';
-import '../providers/app_setup.dart';
-import '../providers/theme.dart';
-import '../supabase/authentication_functions.dart';
-import 'dark_theme_icons.dart';
 
 class Settings extends StatefulWidget {
+  const Settings({super.key});
+
   @override
   State<Settings> createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings>
-    with AutomaticKeepAliveClientMixin<Settings> {
-  @override
-  bool get wantKeepAlive => true;
+class _SettingsState extends State<Settings> {
+
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    AppSetup a = Provider.of<AppSetup>(context);
     final theme = Provider.of<ThemeChanger>(context);
     final device = Provider.of<DeviceManager>(context);
-    int selectedColor = theme.colorIndex;
-    Widget coloredBox({required Color color, required int id}) {
-      return Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: (selectedColor == id)
-                ? Theme.of(context).secondaryHeaderColor
-                : Colors.transparent,
-            width: 3,
-          ),
-        ),
-        child: GestureDetector(
-          child: Container(
-            height: 50,
-            width: 50,
-            color: color,
-          ),
-          onTap: () {
-            setState(() {
-              selectedColor = id;
-            });
-            theme.setThemeColor(color, id);
-          },
-        ),
-      );
-    }
-    SettingsProvider settingsProvider=Provider.of<SettingsProvider>(context);
+    final settingsProvider = Provider.of<SettingsProvider>(context);
 
-    return Container(
-      padding: EdgeInsets.only(bottom: 50),
-      height: double.infinity,
-      width: double.infinity,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 60,
-          ),
-          DarkThemeSwitch(context: context),
-          SizedBox(
-            height: 40,
-          ),
-          OutlinedButton(
-            child: Text(
-              sign_out,
-              style: TextStyle(
-                color: Colors.red,
-              ),
-            ),
-            style: ButtonStyle(
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+    return Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text(
+                "Style Settings",
+                style: TextStyle(
+                  color: Colors.black.withOpacity(.3),
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            onPressed: () async {
-              signOut(context);
-            },
-          ),
-          SizedBox(
-            height: 50,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(20)
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  coloredBox(
-                    id: 0,
-                    color: Colors.indigo,
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .5,
+                        child: Text(
+                          'Dark Mode',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      DarkThemeSwitch(context: context),
+                    ],
                   ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  coloredBox(
-                    id: 1,
-                    color: Colors.green,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  coloredBox(
-                    id: 2,
-                    color: Colors.red,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  coloredBox(
-                    id: 3,
-                    color: Colors.blue,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  coloredBox(
-                    id: 4,
-                    color: Colors.purple,
-                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .5,
+
+                        child: Text(
+                          'Homepage Style:',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      Switch(
+                        value: settingsProvider.isNewHomepage,
+                        onChanged: (value) {
+                          settingsProvider.setIsNewHomepage(value);
+                        },
+                      ),
+                    ],
+                  )
+
                 ],
               ),
-              SizedBox(
-                height: 10,
+            ),
+
+            SizedBox(height: 30),
+            Text(
+              'Select Theme Color',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  coloredBox(
-                    id: 5,
-                    color: Colors.yellow,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  coloredBox(
-                    id: 6,
-                    color: Colors.orange,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  coloredBox(
-                    id: 7,
-                    color: Colors.pink,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  coloredBox(
-                    id: 8,
-                    color: Colors.cyan,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  coloredBox(
-                    id: 9,
-                    color: Colors.lime,
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric( horizontal: 10,vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20)
+            ),
+            SizedBox(height: 10),
+            Center(
+              child: Wrap(
+                spacing: 10,
+                children: List.generate(
+                  10,
+                      (index) => GestureDetector(
+                    onTap: () {
+                      theme.setThemeColor(_getColorByIndex(index), index);
+                    },
+                    child: Container(
+                      width: 45,
+                      height: 45,
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: _getColorByIndex(index),
+                        border: Border.all(
+                          color: theme.colorIndex == index
+                              ? Theme.of(context).cardColor
+                              : Colors.transparent,
+                          width: 3,
+                        ),
+                      ),
                     ),
-                      child: Text(settingsProvider.isNewHomepage ? "New \n Homepage" : "Old \nHomepage",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey.shade700),textAlign: TextAlign.center,)
                   ),
-                  SizedBox(width: 20,),
-                  Switch(value: settingsProvider.isNewHomepage, onChanged: (value) {
-                    setState(() {
-                      settingsProvider.setIsNewHomepage(value);
-                    });
-
-                  },)
-                ],
+                ),
               ),
-              SizedBox(
-                height: 30,
-              ),
+            ),
 
-              if (!device.isDesktopMode() && !device.isPhone)
-                TextButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.blue.withOpacity(0.2))
-                  ),
-                  child: Text(switch_desktop),
+            SizedBox(height: 30),
+            if (!device.isDesktopMode() && !device.isPhone)
+              Center(
+                child: ElevatedButton(
                   onPressed: () {
                     device.setToDesktopMode();
                     Navigator.of(context).popUntil((route) => route.isFirst);
                     Navigator.of(context).pushReplacementNamed('/main-desktop');
                   },
+                  child: Text('Switch to Desktop View'),
                 ),
-              if (device.isDesktopMode())
-                TextButton(
-                  child: Text(switch_mobile),
-                  onPressed: () {
-                    device.setToMobileMode();
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                    Navigator.of(context).pushReplacementNamed('/main-mobile');
-                  },
+              ),
+            if (device.isDesktopMode())
+              ElevatedButton(
+                onPressed: () {
+                  device.setToMobileMode();
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).pushReplacementNamed('/main-mobile');
+                },
+                child: Text('Switch to Mobile View'),
+              ),
+            SizedBox(height: 30),
+            Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  signOut(context);
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.red),
                 ),
-            ],
-          )
-        ],
+                child: Text(
+                  'Sign Out',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        
       ),
     );
+  }
+
+  Color _getColorByIndex(int index) {
+    switch (index) {
+      case 0:
+        return Colors.indigo;
+      case 1:
+        return Colors.green;
+      case 2:
+        return Colors.red;
+      case 3:
+        return Colors.blue;
+      case 4:
+        return Colors.purple;
+      case 5:
+        return Colors.yellow;
+      case 6:
+        return Colors.orange;
+      case 7:
+        return Colors.pink;
+      case 8:
+        return Colors.cyan;
+      case 9:
+        return Colors.lime;
+      default:
+        return Colors.grey;
+    }
   }
 }

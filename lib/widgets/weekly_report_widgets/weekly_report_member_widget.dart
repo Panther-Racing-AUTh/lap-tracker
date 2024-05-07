@@ -35,6 +35,8 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
   late DateTime _endDate;
 
   List<String> checkList=[];
+  List<String> futureCheckList=[];
+
 
 
   @override
@@ -67,7 +69,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
     }
   }
 
-  void _showDialog(){
+  void _showDialog(List<String> checkList){
     showDialog(context: context, builder: (BuildContext context) {
       return AlertDialog(
         title: Center(child: Text('Enter Report No. ${checkList.length + 1}',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black54),)),
@@ -110,7 +112,8 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
     },
     );
   }
-  void _showItemDialog(String checklistItem,int index){
+
+  void _showItemDialog(List<String> checkList,String checklistItem,int index){
     showDialog(context: context, builder: (BuildContext context) {
       return AlertDialog(
         title: Row(
@@ -482,7 +485,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                                   Text('Weekly To-Do List',style: TextStyle(fontSize: 20),),
                                   GestureDetector(
                                     onTap: () {
-                                      _showDialog();
+                                      _showDialog(checkList);
                                     },
                                     child: Icon(Icons.add),
                                   )
@@ -502,7 +505,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                                 child: ListView(
                                   padding: EdgeInsets.zero,
                                   children: List.generate(checkList.length, (index) => GestureDetector(
-                                    onTap: () => _showItemDialog(checkList[index],index),
+                                    onTap: () => _showItemDialog(checkList,checkList[index],index),
                                     child: Container(
                                         height: 60,
                                         decoration: BoxDecoration(
@@ -531,6 +534,81 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                                               Flexible(
                                                 child: Text(
                                                   '${checkList[index]}',
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                  ),
+                                                  softWrap: true,
+                                                  overflow: TextOverflow.fade,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                    ),
+                                  )),
+                                )
+                            ),
+                          ),
+                          SizedBox(height: 26.0),
+                          Container(height: 1,width: MediaQuery.of(context).size.width,color: Colors.grey,),
+                          SizedBox(height: 12.0),
+                          Container(
+                              margin:EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+                              child:  Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('Future To-Do List',style: TextStyle(fontSize: 20),),
+                                  GestureDetector(
+                                    onTap: () {
+                                      _showDialog(futureCheckList);
+                                    },
+                                    child: Icon(Icons.add),
+                                  )
+                                ],
+                              )
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                            child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: 260,
+                                padding: EdgeInsets.symmetric(vertical: 0),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.blue),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: ListView(
+                                  padding: EdgeInsets.zero,
+                                  children: List.generate(futureCheckList.length, (index) => GestureDetector(
+                                    onTap: () => _showItemDialog(futureCheckList,checkList[index],index),
+                                    child: Container(
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.shade100,
+                                            borderRadius: BorderRadius.circular(20)
+                                        ),
+                                        margin: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                        padding: EdgeInsets.symmetric(horizontal: 10),
+                                        child: Container(
+                                          width: 200,
+                                          child: Row(
+
+                                            mainAxisAlignment: MainAxisAlignment.start,
+
+                                            children: [
+                                              Flexible(
+                                                child: Text(
+                                                  '${index+1})',
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 20,),
+
+                                              Flexible(
+                                                child: Text(
+                                                  '${futureCheckList[index]}',
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                   ),
@@ -593,7 +671,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                           }else{
                             isSubmitted=true;
 
-                            WeeklyReportItemList tempItem=WeeklyReportItemList(userId: appSetup.supabase_id,start_date: _startDate,end_date: _endDate,message: feedbackText.text ==''? 'No Message' : feedbackText.text,check_list: checkList,);
+                            WeeklyReportItemList tempItem=WeeklyReportItemList(userId: appSetup.supabase_id,start_date: _startDate,end_date: _endDate,message: feedbackText.text ==''? 'No Message' : feedbackText.text,todo_list: checkList,future_todo_list: futureCheckList,);
 
                             saveWeeklyReport(tempItem);
                           }

@@ -99,7 +99,7 @@ Widget DrawerModel(BuildContext context,int index){
   AppSetup appSetup = Provider.of<AppSetup>(context);
 
 
-  if(appSetup.role=='admin' || appSetup.role=='engineer' || appSetup.role=='chief_engineer' ){
+  if(appSetup.role=='admin' || appSetup.role=='chief_engineer' ){
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -463,8 +463,8 @@ Widget DrawerModel(BuildContext context,int index){
               child: Column(
                   children: [
                     ListTile(
-                      leading: Icon(Icons.new_releases,color: index==DrawerIndexValue.admin.getInt() ? Colors.purple: Colors.black),
-                      title: Text('Future Releases',style: TextStyle(color: index==DrawerIndexValue.admin.getInt() ? Colors.purple: Colors.black),),
+                      leading: Icon(Icons.new_releases,color: Colors.black),
+                      title: Text('Future Releases',style: TextStyle(color:Colors.black),),
                       onTap: () {
                         Navigator.pop(context);
                         if(index==DrawerIndexValue.home.getInt()){
@@ -518,7 +518,8 @@ Widget DrawerModel(BuildContext context,int index){
       ),
     );
 
-  }else if(appSetup.role=='enginner' || appSetup.role=='chief_enginner' || appSetup.role=='hands_on_engineer'){
+  }
+  else if(appSetup.role=='enginner' || appSetup.role=='hands_on_engineer'){
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -749,7 +750,8 @@ Widget DrawerModel(BuildContext context,int index){
       ),
     );
 
-  }else if(appSetup.role=='data_analyst'){
+  }
+  else if(appSetup.role=='data_analyst'){
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -969,7 +971,8 @@ Widget DrawerModel(BuildContext context,int index){
       ),
     );
 
-  }else{
+  }
+  else{
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,

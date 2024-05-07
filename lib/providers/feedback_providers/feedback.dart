@@ -3,7 +3,7 @@ import 'package:flutter_complete_guide/models/feedback_models/feedback_model.dar
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
 
-class FeedbackProvider1 extends ChangeNotifier {
+class FeedbackProvider extends ChangeNotifier {
   List<FeedbackModel> _feedbacks = [];
   double star_rating=0.0;
 

@@ -61,8 +61,8 @@ class MyApp extends StatelessWidget {
             create: (_) => ExpenseData(),
           ),
 
-          provider.ChangeNotifierProvider<FeedbackProvider1>(
-            create: (_) => FeedbackProvider1(),
+          provider.ChangeNotifierProvider<FeedbackProvider>(
+            create: (_) => FeedbackProvider(),
           ),
           provider.ChangeNotifierProvider<WeeklyReportProvider>(
             create: (_) => WeeklyReportProvider(),

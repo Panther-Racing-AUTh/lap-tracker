@@ -42,8 +42,7 @@ class _WeeklyReportAdminWidgetState extends State<WeeklyReportAdminWidget> {
   Future<void> _loadUserList() async {
     try {
       // Get the WeeklyReportProvider instance using Provider.of
-      WeeklyReportProvider weeklyReportProvider =
-      Provider.of<WeeklyReportProvider>(context, listen: false);
+      WeeklyReportProvider weeklyReportProvider =Provider.of<WeeklyReportProvider>(context, listen: false);
       weeklyReportProvider.setIsLoading(true);
 
       // Fetch user list asynchronously
@@ -384,7 +383,8 @@ void openCard(BuildContext context, WeeklyReportItem details) {
                                   start_date: entry.start_date,
                                   end_date: entry.end_date,
                                   message: entry.message,
-                                  check_list: entry.check_list,
+                                  todo_list: entry.todo_list,
+                                  future_todo_list: entry.future_todo_list,
                                 ),
                           ],
                         ),

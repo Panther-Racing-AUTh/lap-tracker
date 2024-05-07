@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/main_screen.dart';
 
 
@@ -28,7 +29,7 @@ class _PreReleaseScreenState extends State<PreReleaseScreen> {
           child: Icon(Icons.close),
         ),
         centerTitle: false,
-        title: Text('Future Releases'),
+        title: Text(future_releases),
       ),
       body: Center(
         child: ListView(

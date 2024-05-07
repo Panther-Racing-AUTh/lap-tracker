@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/person.dart';
 import 'package:flutter_complete_guide/models/role.dart';
+import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen_desktop.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/about_screen.dart';
 import 'package:flutter_complete_guide/models/drawer_model.dart';
@@ -139,7 +140,7 @@ class _AdminPanelState extends State<AdminPanel> {
     return Scaffold(
       appBar: AppBar(
 
-        title: Text('Calendar'),
+        title: Text(admin),
         actions: [
           GestureDetector(
               onTap: () {
