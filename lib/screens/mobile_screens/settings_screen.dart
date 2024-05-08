@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/widgets/settings.dart';
 import '../../widgets/main_appbar.dart';
@@ -32,6 +33,7 @@ class SettingsScreen extends StatelessWidget {
           )
         ],
       ),
+      drawer: DrawerModel(context,DrawerIndexValue.settings.getInt()),
       body: Settings(),
     );
   }

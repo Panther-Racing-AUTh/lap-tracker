@@ -35,7 +35,7 @@ class _SettingsState extends State<Settings> {
               child: Text(
                 "Style Settings",
                 style: TextStyle(
-                  color: Colors.black.withOpacity(.3),
+                  color: theme.getCurrentThemeMode() == ThemeMode.dark ? Colors.white.withOpacity(.5) : Colors.black.withOpacity(.5),
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
@@ -55,7 +55,7 @@ class _SettingsState extends State<Settings> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * .5,
                         child: Text(
-                          'Dark Mode',
+                          theme.getCurrentThemeMode() == ThemeMode.dark ? "Dark Mode" : "Light Mode",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -73,7 +73,7 @@ class _SettingsState extends State<Settings> {
                         width: MediaQuery.of(context).size.width * .5,
 
                         child: Text(
-                          'Homepage Style:',
+                          settingsProvider.isNewHomepage ? 'New Homepage' : 'Old Homepage',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

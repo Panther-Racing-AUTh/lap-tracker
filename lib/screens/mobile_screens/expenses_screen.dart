@@ -10,6 +10,7 @@ import 'package:flutter_complete_guide/screens/mobile_screens/about_screen.dart'
 import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_complete_guide/providers/expenses_providers/expense_provider.dart';
 import 'package:flutter_complete_guide/models/expenses_models/expense_item_model.dart';
+import 'package:flutter_complete_guide/widgets/expenses_widgets/carousel_widget.dart';
 import 'package:flutter_complete_guide/widgets/expenses_widgets/form_widget.dart';
 import 'package:flutter_complete_guide/widgets/expenses_widgets/list_widget.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/profile_screen.dart';
@@ -36,6 +37,28 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     ExpenseItem(name: 'shopping', amount: Random().nextDouble()*100, dateTime: DateTime.now().add(Duration(days: 2)), location: "none",expenseType: 'Engineering',isExpense: true),
     ExpenseItem(name: 'training', amount: Random().nextDouble()*100, dateTime: DateTime.now().add(Duration(days: 3)), location: "none",expenseType: 'Engineering',isExpense: false),
   ];
+
+
+  final List<CreditCardWidget> creditCards = [
+    CreditCardWidget(
+      cardTitle: 'My Credit Card',
+      cardNumber: '1234',
+      cardHolder: 'John Doe',
+      expiryDate: '12/24',
+      cardColor: Colors.blueAccent,
+      totalAmount: 1500.00,
+    ),
+    CreditCardWidget(
+      cardTitle: 'Business Card',
+      cardNumber: '5678',
+      cardHolder: 'Jane Smith',
+      expiryDate: '06/23',
+      cardColor: Colors.greenAccent,
+      totalAmount: 2500.00,
+    ),
+    // Add more CreditCardData entries as needed
+  ];
+
 
   double getTotalAmount(List<double> amountList){
     double temp=0;
@@ -249,63 +272,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height*.02,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      child: Text('Total Amount:  ',style: TextStyle(fontSize: 18),),
-                    ),
-                    Container(
-                      child: Text('\$${double.parse(totalAmount.toStringAsFixed(2))}',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                    ),
-
-                  ],
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height*.03,
-                ),
                 Container(
-                  height: MediaQuery.of(context).size.height *.3,
-                  child: BarChart(
-                    BarChartData(
-                      groupsSpace: 20,
-                      alignment: BarChartAlignment.center,
-                      maxY: maxY,
-                      minY: 0,
-                      borderData: FlBorderData(
-                        show: false,
-                      ),
-                      titlesData: FlTitlesData(
-                          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          bottomTitles: AxisTitles(sideTitles: SideTitles(getTitlesWidget: getBottomTitles,showTitles: true))
-                      ),
-                      gridData: FlGridData(show: false),
-                      barGroups: List.generate(
-                        expenseProvider.listAmount.length,
-                            (index) => BarChartGroupData(
-                          x: index,
-                          barRods: [
-                            BarChartRodData(
-                              color: Colors.grey.shade800,
-                              toY: double.parse(expenseProvider.listAmount[index].toStringAsFixed(2)),
-                              width: 10*2.5,
-                              borderRadius: BorderRadius.circular(4),
-                              backDrawRodData: BackgroundBarChartRodData(
-                                color: Colors.white.withOpacity(0.8),
-                                toY: maxY,
-                                show: true,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                    height: 300,
+                    child: MultiCardSlider(cards: creditCards)
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height*.02,
@@ -340,56 +309,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               borderRadius: BorderRadius.circular(20),
                               color: Colors.white70
                           ),
-                          child: Column(
-                            children: List.generate(
-                              expenseProvider.expenseList.length< 4 ? expenseProvider.expenseList.length : 4,
-                                  (index) {
-                                return Container(
-                                  margin: EdgeInsets.symmetric(vertical: 2,horizontal: 2),
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: expenseProvider.expenseList[index].isExpense ? Colors.orange.withOpacity(0.1): Colors.green.withOpacity(0.1)
+                          child: YourExpenseListWidget(expenseList: expenseProvider.expenseList,),
 
-                                  ),
-                                  child: ListTile(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20)
-                                    ),
-                                    title: Row(
-                                      children: [
-                                        Container(
-                                          child: Column(
-                                            children: [
-                                              Text(expenseProvider.expenseList[index].name),
-                                              Text(convertDateTimeToString(expenseProvider.expenseList[index].dateTime))
-                                            ],
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        Container(
-                                          width: 100,
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
-                                              expenseProvider.expenseList[index].isExpense ? Text('-\$${double.parse(expenseProvider.expenseList[index].amount.toStringAsFixed(2))}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,)) : Text('+\$${double.parse(expenseProvider.expenseList[index].amount.toStringAsFixed(2))}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,)),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                children: [
-                                                  Icon(Icons.location_on,size: 11,color: Colors.grey.shade700,),
-                                                  Text('${expenseProvider.expenseList[index].location}',style: TextStyle(fontSize: 11,color: Colors.grey.shade600),),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
+
+
                       ),
                     ],
                   ),

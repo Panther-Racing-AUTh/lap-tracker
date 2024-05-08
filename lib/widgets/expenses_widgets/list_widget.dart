@@ -19,39 +19,15 @@ class ListPage extends StatelessWidget {
         ),
         title: Text('List Page'),
       ),
-      body:ListView.builder(
-        itemCount: expenseProvider.expenseList.length ,
-        padding: EdgeInsets.symmetric(vertical: 2),
-        itemBuilder: (context, index) {
-          return Container(
-            margin: EdgeInsets.symmetric(vertical: 2,horizontal: 3),
-            padding: EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-                color: Colors.black26.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20)
-            ),
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)
-              ),
-              title: Row(
-                children: [
-                  Container(
-                    child: Column(
-                      children: [
-                        Text(expenseProvider.expenseList[index].name),
-                        Text(convertDateTimeToString(expenseProvider.expenseList[index].dateTime))
-                      ],
-                    ),
-                  ),
-                  Spacer(),
-                  Text('\$${double.parse(expenseProvider.expenseList[index].amount.toStringAsFixed(2))}')
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+      body: Container(
+          margin: EdgeInsets.symmetric(vertical: 2,horizontal: 3),
+          padding: EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+              color: Colors.black26.withOpacity(0.04),
+              borderRadius: BorderRadius.circular(20)
+          ),
+          child: YourExpenseListWidget(expenseList: expenseProvider.expenseList)
+      )
 
     );
   }
