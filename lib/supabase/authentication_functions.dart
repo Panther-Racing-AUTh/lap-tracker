@@ -156,8 +156,8 @@ Future<void> signInWithOAuth(BuildContext context,
     }
   });
   // _googleSignInWeb.signInSilently();
-
-  final googleUser = await _googleSignInWeb.signInSilently();
+  print(0);
+  final googleUser = await googleSignIn.signIn();
   print(1);
   final googleAuth = await googleUser!.authentication;
   print(2);
@@ -172,7 +172,18 @@ Future<void> signInWithOAuth(BuildContext context,
   //   throw 'No Access Token found.';
   // }
   print(5);
-
+  await _googleSignInWeb.signIn().then((result) {
+    result?.authentication.then((googleKey) {
+      print("-------------------");
+      print(googleKey.accessToken);
+      print(googleKey.idToken);
+      print(_googleSignInWeb.currentUser?.displayName);
+    }).catchError((err) {
+      print('inner error');
+    });
+  }).catchError((err) {
+    print('error occured');
+  });
   if (idToken == null) {
     throw 'No ID Token found.';
   }
@@ -193,6 +204,7 @@ Future<void> signInWithOAuth(BuildContext context,
       }
     }),
   );
+  print('done with signing in');
 }
 
 Future<String> getUserRole({required int id}) async {

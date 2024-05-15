@@ -30,7 +30,7 @@ dependencies:
   url_launcher: ^6.1.10
   supabase_flutter: ^1.0.0
   flutter_web_auth: ^0.5.0
-  google_sign_in:
+  google_sign_in: ^6.2.1
   faker: ^2.0.0
   syncfusion_flutter_datagrid: ^21.2.10
   video_player: ^2.4.10
@@ -41,7 +41,7 @@ dependencies:
   quiver: ^3.2.1
   graphic: ^1.0.1
   image_picker: ^0.8.6+2
-  http: ^0.13.5
+  http: ^0.13.6
   syncfusion_flutter_charts: 
   syncfusion_flutter_sliders: 
   syncfusion_flutter_core:

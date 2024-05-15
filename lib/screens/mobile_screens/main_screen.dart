@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 import '../../widgets/block_widget.dart';
 import '../../widgets/main_appbar.dart';
 
-
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -27,9 +26,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static const bool color = true;
 
-
-  void _showAccountPopupMenu(BuildContext context,int viewIndex) {
-
+  void _showAccountPopupMenu(BuildContext context, int viewIndex) {
     late bool getBool;
     final RenderBox button = context.findRenderObject() as RenderBox;
     final Offset buttonPosition = button.localToGlobal(Offset.zero);
@@ -38,85 +35,101 @@ class _MainScreenState extends State<MainScreen> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    final double dx = screenWidth ;
+    final double dx = screenWidth;
     final double dy = 100;
 
     showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(dx, dy, dx, dy),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20)
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       items: [
         PopupMenuItem<String>(
-
           value: 'Option 1',
           onTap: () {
-            setState(() {
-
-            });
-            if(viewIndex==DrawerIndexValue.home.getInt()){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(),));
-            }else{
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfileScreen(),));
+            setState(() {});
+            if (viewIndex == DrawerIndexValue.home.getInt()) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(),
+                  ));
+            } else {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(),
+                  ));
             }
           },
           child: Row(
-
             children: [
               Icon(Icons.account_circle),
-              SizedBox(width: 10,),
+              SizedBox(
+                width: 10,
+              ),
               Text('Profile')
             ],
           ),
-
         ),
         PopupMenuItem<String>(
-
           value: 'Option 1',
           onTap: () {
-            setState(() {
+            setState(() {});
 
-            });
-
-            if(viewIndex==DrawerIndexValue.home.getInt()){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(),));
-            }else{
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SettingsScreen(),));
-            }          },
+            if (viewIndex == DrawerIndexValue.home.getInt()) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingsScreen(),
+                  ));
+            } else {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingsScreen(),
+                  ));
+            }
+          },
           child: Row(
             children: [
               Icon(Icons.settings),
-              SizedBox(width: 10,),
+              SizedBox(
+                width: 10,
+              ),
               Text('Settings')
             ],
           ),
-
         ),
         PopupMenuItem<String>(
-
           value: 'Option 1',
           onTap: () {
-            setState(() {
+            setState(() {});
 
-            });
-
-            if(viewIndex==DrawerIndexValue.home.getInt()){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AboutScreen(),));
-            }else{
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AboutScreen(),));
-            }            },
+            if (viewIndex == DrawerIndexValue.home.getInt()) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AboutScreen(),
+                  ));
+            } else {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AboutScreen(),
+                  ));
+            }
+          },
           child: Row(
             children: [
               Icon(Icons.info),
-              SizedBox(width: 10,),
+              SizedBox(
+                width: 10,
+              ),
               Text('About')
             ],
           ),
-
         ),
         PopupMenuItem<String>(
-
           value: 'Option 1',
           onTap: () {
             setState(() {
@@ -126,31 +139,25 @@ class _MainScreenState extends State<MainScreen> {
           child: Row(
             children: [
               Icon(Icons.logout),
-              SizedBox(width: 10,),
+              SizedBox(
+                width: 10,
+              ),
               Text('Logout`')
             ],
           ),
-
         ),
-
       ],
     ).then((value) {
       if (value != null) {
-        setState(() {
-
-        });
+        setState(() {});
       }
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     AppSetup appSetup = Provider.of<AppSetup>(context);
-    SettingsProvider settingsProvider=Provider.of<SettingsProvider>(context);
-
-
+    SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
 
     final landscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
@@ -208,196 +215,450 @@ class _MainScreenState extends State<MainScreen> {
       ),
     ];
 
-    return Scaffold(
-          appBar: AppBar(
-
-            title: Text(panther),
-            actions: [
-              GestureDetector(
-                  onTap: () {
-                    _showAccountPopupMenu(context,DrawerIndexValue.home.getInt());
-                  },
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(25)
-                    ),
-                    child: Image.asset('assets/panther_logo_transparent.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.account_circle,size: 40,),),
-                  )
-              )
-            ],
-          ),
-          backgroundColor: settingsProvider.isNewHomepage ? Color(-16289889) : Colors.white,
-          drawer: DrawerModel(context,DrawerIndexValue.home.getInt()),
-          // The main menu icons
-          body: ChangeNotifierProvider(
-            create: (context) => SettingsProvider(),
-            builder: (context, child) => settingsProvider.isNewHomepage ? Container(
-              child: Stack(
-                  children:[
-                    ListView(
-
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 30.0),
-                          child: CutsomCarouselWidget(height: 150,itemList: getRoleList(role: appSetup.role)['item_list'],iconList: getRoleList(role: appSetup.role)['icon_list'],decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            gradient: LinearGradient(colors: [Colors.grey.shade700,Colors.grey.shade200],begin: Alignment.topLeft,end: Alignment.bottomRight),
-                          ),
-                            textStyle: TextStyle(
-                                fontSize: 20
-                            ),
-                          ),
+    return (appSetup.role != '')
+        ? Scaffold(
+            appBar: AppBar(
+              title: Text(panther),
+              actions: [
+                GestureDetector(
+                    onTap: () {
+                      _showAccountPopupMenu(
+                          context, DrawerIndexValue.home.getInt());
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(25)),
+                      child: Image.asset(
+                        'assets/panther_logo_transparent.png',
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.account_circle,
+                          size: 40,
                         ),
-                        Container(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Column(
-                              children: [
-                                Center(child: Text('Data',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                  child: Row(
-                                    children: [
-                                      Spacer(),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                                        child: GestureDetector(
-                                            onTap: () {
-                                            },
-                                            child: Text('See All')
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  height: 300,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.5),
-                                      borderRadius: BorderRadius.circular(25)
-                                  ),
-                                  margin: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Column(
-                                    children: [
-
-
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Column(
-                              children: [
-                                Center(child: Text('Data',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                  child: Row(
-                                    children: [
-                                      Spacer(),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                                        child: GestureDetector(
-                                            onTap: () {
-                                            },
-                                            child: Text('See All')
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  height: 300,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.5),
-                                      borderRadius: BorderRadius.circular(25)
-                                  ),
-                                  margin: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Column(
-                                    children: [
-
-
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-
-                      ],
-                    ),
-                  ]
-
-
-              ),
-            ) :
-            Container(
-              padding: const EdgeInsets.all(25),
-              //Created a big column that includes the 6 menu boxes
-              child: GridView(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: landscape ? 3 : 2,
-                  mainAxisSpacing: 50,
-                  crossAxisSpacing: 40,
-                  childAspectRatio: 0.7,
-                ),
-                scrollDirection: Axis.vertical,
-                children:
-                dynamicBlocks(allBlocks: allBlocks, role: appSetup.role),
-              ),
+                      ),
+                    ))
+              ],
             ),
-          )
-        );
+            backgroundColor: settingsProvider.isNewHomepage
+                ? Color(-16289889)
+                : Colors.white,
+            drawer: DrawerModel(context, DrawerIndexValue.home.getInt()),
+            // The main menu icons
+            body: ChangeNotifierProvider(
+              create: (context) => SettingsProvider(),
+              builder: (context, child) => settingsProvider.isNewHomepage
+                  ? Container(
+                      child: Stack(children: [
+                        ListView(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 30.0),
+                              child: CutsomCarouselWidget(
+                                height: 150,
+                                itemList: getRoleList(
+                                    role: appSetup.role)['item_list'],
+                                iconList: getRoleList(
+                                    role: appSetup.role)['icon_list'],
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  gradient: LinearGradient(
+                                      colors: [
+                                        Colors.grey.shade700,
+                                        Colors.grey.shade200
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight),
+                                ),
+                                textStyle: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Column(
+                                  children: [
+                                    Center(
+                                        child: Text(
+                                      'Data',
+                                      style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: Row(
+                                        children: [
+                                          Spacer(),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10, horizontal: 20),
+                                            child: GestureDetector(
+                                                onTap: () {},
+                                                child: Text('See All')),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 300,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.5),
+                                          borderRadius:
+                                              BorderRadius.circular(25)),
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 10),
+                                      child: Column(
+                                        children: [],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Column(
+                                  children: [
+                                    Center(
+                                        child: Text(
+                                      'Data',
+                                      style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: Row(
+                                        children: [
+                                          Spacer(),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10, horizontal: 20),
+                                            child: GestureDetector(
+                                                onTap: () {},
+                                                child: Text('See All')),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 300,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.5),
+                                          borderRadius:
+                                              BorderRadius.circular(25)),
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 10),
+                                      child: Column(
+                                        children: [],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ]),
+                    )
+                  : Container(
+                      padding: const EdgeInsets.all(25),
+                      //Created a big column that includes the 6 menu boxes
+                      child: GridView(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: landscape ? 3 : 2,
+                          mainAxisSpacing: 50,
+                          crossAxisSpacing: 40,
+                          childAspectRatio: 0.7,
+                        ),
+                        scrollDirection: Axis.vertical,
+                        children: dynamicBlocks(
+                            allBlocks: allBlocks, role: appSetup.role),
+                      ),
+                    ),
+            ))
+        : Center(child: CircularProgressIndicator());
   }
 }
 
-Map<String,dynamic> getRoleList({required String role}){
-  Map<String,dynamic> tempMap={
-    'item_list' : [],
-    'icon_list' : [],
+Map<String, dynamic> getRoleList({required String role}) {
+  Map<String, dynamic> tempMap = {
+    'item_list': [],
+    'icon_list': [],
   };
-  switch(role){
+  switch (role) {
     case 'admin':
-      tempMap['item_list']= ['Profile','Chat','Data','Calendar','Chart','Admin Panel','Settings'];
-      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.chat,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.admin_panel_settings,size: 35,),Icon(Icons.settings,size: 35,)];
+      tempMap['item_list'] = [
+        'Profile',
+        'Chat',
+        'Data',
+        'Calendar',
+        'Chart',
+        'Admin Panel',
+        'Settings'
+      ];
+      tempMap['icon_list'] = [
+        Icon(
+          Icons.account_circle,
+          size: 35,
+        ),
+        Icon(
+          Icons.chat,
+          size: 35,
+        ),
+        Icon(
+          Icons.data_object,
+          size: 35,
+        ),
+        Icon(
+          Icons.calendar_month,
+          size: 35,
+        ),
+        Icon(
+          Icons.bar_chart,
+          size: 35,
+        ),
+        Icon(
+          Icons.admin_panel_settings,
+          size: 35,
+        ),
+        Icon(
+          Icons.settings,
+          size: 35,
+        )
+      ];
     case 'engineer':
-      tempMap['item_list']= ['Profile','Chat','Data','Calendar','Chart','Settings'];
-      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.chat,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.settings,size: 35,)];
+      tempMap['item_list'] = [
+        'Profile',
+        'Chat',
+        'Data',
+        'Calendar',
+        'Chart',
+        'Settings'
+      ];
+      tempMap['icon_list'] = [
+        Icon(
+          Icons.account_circle,
+          size: 35,
+        ),
+        Icon(
+          Icons.chat,
+          size: 35,
+        ),
+        Icon(
+          Icons.data_object,
+          size: 35,
+        ),
+        Icon(
+          Icons.calendar_month,
+          size: 35,
+        ),
+        Icon(
+          Icons.bar_chart,
+          size: 35,
+        ),
+        Icon(
+          Icons.settings,
+          size: 35,
+        )
+      ];
     case 'chief_engineer':
-      tempMap['item_list']= ['Profile','Chat','Data','Calendar','Chart','Settings'];
-      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.chat,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.settings,size: 35,)];
+      tempMap['item_list'] = [
+        'Profile',
+        'Chat',
+        'Data',
+        'Calendar',
+        'Chart',
+        'Settings'
+      ];
+      tempMap['icon_list'] = [
+        Icon(
+          Icons.account_circle,
+          size: 35,
+        ),
+        Icon(
+          Icons.chat,
+          size: 35,
+        ),
+        Icon(
+          Icons.data_object,
+          size: 35,
+        ),
+        Icon(
+          Icons.calendar_month,
+          size: 35,
+        ),
+        Icon(
+          Icons.bar_chart,
+          size: 35,
+        ),
+        Icon(
+          Icons.settings,
+          size: 35,
+        )
+      ];
     case 'hands_on_engineer':
-      tempMap['item_list']= ['Profile','Chat','Data','Calendar','Chart','Settings'];
-      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.chat,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.settings,size: 35,)];
+      tempMap['item_list'] = [
+        'Profile',
+        'Chat',
+        'Data',
+        'Calendar',
+        'Chart',
+        'Settings'
+      ];
+      tempMap['icon_list'] = [
+        Icon(
+          Icons.account_circle,
+          size: 35,
+        ),
+        Icon(
+          Icons.chat,
+          size: 35,
+        ),
+        Icon(
+          Icons.data_object,
+          size: 35,
+        ),
+        Icon(
+          Icons.calendar_month,
+          size: 35,
+        ),
+        Icon(
+          Icons.bar_chart,
+          size: 35,
+        ),
+        Icon(
+          Icons.settings,
+          size: 35,
+        )
+      ];
     case 'member':
-      tempMap['item_list']= ['Profile','Chat','Data','Calendar','Chart','Settings'];
-      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.chat,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.settings,size: 35,)];
+      tempMap['item_list'] = [
+        'Profile',
+        'Chat',
+        'Data',
+        'Calendar',
+        'Chart',
+        'Settings'
+      ];
+      tempMap['icon_list'] = [
+        Icon(
+          Icons.account_circle,
+          size: 35,
+        ),
+        Icon(
+          Icons.chat,
+          size: 35,
+        ),
+        Icon(
+          Icons.data_object,
+          size: 35,
+        ),
+        Icon(
+          Icons.calendar_month,
+          size: 35,
+        ),
+        Icon(
+          Icons.bar_chart,
+          size: 35,
+        ),
+        Icon(
+          Icons.settings,
+          size: 35,
+        )
+      ];
     case 'coordinator':
-      tempMap['item_list']= ['Profile','Chat','Data','Calendar','Chart','Settings'];
-      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.chat,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.settings,size: 35,)];
+      tempMap['item_list'] = [
+        'Profile',
+        'Chat',
+        'Data',
+        'Calendar',
+        'Chart',
+        'Settings'
+      ];
+      tempMap['icon_list'] = [
+        Icon(
+          Icons.account_circle,
+          size: 35,
+        ),
+        Icon(
+          Icons.chat,
+          size: 35,
+        ),
+        Icon(
+          Icons.data_object,
+          size: 35,
+        ),
+        Icon(
+          Icons.calendar_month,
+          size: 35,
+        ),
+        Icon(
+          Icons.bar_chart,
+          size: 35,
+        ),
+        Icon(
+          Icons.settings,
+          size: 35,
+        )
+      ];
     case 'default':
-      tempMap['item_list']= ['Profile','Settings'];
-      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.settings,size: 35,)];
+      tempMap['item_list'] = ['Profile', 'Settings'];
+      tempMap['icon_list'] = [
+        Icon(
+          Icons.account_circle,
+          size: 35,
+        ),
+        Icon(
+          Icons.settings,
+          size: 35,
+        )
+      ];
     case 'data_analyst':
-      tempMap['item_list']= ['Profile','Data','Calendar','Chart','Settings'];
-      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.settings,size: 35,)];
-  };
+      tempMap['item_list'] = [
+        'Profile',
+        'Data',
+        'Calendar',
+        'Chart',
+        'Settings'
+      ];
+      tempMap['icon_list'] = [
+        Icon(
+          Icons.account_circle,
+          size: 35,
+        ),
+        Icon(
+          Icons.data_object,
+          size: 35,
+        ),
+        Icon(
+          Icons.calendar_month,
+          size: 35,
+        ),
+        Icon(
+          Icons.bar_chart,
+          size: 35,
+        ),
+        Icon(
+          Icons.settings,
+          size: 35,
+        )
+      ];
+  }
+  ;
   return tempMap;
-
 }
-
-
 
 dynamicBlocks({required List<Widget> allBlocks, required String role}) {
   List<Widget> l = [];
