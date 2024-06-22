@@ -46,7 +46,7 @@ ThemeData darkTheme(MaterialColor c) => ThemeData(
 
       brightness: Brightness.dark,
       textTheme: TextTheme(
-        headline6: TextStyle(
+        headlineMedium: TextStyle(
           color: Colors.white,
         ),
       ),
@@ -67,7 +67,7 @@ ThemeData darkTheme(MaterialColor c) => ThemeData(
 ThemeData lightTheme(MaterialColor c) => ThemeData(
       primarySwatch: c,
       textTheme: TextTheme(
-        headline6: TextStyle(
+        headlineMedium: TextStyle(
           color: Colors.black,
         ),
       ),

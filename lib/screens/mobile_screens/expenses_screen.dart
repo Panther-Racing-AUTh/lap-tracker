@@ -1,24 +1,18 @@
-import 'dart:math';
-
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/about_screen.dart';
-import 'package:flutter_complete_guide/models/drawer_model.dart';
-import 'package:flutter_complete_guide/providers/expenses_providers/expense_provider.dart';
-import 'package:flutter_complete_guide/models/expenses_models/expense_item_model.dart';
-import 'package:flutter_complete_guide/widgets/expenses_widgets/carousel_widget.dart';
-import 'package:flutter_complete_guide/widgets/expenses_widgets/form_widget.dart';
-import 'package:flutter_complete_guide/widgets/expenses_widgets/list_widget.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/profile_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/settings_screen.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
+import 'package:flutter_complete_guide/widgets/expenses_widgets/account/multi_account_widget.dart';
+import 'package:flutter_complete_guide/widgets/new_expenses_widget/form_page.dart';
+import 'package:flutter_complete_guide/providers/expenses_providers/expense_data.dart';
 import 'package:provider/provider.dart';
 
-  class ExpensesScreen extends StatefulWidget {
+class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
 
   @override
@@ -26,38 +20,15 @@ import 'package:provider/provider.dart';
 }
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
+
+
+
   TextEditingController nameEditor=TextEditingController(text: '');
   TextEditingController amountEditor=TextEditingController();
   bool isSaveable=false;
 
   double totalAmount=0;
   double maxY=500;
-  List<ExpenseItem> expensitem=[
-    ExpenseItem(name: 'training', amount: Random().nextDouble()*100, dateTime: DateTime.now().add(Duration(days: 1)), location: "none",expenseType: 'Engineering',isExpense: false),
-    ExpenseItem(name: 'shopping', amount: Random().nextDouble()*100, dateTime: DateTime.now().add(Duration(days: 2)), location: "none",expenseType: 'Engineering',isExpense: true),
-    ExpenseItem(name: 'training', amount: Random().nextDouble()*100, dateTime: DateTime.now().add(Duration(days: 3)), location: "none",expenseType: 'Engineering',isExpense: false),
-  ];
-
-
-  final List<CreditCardWidget> creditCards = [
-    CreditCardWidget(
-      cardTitle: 'My Credit Card',
-      cardNumber: '1234',
-      cardHolder: 'John Doe',
-      expiryDate: '12/24',
-      cardColor: Colors.blueAccent,
-      totalAmount: 1500.00,
-    ),
-    CreditCardWidget(
-      cardTitle: 'Business Card',
-      cardNumber: '5678',
-      cardHolder: 'Jane Smith',
-      expiryDate: '06/23',
-      cardColor: Colors.greenAccent,
-      totalAmount: 2500.00,
-    ),
-    // Add more CreditCardData entries as needed
-  ];
 
 
   double getTotalAmount(List<double> amountList){
@@ -83,10 +54,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
   @override
   void initState(){
-    final ExpenseData expenseProvider=Provider.of<ExpenseData>(context,listen: false);
-    if(expenseProvider.expenseList.isEmpty){
-      expenseProvider.expenseList.addAll(expensitem);
-    }
+    final ExpenseItemProvider expenseProvider=Provider.of<ExpenseItemProvider>(context,listen: false);
+
     expenseProvider.getAllAmountList();
     maxY=getMaxY(expenseProvider.listAmount,maxY);
     totalAmount=getTotalAmount(expenseProvider.listAmount);
@@ -111,6 +80,20 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       isSaveable = amountEditor.text.isNotEmpty && nameEditor.text!='';
     });
   }
+
+  String formatDoubleWithTwoDecimals(double value) {
+    // Convert the double value to a string with two decimal places
+    String formattedValue = value.toStringAsFixed(2);
+
+    // Check if the formatted value has exactly two decimal places
+    if (formattedValue.contains('.') && formattedValue.split('.')[1].length == 1) {
+      // Add a trailing zero to the formatted value (e.g., "12.5" becomes "12.50")
+      formattedValue += '0';
+    }
+
+    return formattedValue;
+  }
+
   void _showAccountPopupMenu(BuildContext context,int viewIndex) {
 
     late bool getBool;
@@ -135,9 +118,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
           value: 'Option 1',
           onTap: () {
-            setState(() {
 
-            });
             if(viewIndex==DrawerIndexValue.home.getInt()){
               Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(),));
             }else{
@@ -158,9 +139,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
           value: 'Option 1',
           onTap: () {
-            setState(() {
 
-            });
 
             if(viewIndex==DrawerIndexValue.home.getInt()){
               Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(),));
@@ -180,9 +159,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
           value: 'Option 1',
           onTap: () {
-            setState(() {
 
-            });
 
             if(viewIndex==DrawerIndexValue.home.getInt()){
               Navigator.push(context, MaterialPageRoute(builder: (context) => AboutScreen(),));
@@ -202,9 +179,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
           value: 'Option 1',
           onTap: () {
-            setState(() {
-              signOut(context);
-            });
+            signOut(context);
+
           },
           child: Row(
             children: [
@@ -219,129 +195,85 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       ],
     ).then((value) {
       if (value != null) {
-        setState(() {
 
-        });
       }
     });
   }
 
-  String formatDoubleWithTwoDecimals(double value) {
-    // Convert the double value to a string with two decimal places
-    String formattedValue = value.toStringAsFixed(2);
-
-    // Check if the formatted value has exactly two decimal places
-    if (formattedValue.contains('.') && formattedValue.split('.')[1].length == 1) {
-      // Add a trailing zero to the formatted value (e.g., "12.5" becomes "12.50")
-      formattedValue += '0';
-    }
-
-    return formattedValue;
-  }
 
   @override
   Widget build(BuildContext context) {
-    final ExpenseData expenseProvider=Provider.of<ExpenseData>(context,listen: false);
-    return ChangeNotifierProvider(create: (context) => ExpenseData(),builder: (context, child) => Scaffold(
-      appBar: AppBar(
-        title: Text(expenses),
-        actions: [
-          GestureDetector(
-              onTap: () {
-                _showAccountPopupMenu(context, DrawerIndexValue.expenses.getInt());
-              },
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(25)
-                ),
-                child: Image.asset('assets/panther_logo_transparent.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.account_circle,size: 40,),),
-              )
-          )
-        ],
-      ),
-      drawer: DrawerModel(context,DrawerIndexValue.expenses.getInt()),
+    final ExpenseItemProvider expenseProvider=Provider.of<ExpenseItemProvider>(context,listen: false);
+    final ExpenseAccountProvider expenseAccountProvider=Provider.of<ExpenseAccountProvider>(context,listen: false);
 
-      body: Stack(
-        children: [
-          Container(
-            color: Colors.grey.shade300,
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                Container(
-                    height: 300,
-                    child: MultiCardSlider(cards: creditCards)
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height*.02,
-                ),
-                Container(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 0),
-                        child: Row(
-                          children: [
-                            Spacer(),
-                            MaterialButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                onPressed: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListPage(),));
-                                  setState(() {
-
-                                  });
-                                },
-                                child: Text('See all')
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-
-                          height: MediaQuery.of(context).size.height * .47 ,
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white70
-                          ),
-                          child: YourExpenseListWidget(expenseList: expenseProvider.expenseList,),
+    return ChangeNotifierProvider(create: (context) => ExpenseAccountProvider(),builder: (context, child) => Scaffold(
 
 
+      body: Scaffold(
+        appBar: AppBar(
 
-                      ),
-                    ],
+          title: Text(expenses),
+          actions: [
+            GestureDetector(
+                onTap: () {
+                  _showAccountPopupMenu(context, DrawerIndexValue.chat.getInt());
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(25)
                   ),
+                  child: Image.asset('assets/panther_logo_transparent.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.account_circle,size: 40,),),
                 )
-              ],
+            )
+          ],
+        ),
+        drawer: DrawerModel(context,DrawerIndexValue.chat.getInt()),
+
+        body: Stack(
+          children: [
+            Container(
+              color: Colors.grey.shade300,
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Container(
+                      height: MediaQuery.of(context).size.height,
+                      child: MultiExpenseAccountWidget(expenseAccounts: expenseAccountProvider.expenseAccountList)
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height*.02,
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          /*
+            /*
 
-           */
-          Positioned(
-            bottom: 16.0, // Adjust the bottom offset as needed
-            right: 16.0, // Adjust the right offset as needed
-            child: FloatingActionButton(
-              onPressed: () async{
-                print('Floating Action Button pressed!');
-                maxY=getMaxY(expenseProvider.listAmount,maxY);
-                totalAmount=getTotalAmount(expenseProvider.listAmount);
-                await Navigator.push(context, MaterialPageRoute(builder: (context) => FormPage(),));
-                setState(() {
-                  expenseProvider.getAllAmountList();
+             */
+            Positioned(
+              bottom: 16.0, // Adjust the bottom offset as needed
+              right: 16.0, // Adjust the right offset as needed
+              child: FloatingActionButton(
+                onPressed: () async{
+                  final ExpenseAccountProvider expenseAccountProvider =Provider.of<ExpenseAccountProvider>(context,listen: false);
+                  print('Floating Action Button pressed!');
+                  maxY=getMaxY(expenseProvider.listAmount,maxY);
                   totalAmount=getTotalAmount(expenseProvider.listAmount);
-                });
-              },
-              child: Icon(Icons.add), // You can change the icon as needed
+                  await Navigator.push(context, MaterialPageRoute(builder: (context) => FormPage(index: expenseAccountProvider.currentIndex,),));
+                  setState(() {
+                    expenseProvider.getAllAmountList();
+                    totalAmount=getTotalAmount(expenseProvider.listAmount);
+                  });
+                },
+                child: Icon(Icons.add), // You can change the icon as needed
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),);
   }

@@ -383,7 +383,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                           fontSize: 20,
                         ),
                         unselectedLabelTextStyle: TextStyle(
-                            color: Theme.of(context).textTheme.headline6!.color,
+                            color: Theme.of(context).textTheme.headlineMedium!.color,
                             fontSize: 20),
                         selectedIconTheme: IconThemeData(
                           color: Theme.of(context).primaryColor,
@@ -391,7 +391,7 @@ class _MainScreenDesktopState extends State<MainScreenDesktop> {
                         ),
                         unselectedIconTheme: IconThemeData(
                           size: 27,
-                          color: Theme.of(context).textTheme.headline6!.color,
+                          color: Theme.of(context).textTheme.headlineMedium!.color,
                         ),
                       ),
                     ),

@@ -23,7 +23,7 @@ class CutsomCarouselWidget extends StatefulWidget {
   TextStyle textStyle;
 
   List itemList;
-  List<Icon>? iconList;
+  List<dynamic>? iconList;
 
   CutsomCarouselWidget({super.key,required this.height,this.imageBackground,this.iconList,this.margin=EdgeInsets.zero,required this.itemList,this.axisDirection=Axis.horizontal,BoxDecoration? decoration,TextStyle? textStyle}): decoration = decoration ?? BoxDecoration(color: Colors.white), textStyle = textStyle ?? TextStyle();
 

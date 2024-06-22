@@ -45,9 +45,20 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
 
           centerTitle: true,
           title: Text('Weekly Report'),
-        ),
-        drawer: DrawerModel(context,DrawerIndexValue.weekly_report.getInt()),
+          actions: [
+            Padding(
+              padding: EdgeInsets.all(12),
+              child: GestureDetector(
+                onTap: () {
 
+                },
+                child: Icon(Icons.upload),
+              ),
+            )
+          ],
+        ),
+        drawer: DrawerModel(context,DrawerIndexValue.weekly_report.getInt()), 
+        
         body: Container(
           child: Center(
             child: Column(
