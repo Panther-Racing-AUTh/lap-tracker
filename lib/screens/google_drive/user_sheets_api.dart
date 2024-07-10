@@ -1,19 +1,23 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:gsheets/gsheets.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart' as provider;
 
 class UserSheetsApi {
-  static final _spreadsheetId = '1M8DSdypMfUjMLTzilC-kJRmST98ATOvl0W_HY7RysT4';
+  static final _spreadsheetId = '1pZzEa5TYPNe7um1LR0pvg3hrFOzQaS8qpENM2pek3fE';
   static const _credentials = r''' 
     {
       "type": "service_account",
-      "project_id": "utility-pad-425713-t7",
-      "private_key_id": "f3b85ae9b5a1115f28f7d5ec01ffb8c15deea4c5",
-      "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDNd5Jn7dSG+ma5\ntFvZF8ID8m+ibycRpoGDJGpBo30KA+k346iyjERgf+CPp9tIVaJueW2beJq51tdk\n6spr7yXL1dr0t+JfwTQEYc1GVvK1u/RKhjL4dL+pMXp1v1kd2KKQ3A2Zcn2LFB8F\n8wcOueB8YwFhSudX4a012oJRuWVtEVYIg2NILTZuZmSPPUn+QSXQK5cKk0m5hYNY\nkXT2f2kms11F9HAiTJHhf+2LLPo29TLiO1csGm3ggn+ffvEa/kA00fvhzT0RDxhF\nZRfSI1j2FpBoWtTprfUTdjBaQYzl+TYot5hK0sj8bD8JJQMbQ47xDqil5ivvLFUW\nR7X6th2PAgMBAAECggEAL8WE00gvOUDgAH5oOoX1FKDaBszMKyTpCNo/IErISDtX\njqiOcRD+1ub0icIP0HYkoYX3D4ZPhzTl+K9EaCr+wTFUSsC0T+omU3x/00JlBQ8R\nwgAIus6+PzLjU5wtNqzHQ2H+gXZmrR79BY+XTPu3r4P/bqURO9QbRyGqWiD+bYiH\nLyO1FtAz3piYwyAY2p09XwisSmw+0O3+T5y7xqvLaa2pK2hCLPHxIBam8UhnD+Ah\nOG1iMsu3Qt/mV0ANLkc4Vrsx6QY114oiS6Tn9OMRJrPRtldtr4iWG/6NGYR9v4l2\nsrrp3DUw+t5b9d5iIPieef+ARR304QnHKQAt/LUjzQKBgQDm6lXvFAbwTqlABFy2\niDI13QRRxMFu2h5vUOcgtvJmzc3XtWCoX4qzOGVDXF1ZFYQOEQ12ySKREnwxllnY\nTzxvh2H6tOkBJ7xGtWPy9h1bSOdPG5Nke6kWOPBm8Xqht2VdL9LfZs5stalfWWc8\nnEqlLrQlC2PtTZrnlZtyq1d5IwKBgQDjyYd+QjCg4m8OQLAbQd+6StXVFbGTr3LI\nxQZZIWR3wC1n6RNwT1fdZmag4FrGaj6QVyEMDpAq/DCsJoXNdvL0gXYTXeWjnh/K\nFOCiDZOYOKFqvpNw0RrPTaEtu7ZBoRZVlFbyyKGPoGmH38B2qWXxHayFoESAlzDn\nlpvdnhhupQKBgBCILmbTdDu4Jf3jUg/vaEja7fg8seyRySQHEsUQ1AHwMhCDd8wW\nKwPxwa406qn6FF49ck1S0Rq5zBJwxTXrVlRVyPn+AcCHa79UNTerzyY97fGH8+F5\nyP1CTlPQbgst6h/l0J8V6Sl3SAz/hZidR+rTkSolyp2utKxn1Z08DyMpAoGAf9cC\nCRVCz3hllZ0ueQ2+b4JCgkWblOQ5yn3xMyKvjRm5IgFIXJbbHDG1VYK0z3ifRkjw\nDiE6PjWtZ2BzZb3lWt4xk2r2T56V/sc6zxhJhnv587ujagShREkwNUeNYUX0D/Gh\n3r5FFiOUNqKYFMC7qtfZlGE/MOApnUAEmBt7YNUCgYEAw0WZSWpAKcTTcn8aZetE\nIIHoL0Qz791jCPr42HSUjYW+JUD1e+aoC89I1KM2Vrb9Z5H4Wixhos4bOhOjBGGP\nC2qRaozzIVCur1jnykfYwSxUtw3K7/g30QgL067cpNv973T+1AUTk01/XTz8ePmH\nDSXQGBjVhK8SToMVRcS+iYA=\n-----END PRIVATE KEY-----\n",
-      "client_email": "gsheets@utility-pad-425713-t7.iam.gserviceaccount.com",
-      "client_id": "108222002735367407813",
+      "project_id": "tensile-medium-368722",
+      "private_key_id": "ec2d017746d5e1e9b037945799418547ec8015cd",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDDQ5iy7/i04V2G\n3d4vRMfrnNJholA9uI6grnThy9vV0kxQGdMwvBOjI0/JCGOz8/UNfaaIDzuQp9ID\nHEa3QnHF/vf8y3c2Tk1vFXGgx9I52qel5IrbwdB8m9kcrWWyNPKXr1j7NzKL8xto\nHSSir0DfRsnGrrDzFl3LsZgEIU+hVUP81NuvnL8nJTXwMTBQlrpMUMsJutfIXjWF\n3v4RRm+Acua+jnk8zR3A3Up43dV0FpBxgSehJ9g/su6wkN2l74Zpd8adwopdlPeR\n1PtfQXTIeSaWpeCYMOgu0oC4xExHU14zK0bIY7C5XmVEvdXjQo+TJY5bB6IBFOEE\nmg5oL5yBAgMBAAECggEABtnSa9XIUrVVAhg69UrbHlDDX15R5SZ6Z5gTXQA5a3I8\nT/OmAZ/ZqwfAQwAGun+41XM3Am9RYlEHCOmnMAMWaZFZa07KtRaweBEnKlJUdYfu\nyZ7gAdeWHGcd6hgJ2UOrDsgdzbuZLAiYqbGbEVOniaXqyqwipHbAjfbiS+PMzs7W\nm3O3GrNgCvldYCi0aiepPFKhWi8Uiblmj/Bay/4zUO1Dxz628Z6eGMZeaI6fR6vj\nJrfdxsaFTU7BtG0BLwyiZybamuQ3qfmdw9O9T8zCABP3m1fMUM28qKRxSIaCrKoA\nOeRIUL/Qu8nEZ/5g0i8CUCR0WZx+8oAR2HUdYOmWaQKBgQD9FiaLv5QRA0EGHRzO\nXfM2g+a336rL+UWFwHi/+eyqkrUkiclNJkaSmTwuTQe7K2VA7CKj8u57/znk9Jrg\n3WgetnCVEiGQfBahzsRCrG+eyVFuilJs3Mc6k6M9eYhju3ozU54NVXLjdiMUZdsV\nJEueQ1qNoxAQr7qv+gc52OTbOQKBgQDFgwrTNeJ+QVmCKvEGklb8AxpFLJph65O8\nMFhz2t5SB/coFxKOfAcuN1+DeFyOre7NDYsavu7TvzTxDaSsUvrWJzR6ZohLnul7\nVG0Sbgj0c3nAgLylR1ATS8ORkxBo84l20L5CFnoCe6LyX8sg/OK1OtUQxXSo0t/S\n/QXikimjiQKBgCU4KrcGl5ng5qEliuT2gBwWTcngxNd2czj2U0u4T4vOQ4F6GfaU\nmHBaxLTycx6dhSiFEZsW0Oe/Yx4+ssA7D2Lk5a2mmvUKqrFlHQvJHCk35hfhk7ma\nxlng+HLD+sDgA1qlA2tmk5zL9OC9EfkL+2rs8NY/ks9BaK0Ukhd5xD5RAoGBAJzM\nl39tu813m9OWu5n3+04+OFDKRBWQq8wupUn0a6K76B7Pkk/Dbv/lvdHlb7Vlp7rq\nEZC+G2PG3ASyTBTyG2h/3018sJ84HStnrt9+s2U9d1631QtxPcTT1QJwugpXrL3C\noghdR6dI9+dq3RvnJyOw/Q0/dInCPyaE8HMajivhAoGAJnBeMQ0z0YwLGvYENg5I\n+mdVeUzp9qkorI2p+ihzNxiiFjGbJAwPkWPNIPU9eLnBN8DIXgzgGskZjMdwKvFa\nXUrt1qQmQsz7TyeEQc5rEARKeMuMA50OWv4TAKB7zJcbFeJXimQI46/MI3ofsRTy\nuVla0Hf7832x6Gg9ZsEDW5Y=\n-----END PRIVATE KEY-----\n",
+      "client_email": "panther-gsheet-recap@tensile-medium-368722.iam.gserviceaccount.com",
+      "client_id": "115128944597052789491",
       "auth_uri": "https://accounts.google.com/o/oauth2/auth",
       "token_uri": "https://oauth2.googleapis.com/token",
       "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gsheets%40utility-pad-425713-t7.iam.gserviceaccount.com",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/panther-gsheet-recap%40tensile-medium-368722.iam.gserviceaccount.com",
       "universe_domain": "googleapis.com"
     }
   ''';
@@ -21,27 +25,49 @@ class UserSheetsApi {
   static final _gsheets = GSheets(_credentials);
 
   // Creating a Sheet.
-  static Worksheet? _userSheet;
+  static Worksheet? userSheet;
 
-  static Future init() async {
+  static Future init(BuildContext context) async {
     try {
-      final spreadsheet = await _gsheets.spreadsheet(_spreadsheetId);
-      _userSheet = await _getWorkSheet(spreadsheet, title: 'Users');
+      final appSetup=provider.Provider.of<AppSetup>(context,listen: false);
 
-      // Insert the pattern "Monday, Wednesday, Saturday" in the first row
-      final pattern = ["Monday", "Wednesday", "Saturday"];
-      await _userSheet!.values.insertRow(1, pattern);
+      final spreadsheet = await _gsheets.spreadsheet(_spreadsheetId);
+      userSheet = await _getWorkSheet(spreadsheet, title: appSetup.username);
+
+
+      // Generate the pattern for 3 weeks
+      final pattern = _generatePattern();
+
+      // Insert the pattern in the first row starting from the second column
+      await userSheet!.values.insertRow(1, pattern, fromColumn: 2);
+
 
       // Insert the user fields in the second row
       final userFields = UserFields.getFields();
-      await _userSheet!.values.insertRow(2, userFields);
+      await userSheet!.values.insertColumn(1,fromRow: 2, userFields);
+
+
     } catch (e) {
       print('init error $e');
     }
   }
 
-  static Future<Worksheet> _getWorkSheet(Spreadsheet spreadsheet,
-      {required String title}) async {
+  static List<String> _generatePattern() {
+    final days = ["Monday", "Wednesday", "Saturday"];
+    final pattern = <String>[];
+    final dateFormat = DateFormat('dd/MM');
+    final startDate = DateTime(2024,5,1);
+
+    for (int i = 0; i < 48 * 7; i++) {
+      final date = startDate.add(Duration(days: i));
+      if (days.contains(DateFormat('EEEE').format(date))) {
+        pattern.add('[${DateFormat('EEEE').format(date)}, ${DateFormat('dd/MM/yyyy').format(date)}]');
+      }
+    }
+    return pattern;
+  }
+
+  static Future<Worksheet> _getWorkSheet(Spreadsheet spreadsheet, {required String title}) async {
     try {
       return await spreadsheet.addWorksheet(title);
     } catch (e) {
@@ -49,17 +75,35 @@ class UserSheetsApi {
     }
   }
 
-  static Future insertUser(Map<String, dynamic> user) async {
-    if (_userSheet == null) return;
-    await _userSheet!.values.map.appendRow(user);
+  static Future<int> _findColumnIndexByKey(String key) async {
+    final headerRow = await userSheet!.values.row(1);
+    for (int i = 0; i < headerRow.length; i++) {
+      final compositeKey = headerRow[i];
+      //print(headerRow[i].toString());
+      if (compositeKey == '${key}') {
+        return i + 1; // Columns are 1-based index in GSheets
+      }
+    }
+    return -1; // Not found
   }
+
+  static Future insertUser(Worksheet? userSheet,Map<String, dynamic> user,String key) async {
+    if (userSheet == null) return;
+    final columnIndex = await _findColumnIndexByKey(key);
+    if (columnIndex == -1) {
+      print('Column with key $key not found.');
+      return;
+    }
+    await userSheet.values.map.insertColumn(columnIndex, user, fromRow: 2);
+  }
+
 }
 
 class UserFields {
-  static final String id = 'id';
-  static final String name = 'name';
-  static final String email = 'email';
-  static final String isBeginner = 'isBeginner';
+  static final String submit_date = 'Submit Date';
+  static final String recap_list = 'Recap List';
+  static final String future_list = 'Future List';
+  static final String message = 'Message';
 
-  static List<String> getFields() => [id, name, email, isBeginner];
+  static List<String> getFields() => [submit_date, recap_list, future_list, message];
 }

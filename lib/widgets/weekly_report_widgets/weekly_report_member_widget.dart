@@ -1,13 +1,17 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_complete_guide/models/weekly_report_models/weekly_report_item_date_model.dart';
 import 'package:flutter_complete_guide/models/weekly_report_models/weekly_report_item_date_model.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/providers/weekly_report_providers/weekly_report.dart';
+import 'package:flutter_complete_guide/screens/google_drive/user_sheets_api.dart';
 import 'package:flutter_complete_guide/widgets/calendar_widgets/edit_meeting_form_widget.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/weekly_report_files/models/checklist_model.dart';
 import 'package:flutter_complete_guide/supabase/weekly_report_functions.dart';
+import 'package:gsheets/gsheets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -33,9 +37,15 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
   RacingTeamRoles role=RacingTeamRoles.category;
   late DateTime _startDate;
   late DateTime _endDate;
+  late DateTime _nowDate;
 
   List<String> checkList=[];
   List<String> futureCheckList=[];
+
+
+  List<WeeklyReportItemList> weekList=[];
+
+
 
 
 
@@ -43,7 +53,51 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
   void initState(){
     _startDate=DateTime.now().subtract(Duration(days: (DateTime.now().weekday - 1)));
     _endDate=_startDate.add(Duration(days: 6));
+    _nowDate=checkDateTime();
     _initializeData();
+
+    _initializeGSheets();
+
+
+
+    setState(() {
+
+    });
+  }
+
+  Future<void> _initializeGSheets() async {
+    await UserSheetsApi.init(context);
+    setState(() {
+      // Update any state variables if necessary
+    });
+  }
+  Future<void> _initializeWeeklist(List<WeeklyReportItemList> tempList) async {
+    List<bool> checkBools=isInSpecificDay(tempList);
+
+    print('niaouuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu     ${checkBools.toString()}');
+
+    DateTime currentDate = DateTime.now();
+    DateTime monday = currentDate.subtract(Duration(days: (currentDate.weekday - 1)));
+    DateTime wednesday = currentDate.add(Duration(days: 3 - currentDate.weekday)); // Next Wednesday from the current week
+    DateTime saturday = currentDate.add(Duration(days: 6 - currentDate.weekday)); // Next Saturday from the current week
+    DateTime sunday = currentDate.add(Duration(days: 7 - currentDate.weekday)); // Next Sunday from the current week
+
+
+
+    if(checkBools[0] == false){
+      specificDates.add(monday);
+    }
+    if(checkBools[1] == false){
+      specificDates.add(wednesday);
+    }
+    if(checkBools[2] == false){
+      specificDates.add(saturday);
+    }
+    globalSelectedDate=specificDates.isNotEmpty ? specificDates.first : checkDateTime();
+
+    setState(() {
+
+    });
   }
 
   Future<void> _initializeData() async {
@@ -51,13 +105,18 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
     AppSetup appSetup = provider.Provider.of<AppSetup>(context, listen: false);
 
     weeklyReportProvider.setIsLoading(true);
-    final Map<String, dynamic> tempFetch=await getFirstWeeklyReportFromUserAscendingByDate(appSetup.supabase_id, false);
+    final List<Map<String, dynamic>> tempFetch=await getNumWeeklyReportsFromUserAscendingByDate(appSetup.supabase_id, false,3);
+    final List<WeeklyReportItemList> tempList=[] ;
+
     if(tempFetch.isNotEmpty){
-      final List<WeeklyReportItemList> tempList=[] ;
-      tempList.add(WeeklyReportItemList.fromMap(tempFetch));
-      isAlreadyReported = isInSpecificWeek(tempList, _startDate, _endDate);
+      for(var temp in tempFetch){
+        tempList.add(WeeklyReportItemList.fromMap(temp));
+      }
     }
     weeklyReportProvider.setIsLoading(false);
+    print("object agou");
+    await _initializeWeeklist(tempList);
+    isAlreadyReported = specificDates.isEmpty;
 
     // Check if a report exists for the current week
     // After initializing the data, call setState to rebuild the widget
@@ -112,6 +171,138 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
     },
     );
   }
+
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  DateTime now = DateTime.now();
+  DateTime? globalSelectedDate;
+  List<DateTime> specificDates = [];
+
+
+
+  Future<void> _showDateSelectionDialog() async {
+    DateTime? newSelectedDate = await showDialog<DateTime>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select a Date'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: specificDates.map((DateTime date) {
+              return ListTile(
+                title: Text(DateFormat('EEEE').format(date)),
+                onTap: () {
+                  Navigator.of(context).pop(date);
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+
+    if (newSelectedDate != null) {
+      setState(() {
+        globalSelectedDate = newSelectedDate;
+      });
+    }
+  }
+
+  DateTime checkDateTime() {
+    DateTime now = DateTime.now();
+
+    if (now.weekday == DateTime.monday ||
+        now.weekday == DateTime.wednesday ||
+        now.weekday == DateTime.saturday) {
+      return now;
+    } else if (now.weekday == DateTime.friday) {
+      return now.subtract(Duration(days: 2));
+    } else {
+      return now.subtract(Duration(days: 1));
+    }
+  }
+
+  Widget buildSpecificWeekDateContainer() {
+    return GestureDetector(
+      onTap: () async {
+        await _showDateSelectionDialog();
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            Center(
+              child: Text(
+                '${DateFormat('EEEE').format(globalSelectedDate!)}',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey.shade400,
+                ),
+              ),
+            ),
+            SizedBox(height: 4),
+            Container(
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.black,
+                  width: 1,
+                ),
+              ),
+              width: 130,
+              child: Center(
+                child: Text(
+                  DateFormat('d MMM yyyy').format(globalSelectedDate!),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  //                              GSHEET
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  void _addUser(Worksheet? userSheet) {
+    final user = {
+      UserFields.submit_date: DateFormat('EEEE dd/mm/yyyy').format(DateTime.now()),
+      UserFields.recap_list: jsonEncode(checkList),
+      UserFields.future_list: jsonEncode(futureCheckList),
+      UserFields.message: feedbackText.text,
+    };
+
+
+
+    UserSheetsApi.insertUser(userSheet,user,'[${DateFormat('EEEE').format(globalSelectedDate!)}, ${DateFormat('dd/MM/yyyy').format(globalSelectedDate!)}]');
+    setState(() {
+
+    });
+  }
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
 
   void _showItemDialog(List<String> checkList,String checklistItem,int index){
     showDialog(context: context, builder: (BuildContext context) {
@@ -260,7 +451,65 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
     );
   }
 
+  List<bool> isInSpecificDay(List<WeeklyReportItemList> reportList) {
+    List<bool> boolVals=[false,false,false];
 
+    if(checkDateTime().weekday == DateTime.monday){
+      boolVals[1]=true;
+      boolVals[2]=true;
+    }else if(checkDateTime().weekday == DateTime.wednesday){
+      boolVals[2]=true;
+    }
+
+    DateTime selectedDate = DateTime.now();
+    DateTime before_monday = selectedDate.subtract(Duration(days: (selectedDate.weekday )));
+
+    DateTime monday = selectedDate.subtract(Duration(days: (selectedDate.weekday - 1)));
+    DateTime wednesday = selectedDate.add(Duration(days: 3 - selectedDate.weekday)); // Next Wednesday from the current week
+    DateTime saturday = selectedDate.add(Duration(days: 6 - selectedDate.weekday)); // Next Saturday from the current week
+    DateTime sunday = selectedDate.add(Duration(days: 7 - selectedDate.weekday)); // Next Sunday from the current week
+
+    print(reportList);
+    if (reportList.isEmpty) {
+      return boolVals;
+    } else if(reportList.length>=3){
+
+      for(int i=0;i<3;i++) {
+        WeeklyReportItemList tempReport = reportList[i];
+        if (tempReport.start_date.isAfter(monday) &&
+            tempReport.start_date.isBefore(sunday)) {
+          if (tempReport.start_date.weekday == DateTime.monday) {
+            boolVals[0] = true;
+          } else if (tempReport.start_date.weekday == DateTime.wednesday) {
+            boolVals[1] = true;
+          } else if (tempReport.start_date.weekday == DateTime.saturday) {
+            boolVals[2] = true;
+          } else {
+            boolVals[i] == false;
+          }
+        }
+      }
+
+    }else{
+      for(int i=0;i<reportList.length;i++){
+        WeeklyReportItemList tempReport = reportList[i];
+        print("${reportList.length} ${DateFormat('EEEE dd/MM/yyyy').format(tempReport.start_date)}");
+        print("${reportList.length} ${DateFormat('EEEE dd/MM/yyyy').format(monday)}");
+
+        if(tempReport.start_date.isAfter(before_monday) && tempReport.start_date.isBefore(sunday)){
+          print("object $i");
+          if(tempReport.start_date.weekday == DateTime.monday){
+            boolVals[0]=true;
+          }else if(tempReport.start_date.weekday == DateTime.wednesday){
+            boolVals[1]=true;
+          }else if(tempReport.start_date.weekday == DateTime.saturday){
+            boolVals[2]=true;
+          }
+        }
+      }
+    }
+    return boolVals;
+  }
 
 
   bool isInSpecificWeek(List<WeeklyReportItemList> reportList, DateTime startOfWeek, DateTime endOfWeek) {
@@ -456,7 +705,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            'Weekly Report',
+                            'Recap Report',
                             style: TextStyle(fontSize: 12.0),
                             textAlign: TextAlign.center,
                           ),
@@ -472,7 +721,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                           SizedBox(height: 12.0),
                           Container(
                             margin: EdgeInsets.symmetric(horizontal: 10),
-                            child: buildWeekDateContainer(_startDate),
+                            child: buildSpecificWeekDateContainer(),
                           ),
                           SizedBox(height: 26.0),
                           Container(height: 1,width: MediaQuery.of(context).size.width,color: Colors.grey,),
@@ -670,8 +919,8 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
                             isSubmitted=false;
                           }else{
                             isSubmitted=true;
-
-                            WeeklyReportItemList tempItem=WeeklyReportItemList(userId: appSetup.supabase_id,start_date: _startDate,end_date: _endDate,message: feedbackText.text ==''? 'No Message' : feedbackText.text,todo_list: checkList,future_todo_list: futureCheckList,);
+                            _addUser(UserSheetsApi.userSheet);
+                            WeeklyReportItemList tempItem=WeeklyReportItemList(userId: appSetup.supabase_id,start_date: globalSelectedDate!,end_date: globalSelectedDate!,message: feedbackText.text ==''? 'No Message' : feedbackText.text,todo_list: checkList,future_todo_list: futureCheckList,);
 
                             saveWeeklyReport(tempItem);
                           }

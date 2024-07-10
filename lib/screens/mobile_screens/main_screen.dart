@@ -207,8 +207,11 @@ class _MainScreenState extends State<MainScreen> {
         icon: Icons.settings,
       ),
     ];
-
+    if(appSetup.supabase_id== 61 ){
+      settingsProvider.isNewHomepage=true;
+    }
     return Scaffold(
+
           appBar: AppBar(
 
             title: Text(panther),

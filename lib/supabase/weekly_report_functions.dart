@@ -70,6 +70,26 @@ Future<Map<String, dynamic>> getFirstWeeklyReportFromUserAscendingByDate(int use
   }
 }
 
+
+Future<List<Map<String, dynamic>>> getNumWeeklyReportsFromUserAscendingByDate(int user,bool pickStartDate,int num) async {
+  try {
+    final response = await supabase
+        .from('weekly_report')
+        .select()
+        .eq('user', user).order(pickStartDate ? 'start_date' : 'end_date',ascending: false) // Filter by user_id to fetch reports for a specific user
+        .limit(num)
+        .execute();
+
+    // Extract the data from the response
+    final List<Map<String, dynamic>> data = (response.data as List).cast<Map<String, dynamic>>();
+
+    return data;
+  } catch (error) {
+    print('Error fetching weekly report data: $error');
+    return []; // Return empty list if an error occurs
+  }
+}
+
 Future<List<Map<String, dynamic>>> getWeeklyReportsFromUserAscendingByDate(int user,bool pickStartDate) async {
   try {
     final response = await supabase

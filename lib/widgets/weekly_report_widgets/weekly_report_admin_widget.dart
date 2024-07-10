@@ -9,6 +9,7 @@ import 'package:flutter_complete_guide/providers/weekly_report_providers/weekly_
 import 'package:flutter_complete_guide/supabase/chat_service.dart';
 import 'package:flutter_complete_guide/widgets/calendar_widgets/edit_meeting_form_widget.dart';
 import 'package:flutter_complete_guide/supabase/weekly_report_functions.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_core/core.dart';
 
@@ -32,6 +33,7 @@ class _WeeklyReportAdminWidgetState extends State<WeeklyReportAdminWidget> {
 
 
 
+
   @override
   void initState() {
     super.initState();
@@ -52,12 +54,13 @@ class _WeeklyReportAdminWidgetState extends State<WeeklyReportAdminWidget> {
       weeklyReportProvider.reports.clear();
       for(int i=0;i<userList.length;i++){
         weeklyReportProvider.addMeeting(WeeklyReportItem.fromMap(userList[i]));
-        var report_data=await getFirstWeeklyReportFromUserAscendingByDate(weeklyReportProvider.reports[i].userId,false);
+        var report_data=await getNumWeeklyReportsFromUserAscendingByDate(weeklyReportProvider.reports[i].userId,false,3);
         print(report_data.toString());
         weeklyReportProvider.reports[i].reportList.clear();
         if(report_data.isNotEmpty){
-
-          weeklyReportProvider.reports[i].reportList.add(WeeklyReportItemList.fromMap(report_data));
+          for(var temp in report_data){
+            weeklyReportProvider.reports[i].reportList.add(WeeklyReportItemList.fromMap(temp));
+          }
         }
         print("Check ReportList:${weeklyReportProvider.reports[i].reportList.toString()}");
       }
@@ -104,6 +107,65 @@ class _WeeklyReportAdminWidgetState extends State<WeeklyReportAdminWidget> {
     }
   }
 
+  List<bool> isInSpecificDay(List<WeeklyReportItemList> reportList) {
+    List<bool> boolVals=[false,false,false];
+
+
+
+    DateTime selectedDate = DateTime.now();
+    DateTime before_monday = selectedDate.subtract(Duration(days: (selectedDate.weekday )));
+
+    DateTime monday = selectedDate.subtract(Duration(days: (selectedDate.weekday - 1)));
+    DateTime wednesday = selectedDate.add(Duration(days: 3 - selectedDate.weekday)); // Next Wednesday from the current week
+    DateTime saturday = selectedDate.add(Duration(days: 6 - selectedDate.weekday)); // Next Saturday from the current week
+    DateTime sunday = selectedDate.add(Duration(days: 7 - selectedDate.weekday)); // Next Sunday from the current week
+
+    print(reportList);
+    if (reportList.isEmpty) {
+      return boolVals;
+    } else if(reportList.length>=3){
+
+      for(int i=0;i<3;i++) {
+        WeeklyReportItemList tempReport = reportList[i];
+        if(tempReport.start_date.weekday == DateTime.monday || tempReport.start_date.weekday == DateTime.wednesday || tempReport.start_date.weekday == DateTime.saturday){
+          boolVals[i]=true;
+        }
+      }
+
+    }else{
+      for(int i=0;i<reportList.length;i++){
+        WeeklyReportItemList tempReport = reportList[i];
+        print('Length : ${reportList.length}');
+        print("temp report : ${reportList.length} ${DateFormat('EEEE dd/MM/yyyy').format(tempReport.start_date)}");
+        print("mday : ${reportList.length} ${DateFormat('EEEE dd/MM/yyyy').format(monday)}");
+
+        if(tempReport.start_date.isAfter(before_monday) && tempReport.start_date.isBefore(sunday)){
+          print("object $i");
+          if(tempReport.start_date.weekday == DateTime.monday){
+            boolVals[0]=true;
+          }else if(tempReport.start_date.weekday == DateTime.wednesday){
+            boolVals[1]=true;
+          }else if(tempReport.start_date.weekday == DateTime.saturday){
+            boolVals[2]=true;
+          }
+        }
+      }
+    }
+    return boolVals;
+  }
+  DateTime checkDateTime() {
+    DateTime now = DateTime.now();
+
+    if (now.weekday == DateTime.monday ||
+        now.weekday == DateTime.wednesday ||
+        now.weekday == DateTime.saturday) {
+      return now;
+    } else if (now.weekday == DateTime.friday) {
+      return now.subtract(Duration(days: 2));
+    } else {
+      return now.subtract(Duration(days: 1));
+    }
+  }
 
 
   @override
@@ -166,6 +228,7 @@ class _WeeklyReportAdminWidgetState extends State<WeeklyReportAdminWidget> {
                                       var report_data=await getWeeklyReportsFromUserAscendingByDate(weeklyReportProvider.reports[i].userId,false);
                                       weeklyReportProvider.reports[i].reportList.clear();
                                       for(int j=0;j<report_data.length;j++){
+                                        print('report_data length : ${report_data.length}');
                                         weeklyReportProvider.reports[i].reportList.add(WeeklyReportItemList.fromMap(report_data[j]));
                                         print("Check ReportList:${weeklyReportProvider.reports[i].reportList}");
                                       }
@@ -183,6 +246,10 @@ class _WeeklyReportAdminWidgetState extends State<WeeklyReportAdminWidget> {
     );
   }
   Widget buildReportItem(WeeklyReportItem item) {
+    List<bool> checkAdminRecapsSubmit=[];
+    checkAdminRecapsSubmit=isInSpecificDay(item.reportList);
+
+
     DateTime selectedDate=DateTime.now();
     DateTime monday = selectedDate.subtract(Duration(days: (selectedDate.weekday - 1)));
     DateTime sunday = monday.add(Duration(days: 6));
@@ -273,7 +340,16 @@ class _WeeklyReportAdminWidgetState extends State<WeeklyReportAdminWidget> {
             ],
           ),
           Spacer(),
-          isInSpecificWeek(item.reportList, monday, sunday) ? Icon(Icons.circle,color: Colors.green,size: 25,) :  Icon(Icons.circle_outlined,color: Colors.red,size: 22,)
+          Column(
+            children: [
+              checkAdminRecapsSubmit[0] ? Icon(Icons.circle,color: Colors.green,size: 25,) :  Icon(Icons.circle_outlined,color: Colors.red,size: 22,),
+              SizedBox(height: MediaQuery.of(context).size.height * .005,),
+              checkAdminRecapsSubmit[1] ? Icon(Icons.circle,color: Colors.green,size: 25,) :  Icon(Icons.circle_outlined,color: Colors.red,size: 22,),
+              SizedBox(height: MediaQuery.of(context).size.height * .005,),
+              checkAdminRecapsSubmit[2] ? Icon(Icons.circle,color: Colors.green,size: 25,) :  Icon(Icons.circle_outlined,color: Colors.red,size: 22,),
+
+            ],
+          )
         ],
       ),
     );
