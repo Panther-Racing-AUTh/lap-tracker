@@ -61,6 +61,11 @@ var dept_public_relations = 'Marketing - Public Relations';
 var no_dept = 'No Department selected';
 var dashboard = 'Dashboard';
 
+//notification Texts
+
+
+
+
 //Elena's Texts
 var telemetry_columns_date = 'Date';
 var telemetry_columns_racing_time = 'Racing Time';

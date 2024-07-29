@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_complete_guide/icon__panther_icons.dart';
 import 'package:flutter_complete_guide/models/calendar_models/carousel_model.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
@@ -150,66 +151,92 @@ class _MainScreenState extends State<MainScreen> {
     AppSetup appSetup = Provider.of<AppSetup>(context);
     SettingsProvider settingsProvider=Provider.of<SettingsProvider>(context);
 
-
+    if(appSetup.supabase_id==61){
+      settingsProvider.isNewHomepage=true;
+    }
 
     final landscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
 
-    //all blocks list - each blocks maps to a different page
-    List<Widget> allBlocks = [
-      blockWidget(
-        title: profile,
-        context: context,
-        color: Color.fromARGB(255, 18, 64, 102),
-        page: '/profile',
-        icon: Icons.switch_account,
-      ),
-      blockWidget(
-        title: chat,
-        context: context,
-        color: Color.fromARGB(255, 38, 67, 161),
-        page: '/chat',
-        icon: Icons.chat,
-      ),
-      blockWidget(
-        title: data,
-        context: context,
-        color: Color.fromARGB(255, 235, 227, 215),
-        page: '/data',
-        icon: Icons.data_object,
-      ),
-      blockWidget(
-        title: "Calendar",
-        context: context,
-        color: Color.fromARGB(255, 7, 34, 56),
-        page: '/calendar',
-        icon: Icons.calendar_month_outlined,
-      ),
-      blockWidget(
-        title: chart,
-        context: context,
-        color: Color.fromARGB(255, 85, 139, 190),
-        page: '/chart',
-        icon: Icons.bar_chart_rounded,
-      ),
-      blockWidget(
-        title: "Admin Panel",
-        context: context,
-        color: Color.fromARGB(255, 7, 34, 56),
-        page: '/admin-panel-mobile',
-        icon: Icons.admin_panel_settings,
-      ),
-      blockWidget(
-        title: settings,
-        context: context,
-        color: Color.fromARGB(255, 169, 228, 200),
-        page: '/settings',
-        icon: Icons.settings,
-      ),
+// Define aspect ratios for different orientations
+    double aspectRatio = landscape ? 1.5 : 1.0;
+
+// All blocks list - each block maps to a different page
+    final List<Map<String, dynamic>> allBlocks = [
+      {
+        'title': 'Profile',
+        'page': '/profile',
+        'color': Color.fromARGB(255, 18, 64, 102),
+        'icon': Icons.switch_account,
+      },
+      {
+        'title': 'Chat',
+        'page': '/chat',
+        'color': Color.fromARGB(255, 38, 67, 161),
+        'icon': Icons.chat,
+      },
+      {
+        'title': 'Data',
+        'page': '/data',
+        'color': Color.fromARGB(255, 235, 227, 215),
+        'icon': Icons.data_object,
+      },
+      {
+        'title': 'Calendar',
+        'page': '/calendar',
+        'color': Color.fromARGB(255, 7, 34, 56),
+        'icon': Icons.calendar_month_outlined,
+      },
+      {
+        'title': 'Chart',
+        'page': '/chart',
+        'color': Color.fromARGB(255, 85, 139, 190),
+        'icon': Icons.bar_chart_rounded,
+      },
+      {
+        'title': 'Admin Panel',
+        'page': '/admin-panel-mobile',
+        'color': Color.fromARGB(255, 7, 34, 56),
+        'icon': Icons.admin_panel_settings,
+      },
+      {
+        'title': 'Settings',
+        'page': '/settings',
+        'color': Color.fromARGB(255, 169, 228, 200),
+        'icon': Icons.settings,
+      },
+      {
+        'title': 'Timeline',
+        'page': '/timeline',
+        'color': Color.fromARGB(255, 120, 144, 156),
+        'icon': Icons.timeline,
+      },
+      {
+        'title': 'Motostudent',
+        'page': '/motostudent',
+        'color': Color.fromARGB(255, 232, 182, 132),
+        'icon': Icon_Panther.helmet,
+      },
+      {
+        'title': 'Weekly Report',
+        'page': '/weekly-report',
+        'color': Color.fromARGB(255, 205, 220, 57),
+        'icon': Icons.description,
+      },
+      {
+        'title': 'Feedback',
+        'page': '/feedback',
+        'color': Color.fromARGB(255, 255, 193, 7),
+        'icon': Icons.feedback,
+      },
+      {
+        'title': 'Future Releases',
+        'page': '/future-releases',
+        'color': Color.fromARGB(255, 121, 134, 203),
+        'icon': Icons.new_releases,
+      },
     ];
-    if(appSetup.supabase_id== 61 ){
-      settingsProvider.isNewHomepage=true;
-    }
+
     return Scaffold(
 
           appBar: AppBar(
@@ -347,19 +374,25 @@ class _MainScreenState extends State<MainScreen> {
             ) :
             Container(
               padding: const EdgeInsets.all(25),
-              //Created a big column that includes the 6 menu boxes
-              child: GridView(
+              child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: landscape ? 3 : 2,
-                  mainAxisSpacing: 50,
-                  crossAxisSpacing: 40,
-                  childAspectRatio: 0.7,
+                  mainAxisSpacing: 20.0,
+                  crossAxisSpacing: 20.0,
+                  childAspectRatio: 0.8, // Adjust this ratio to control the height of items
                 ),
-                scrollDirection: Axis.vertical,
-                children:
-                dynamicBlocks(allBlocks: allBlocks, role: appSetup.role),
+                itemCount: allBlocks.length,
+                itemBuilder: (context, index) {
+                  return blockWidget(
+                    title: allBlocks[index]['title'],
+                    context: context,
+                    color: allBlocks[index]['color'],
+                    page: allBlocks[index]['page'],
+                    icon: allBlocks[index]['icon'],
+                  );
+                },
               ),
-            ),
+            )
           )
         );
   }
@@ -372,8 +405,8 @@ Map<String,dynamic> getRoleList({required String role}){
   };
   switch(role){
     case 'admin':
-      tempMap['item_list']= ['Profile','Chat','Data','Calendar','Chart','Admin Panel','Settings'];
-      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.chat,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.admin_panel_settings,size: 35,),Icon(Icons.settings,size: 35,)];
+      tempMap['item_list']= ['Profile','Chat','Data','Calendar','Chart','TimeLine','MotoStudent','Admin Panel','Settings'];
+      tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.chat,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.timeline,size: 35,),Icon(Icon_Panther.helmet,size: 35,),Icon(Icons.admin_panel_settings,size: 35,),Icon(Icons.settings,size: 35,)];
     case 'engineer':
       tempMap['item_list']= ['Profile','Chat','Data','Calendar','Chart','Settings'];
       tempMap['icon_list']= [Icon(Icons.account_circle,size: 35,),Icon(Icons.chat,size: 35,),Icon(Icons.data_object,size: 35,),Icon(Icons.calendar_month,size: 35,),Icon(Icons.bar_chart,size: 35,),Icon(Icons.settings,size: 35,)];

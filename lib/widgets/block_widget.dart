@@ -9,92 +9,47 @@ Widget blockWidget({
   required IconData icon,
 }) {
   final landscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
   return InkWell(
     onTap: () => Navigator.of(context).pushNamed(page),
     splashColor: Theme.of(context).primaryColor,
     borderRadius: BorderRadius.circular(15),
-    child: !landscape
-        //The sizes of the box when in portrait mode
-        ? Container(
-            //specified the size of the menu box
-
-            height: MediaQuery.of(context).size.height * 0.23,
-            width: MediaQuery.of(context).size.width * 0.33,
-
-            padding: const EdgeInsets.all(15),
-
-            //Wrapped in fitted box so both the title and icon can resize
-            child: FittedBox(
-              child: Column(
-                children: [
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.035,
-                    width: MediaQuery.of(context).size.width * 0.1,
-                  ),
-                  Icon(
-                    icon,
-                    size: MediaQuery.of(context).size.height * 0.04,
-                    color: Colors.black,
-                  )
-                ],
-              ),
+    child: Container(
+      height: landscape ? MediaQuery.of(context).size.height * 0.23 : MediaQuery.of(context).size.height * 0.23,
+      width: landscape ? MediaQuery.of(context).size.width * 0.20 : MediaQuery.of(context).size.width * 0.33,
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            color.withOpacity(0.7),
+            color,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: landscape ? 16 : 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
             ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  color.withOpacity(0.7),
-                  color,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-          )
-//The sizes of the box when in landscape mode
-        : Container(
-            //specified the size of the menu box
-
-            height: MediaQuery.of(context).size.height * 0.23,
-            width: MediaQuery.of(context).size.width * 0.20,
-
-            padding: const EdgeInsets.all(15),
-
-            //Wrapped in fitted box so both the title and icon can resize
-            child: FittedBox(
-              child: Column(
-                children: [
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                    width: MediaQuery.of(context).size.width * 0.1,
-                  ),
-                  Icon(
-                    icon,
-                    size: MediaQuery.of(context).size.height * 0.04,
-                    color: Colors.black,
-                  )
-                ],
-              ),
-            ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  color.withOpacity(0.7),
-                  color,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
+            textAlign: TextAlign.center,
           ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+          Icon(
+            icon,
+            size: landscape ? MediaQuery.of(context).size.height * 0.04 : MediaQuery.of(context).size.height * 0.06,
+            color: Colors.black,
+          ),
+
+        ],
+      ),
+    ),
   );
 }

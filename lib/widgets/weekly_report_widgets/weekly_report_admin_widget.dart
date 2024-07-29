@@ -127,8 +127,10 @@ class _WeeklyReportAdminWidgetState extends State<WeeklyReportAdminWidget> {
 
       for(int i=0;i<3;i++) {
         WeeklyReportItemList tempReport = reportList[i];
-        if(tempReport.start_date.weekday == DateTime.monday || tempReport.start_date.weekday == DateTime.wednesday || tempReport.start_date.weekday == DateTime.saturday){
-          boolVals[i]=true;
+        if(tempReport.start_date.isAfter(before_monday) && tempReport.start_date.isBefore(sunday)){
+          if(tempReport.start_date.weekday == DateTime.monday || tempReport.start_date.weekday == DateTime.wednesday || tempReport.start_date.weekday == DateTime.saturday){
+            boolVals[i]=true;
+          }
         }
       }
 
@@ -372,7 +374,6 @@ void openCard(BuildContext context, WeeklyReportItem details) {
     isScrollControlled: true,
     builder: (BuildContext context) {
       final appSetup=Provider.of<AppSetup>(context);
-  print("Nious:${details.userId}");
 
   return DraggableScrollableSheet(
         shouldCloseOnMinExtent: true,

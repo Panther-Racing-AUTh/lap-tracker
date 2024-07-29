@@ -30,6 +30,7 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
   TextEditingController dialogText=TextEditingController(text: '');
   TextEditingController feedbackText=TextEditingController(text: '');
 
+
   bool isSaveable=false;
   bool isSubmitted=false;
 
@@ -281,15 +282,15 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
 
   void _addUser(Worksheet? userSheet) {
     final user = {
-      UserFields.submit_date: DateFormat('EEEE dd/mm/yyyy').format(DateTime.now()),
+      UserFields.submit_date: DateFormat('EEEE dd/MM/yyyy').format(DateTime.now()),
       UserFields.recap_list: jsonEncode(checkList),
       UserFields.future_list: jsonEncode(futureCheckList),
       UserFields.message: feedbackText.text,
     };
 
+    final appSetup=provider.Provider.of<AppSetup>(context,listen: false);
 
-
-    UserSheetsApi.insertUser(userSheet,user,'[${DateFormat('EEEE').format(globalSelectedDate!)}, ${DateFormat('dd/MM/yyyy').format(globalSelectedDate!)}]');
+    UserSheetsApi.insertUser(user,'[${DateFormat('EEEE').format(globalSelectedDate!)}, ${DateFormat('dd/MM/yyyy').format(globalSelectedDate!)}]' );
     setState(() {
 
     });
@@ -476,17 +477,20 @@ class _WeeklyReportMemberWidgetState extends State<WeeklyReportMemberWidget> {
 
       for(int i=0;i<3;i++) {
         WeeklyReportItemList tempReport = reportList[i];
-        if (tempReport.start_date.isAfter(monday) &&
-            tempReport.start_date.isBefore(sunday)) {
-          if (tempReport.start_date.weekday == DateTime.monday) {
-            boolVals[0] = true;
-          } else if (tempReport.start_date.weekday == DateTime.wednesday) {
-            boolVals[1] = true;
-          } else if (tempReport.start_date.weekday == DateTime.saturday) {
-            boolVals[2] = true;
-          } else {
-            boolVals[i] == false;
-          }
+        print(tempReport.start_date.isAfter(before_monday));
+        if(tempReport.start_date.isAfter(before_monday) && tempReport.start_date.isBefore(sunday)){
+
+            if (tempReport.start_date.weekday == DateTime.monday) {
+              print('object 0');
+              boolVals[0] = true;
+            } else if (tempReport.start_date.weekday == DateTime.wednesday) {
+              print('object 1');
+              boolVals[1] = true;
+            } else if (tempReport.start_date.weekday == DateTime.saturday) {
+              print('object 2');
+              boolVals[2] = true;
+            }
+
         }
       }
 

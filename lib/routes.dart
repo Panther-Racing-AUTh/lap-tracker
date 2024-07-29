@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen_desktop.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/admin_panel_screen.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/feedback_screen.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/motostudent_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/pre_release_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/timeline_screen.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/toolkit_screen.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/weekly_report_screen.dart';
+import 'package:flutter_complete_guide/screens/notification_screen.dart';
 import 'package:flutter_complete_guide/widgets/new_expenses_widget/home_page.dart';
 import './screens/splash_screen.dart';
 import 'screens/desktop_screens/main_screen_desktop.dart';
@@ -68,6 +73,31 @@ class RouteGenerator {
       case '/calendar':
         return MaterialPageRoute(
           builder: (_) => CalendarScreen(),
+        );
+      case '/timeline':
+        return MaterialPageRoute(
+          builder: (_) => TimelineScreen(),
+
+        );
+      case '/weekly-report':
+        return MaterialPageRoute(
+          builder: (_) => WeeklyReportScreen(),
+
+        );
+      case '/future-releases':
+        return MaterialPageRoute(
+          builder: (_) => PreReleaseScreen(),
+
+        );
+      case '/feedback':
+        return MaterialPageRoute(
+          builder: (_) => FeedbackScreen(),
+
+        );
+
+      case '/motostudent':
+        return MaterialPageRoute(
+          builder: (_) => MotostudentScreen(),
         );
       case '/profile/edit':
         return MaterialPageRoute(

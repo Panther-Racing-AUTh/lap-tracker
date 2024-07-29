@@ -1,5 +1,9 @@
+import 'dart:math';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_complete_guide/models/notification_model.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_complete_guide/widgets/calendar_widgets/edit_meeting_form_widget.dart';
@@ -29,7 +33,6 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final appSetup=Provider.of<AppSetup>(context);
@@ -45,17 +48,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
 
           centerTitle: true,
           title: Text('Weekly Report'),
-          actions: [
-            Padding(
-              padding: EdgeInsets.all(12),
-              child: GestureDetector(
-                onTap: () {
 
-                },
-                child: Icon(Icons.upload),
-              ),
-            )
-          ],
         ),
         drawer: DrawerModel(context,DrawerIndexValue.weekly_report.getInt()), 
         
@@ -64,10 +57,57 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                MaterialButton(minWidth: MediaQuery.of(context).size.width*.8,height:  MediaQuery.of(context).size.height*.3,color: Colors.blue,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => WeeklyReportAdminWidget(),));}, child: Text('Admin',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
-                SizedBox(height: 30,),
-                MaterialButton(minWidth:  MediaQuery.of(context).size.width*.8,height: MediaQuery.of(context).size.height*.3,color: Colors.blue,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => WeeklyReportMemberWidget(),));}, child: Text('Member',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  child: MaterialButton(
+                    color: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    onPressed: () {
 
+                      NotificationModelFunction notifi=NotificationModelFunction();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => WeeklyReportAdminWidget()),
+                      );
+                    },
+                    child: Text(
+                      'Admin',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 30),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  child: MaterialButton(
+                    color: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => WeeklyReportMemberWidget()),
+                      );
+                    },
+                    child: Text(
+                      'Member',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

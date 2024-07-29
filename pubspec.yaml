@@ -66,13 +66,16 @@ dependencies:
   flutter_date_pickers: ^0.4.2
   fl_chart: ^0.66.2
   timeline_tile:
+  permission_handler: ^10.1.0  # Check for the latest version
 
+
+  awesome_notifications: ^0.9.3+1
+  workmanager: ^0.5.2
 
 
   flutter_pdfview: ^1.0.4  # For PDF viewing
   excel: ^2.0.7  # For Excel handling
   path_provider: ^2.0.9  # To get the path to store files
-
 
 
   carousel_slider: ^4.2.1
@@ -125,7 +128,7 @@ flutter:
     - assets/motostudent/files/2024_MEF_Approved_Parts_List.xlsx
     -  assets/motostudent/files/MOTOSTUDENT_REGISTRATION_PROCESS_VIII_EDITION.pdf
     -  assets/motostudent/files/MS2425_Regulations_Rev1.pdf
-    -  assets/motostudent/files/Poster_Design_Contest_Rules_VIII_Edition.pdf
+    -  assets/motostudent/files/Poster_Design_Contest_Rules_VIII Edition.pdf
     - images/
 
   fonts:

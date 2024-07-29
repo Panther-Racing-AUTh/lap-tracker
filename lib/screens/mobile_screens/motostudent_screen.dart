@@ -1,22 +1,13 @@
+import 'package:excel/excel.dart' as excell;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:excel/excel.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:flutter/material.dart';
-import 'package:excel/excel.dart';
-import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ImageViewerPage extends StatelessWidget {
@@ -46,7 +37,7 @@ class ExcelViewerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final file = File(filePath);
     final bytes = file.readAsBytesSync();
-    final excel = Excel.decodeBytes(bytes);
+    final excel = excell.Excel.decodeBytes(bytes);
     final rows = excel.tables[excel.tables.keys.first]?.rows ?? [];
 
     return Scaffold(
@@ -66,24 +57,6 @@ class ExcelViewerPage extends StatelessWidget {
 }
 
 
-class PdfViewerPage extends StatelessWidget {
-  final String filePath;
-
-  PdfViewerPage({required this.filePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('PDF Viewer'),
-      ),
-      body: PDFView(
-        filePath: filePath,
-      ),
-    );
-  }
-}
-
 
 class FilePickerService {
   Future<String?> pickFile({required List<String> allowedExtensions}) async {
@@ -98,23 +71,22 @@ class FilePickerService {
     return null;
   }
 }
-class PdfViewerPage1 extends StatefulWidget {
+
+class MotostudentScreen extends StatefulWidget {
   @override
-  _PdfViewerPage1State createState() => _PdfViewerPage1State();
+  _MotostudentScreenState createState() => _MotostudentScreenState();
 }
 
-class _PdfViewerPage1State extends State<PdfViewerPage1> {
-  String? _filePath; // Path of the currently opened PDF file
-
-  // List of sample PDF files bundled with the app
-  final List<String> samplePdfFiles = [
+class _MotostudentScreenState extends State<MotostudentScreen> {
+  List<String> fileList = [
     'assets/motostudent/files/1st_Team_of_Each_Country.pdf',
-    'assets/motostudent/files/2024_MEF_Approved_Parts_List.xlsx',
     'assets/motostudent/files/MOTOSTUDENT_REGISTRATION_PROCESS_VIII_EDITION.pdf',
     'assets/motostudent/files/MS2425_Regulations_Rev1.pdf',
-    'assets/motostudent/files/Poster_Design_Contest_Rules_VIII_Edition.pdf',
-    // Add more sample PDF files here
+    'assets/motostudent/files/Poster_Design_Contest_Rules_VIII Edition.pdf',
+
   ];
+
+  String? _filePath;
 
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -126,25 +98,26 @@ class _PdfViewerPage1State extends State<PdfViewerPage1> {
       setState(() {
         _filePath = result.files.single.path;
       });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('No PDF file selected.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
     }
   }
 
-  void _openSamplePdf(String pdfPath) {
-    setState(() {
-      _filePath = pdfPath; // Open the selected sample PDF
-    });
+  Future<void> openFile(String assetPath) async {
+    try {
+      final byteData = await rootBundle.load(assetPath);
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File('${tempDir.path}/${assetPath.split('/').last}');
+      await tempFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+      setState(() {
+        _filePath = tempFile.path;
+      });
+    } catch (e) {
+      print('Error opening file: $e');
+    }
   }
 
   void _closePdfViewer() {
     setState(() {
-      _filePath = null; // Clear the file path to close the PDF viewer
+      _filePath = null;
     });
   }
 
@@ -153,14 +126,8 @@ class _PdfViewerPage1State extends State<PdfViewerPage1> {
     return Scaffold(
       appBar: AppBar(
         title: Text('PDF Viewer'),
-        actions: [
-          if (_filePath != null)
-            IconButton(
-              icon: Icon(Icons.close),
-              onPressed: _closePdfViewer,
-            ),
-        ],
       ),
+      drawer: DrawerModel(context, DrawerIndexValue.motostudent.getInt()),
       body: Center(
         child: _filePath != null
             ? PDFView(
@@ -174,23 +141,85 @@ class _PdfViewerPage1State extends State<PdfViewerPage1> {
             print(error.toString());
           },
         )
-            : samplePdfFiles.isEmpty
-            ? Text(
-          'No PDF files found.',
-          style: TextStyle(fontSize: 20),
+            : Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                margin: EdgeInsets.all(10),
+                child: Text(
+                  "Built-in Files",
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.8, // Adjust this ratio for the height of items
+                  crossAxisSpacing: 10.0, // Spacing between columns
+                  mainAxisSpacing: 10.0, // Spacing between rows
+                ),
+                itemCount: fileList.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      openFile(fileList[index]);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 3,
+                            offset: Offset(0, 2), // changes position of shadow
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.picture_as_pdf,
+                            size: 40,
+                            color: Colors.red, // Example icon color, adjust as needed
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            fileList[index].split('/').last,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         )
-            : ListView.builder(
-          itemCount: samplePdfFiles.length,
-          itemBuilder: (context, index) {
-            String pdfPath = samplePdfFiles[index];
-            return ListTile(
-              title: Text(pdfPath.split('/').last), // Display filename
-              onTap: () => _openSamplePdf(pdfPath), // Open PDF on tap
-            );
-          },
-        ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _filePath != null
+          ? FloatingActionButton(
+        onPressed: _closePdfViewer,
+        tooltip: 'Close PDF',
+        child: Icon(Icons.close),
+      )
+          : FloatingActionButton(
         onPressed: _pickFile,
         tooltip: 'Pick PDF',
         child: Icon(Icons.folder_open),
@@ -198,6 +227,8 @@ class _PdfViewerPage1State extends State<PdfViewerPage1> {
     );
   }
 }
+
+
 
 class AragonRaceCircuitPage extends StatelessWidget {
   // Method to launch URLs
@@ -487,72 +518,3 @@ class AragonRaceCircuitPage extends StatelessWidget {
 
 
 
-
-
-final FilePickerService filePickerService = FilePickerService();
-
-  void _openFile(BuildContext context, String filePath, String fileType) {
-    switch (fileType) {
-      case 'pdf':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PdfViewerPage(filePath: filePath),
-          ),
-        );
-        break;
-      case 'xlsx':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ExcelViewerPage(filePath: filePath),
-          ),
-        );
-        break;
-      case 'image':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ImageViewerPage(filePath: filePath),
-          ),
-        );
-        break;
-    }
-  }
-
-  Future<void> _pickFile(BuildContext context, List<String> extensions, String fileType) async {
-    final filePath = await filePickerService.pickFile(allowedExtensions: extensions);
-    if (filePath != null) {
-      _openFile(context, filePath, fileType);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('File Viewer'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () => _pickFile(context, ['pdf'], 'pdf'),
-              child: Text('Open PDF'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _pickFile(context, ['xlsx', 'xls'], 'xlsx'),
-              child: Text('Open Excel'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _pickFile(context, ['jpg', 'jpeg', 'png'], 'image'),
-              child: Text('Open Image'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }

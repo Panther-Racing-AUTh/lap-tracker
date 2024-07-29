@@ -3,12 +3,12 @@ import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:intl/intl.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
-class TimelinePage extends StatefulWidget {
+class TimelineScreen extends StatefulWidget {
   @override
-  _TimelinePageState createState() => _TimelinePageState();
+  _TimelineScreenState createState() => _TimelineScreenState();
 }
 
-class _TimelinePageState extends State<TimelinePage> {
+class _TimelineScreenState extends State<TimelineScreen> {
 
 
   final List<Map<String, dynamic>> timelineData = [
@@ -193,7 +193,7 @@ class _TimelinePageState extends State<TimelinePage> {
 
 
 
-  final DateTime now = DateTime.now().add(Duration(days: 23));
+  final DateTime now = DateTime.now();
   int? _expandedIndex;
 
   @override

@@ -118,7 +118,7 @@ Widget DrawerModel(BuildContext context,int index){
                         child: CircleAvatar(
                             radius: 40,
                             backgroundColor: Colors.grey.shade300.withOpacity(0.5),
-                            child: Image.asset('assets/panther_logo_transparent-2.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.add_a_photo,size: 40,),)
+                            child: Image.asset('assets/panther_logo_transparent_2.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.add_a_photo,size: 40,),)
                         ),
                       ),
                       Spacer(),

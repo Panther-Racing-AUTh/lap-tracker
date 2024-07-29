@@ -18,6 +18,7 @@ import 'package:flutter_complete_guide/screens/mobile_screens/pre_release_screen
 import 'package:flutter_complete_guide/screens/mobile_screens/profile_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/settings_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/timeline_screen.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/toolkit_screen.dart';
 import 'package:flutter_complete_guide/screens/mobile_screens/weekly_report_screen.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -38,7 +39,8 @@ enum DrawerIndexValue{
   about,
   weekly_report,
   timeline,
-  motostudent
+  motostudent,
+  toolkit
 }
 
 extension DrawerIndexValueExtension on DrawerIndexValue{
@@ -72,6 +74,8 @@ extension DrawerIndexValueExtension on DrawerIndexValue{
         return 12;
       case DrawerIndexValue.motostudent:
         return 13;
+      case DrawerIndexValue.toolkit:
+        return 14;
     }
   }
   String getString() {
@@ -104,6 +108,9 @@ extension DrawerIndexValueExtension on DrawerIndexValue{
         return 'Timeline';
       case DrawerIndexValue.motostudent:
         return 'MotoStudent';
+      case DrawerIndexValue.toolkit:
+        return 'Toolkit';
+
     }
   }
 }
@@ -137,7 +144,7 @@ Widget DrawerModel(BuildContext context,int index){
                         child: CircleAvatar(
                             radius: 40,
                             backgroundColor: Colors.grey.shade300.withOpacity(0.5),
-                            child: Image.asset('assets/panther_logo_transparent-2.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.add_a_photo,size: 40,),)
+                            child: Image.asset('assets/panther_logo_transparent_2.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.add_a_photo,size: 40,),)
                         ),
                       ),
                       Spacer(),
@@ -325,6 +332,29 @@ Widget DrawerModel(BuildContext context,int index){
                 //   },
                 // ),
                 ListTile(
+                  leading: Icon(Icons.build,color: index==DrawerIndexValue.toolkit.getInt() ? Colors.purple: Colors.black),
+                  title: Text('Toolkit',style: TextStyle(color: index==DrawerIndexValue.toolkit.getInt() ? Colors.purple: Colors.black),),
+                  onTap: () {
+                    Navigator.pop(context);
+                    print(index);
+                    if(index!=DrawerIndexValue.toolkit.getInt()){
+                      if (index == DrawerIndexValue.home.getInt()) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TrackDayScreen(),
+                            ));
+                      } else {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TrackDayScreen(),
+                            ));
+                      }
+                    }
+                  },
+                ),
+                ListTile(
                   leading: Icon(Icons.timeline,color: index==DrawerIndexValue.timeline.getInt() ? Colors.purple: Colors.black),
                   title: Text('Timeline',style: TextStyle(color: index==DrawerIndexValue.timeline.getInt() ? Colors.purple: Colors.black),),
                   onTap: () {
@@ -335,20 +365,20 @@ Widget DrawerModel(BuildContext context,int index){
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TimelinePage(),
+                              builder: (context) => TimelineScreen(),
                             ));
                       } else {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TimelinePage(),
+                              builder: (context) => TimelineScreen(),
                             ));
                       }
                     }
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.timeline,color: index==DrawerIndexValue.motostudent.getInt() ? Colors.purple: Colors.black),
+                  leading: Icon(Icon_Panther.helmet,color: index==DrawerIndexValue.motostudent.getInt() ? Colors.purple: Colors.black),
                   title: Text('Motostudent',style: TextStyle(color: index==DrawerIndexValue.motostudent.getInt() ? Colors.purple: Colors.black),),
                   onTap: () {
                     Navigator.pop(context);
@@ -358,13 +388,13 @@ Widget DrawerModel(BuildContext context,int index){
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PdfViewerPage1(),
+                              builder: (context) => MotostudentScreen(),
                             ));
                       } else {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PdfViewerPage1(),
+                              builder: (context) => MotostudentScreen(),
                             ));
                       }
                     }
@@ -620,7 +650,7 @@ Widget DrawerModel(BuildContext context,int index){
                         child: CircleAvatar(
                             radius: 40,
                             backgroundColor: Colors.grey.shade300.withOpacity(0.5),
-                            child: Image.asset('assets/panther_logo_transparent-2.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.add_a_photo,size: 40,),)
+                            child: Image.asset('assets/panther_logo_transparent_2.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.add_a_photo,size: 40,),)
                         ),
                       ),
                       Spacer(),
@@ -795,18 +825,42 @@ Widget DrawerModel(BuildContext context,int index){
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TimelinePage(),
+                              builder: (context) => TimelineScreen(),
                             ));
                       } else {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TimelinePage(),
+                              builder: (context) => TimelineScreen(),
                             ));
                       }
                     }
                   },
                 ),
+                ListTile(
+                  leading: Icon(Icon_Panther.helmet,color: index==DrawerIndexValue.motostudent.getInt() ? Colors.purple: Colors.black),
+                  title: Text('Motostudent',style: TextStyle(color: index==DrawerIndexValue.motostudent.getInt() ? Colors.purple: Colors.black),),
+                  onTap: () {
+                    Navigator.pop(context);
+                    print(index);
+                    if(index!=DrawerIndexValue.motostudent.getInt()){
+                      if (index == DrawerIndexValue.home.getInt()) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MotostudentScreen(),
+                            ));
+                      } else {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MotostudentScreen(),
+                            ));
+                      }
+                    }
+                  },
+                ),
+
                 ListTile(
                   leading: Icon(Icons.move_to_inbox_rounded,color: index==DrawerIndexValue.weekly_report.getInt() ? Colors.purple: Colors.black),
                   title: Text('Weekly Report',style: TextStyle(color: index==DrawerIndexValue.weekly_report.getInt() ? Colors.purple: Colors.black),),
@@ -1034,7 +1088,7 @@ Widget DrawerModel(BuildContext context,int index){
                         child: CircleAvatar(
                             radius: 40,
                             backgroundColor: Colors.grey.shade300.withOpacity(0.5),
-                            child: Image.asset('assets/panther_logo_transparent-2.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.add_a_photo,size: 40,),)
+                            child: Image.asset('assets/panther_logo_transparent_2.png',errorBuilder: (context, error, stackTrace) => Icon(Icons.add_a_photo,size: 40,),)
                         ),
                       ),
                       Spacer(),
@@ -1209,18 +1263,42 @@ Widget DrawerModel(BuildContext context,int index){
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TimelinePage(),
+                              builder: (context) => TimelineScreen(),
                             ));
                       } else {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TimelinePage(),
+                              builder: (context) => TimelineScreen(),
                             ));
                       }
                     }
                   },
                 ),
+                ListTile(
+                  leading: Icon(Icon_Panther.helmet,color: index==DrawerIndexValue.motostudent.getInt() ? Colors.purple: Colors.black),
+                  title: Text('Motostudent',style: TextStyle(color: index==DrawerIndexValue.motostudent.getInt() ? Colors.purple: Colors.black),),
+                  onTap: () {
+                    Navigator.pop(context);
+                    print(index);
+                    if(index!=DrawerIndexValue.motostudent.getInt()){
+                      if (index == DrawerIndexValue.home.getInt()) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MotostudentScreen(),
+                            ));
+                      } else {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MotostudentScreen(),
+                            ));
+                      }
+                    }
+                  },
+                ),
+
                 ListTile(
                   leading: Icon(Icons.move_to_inbox_rounded,color: index==DrawerIndexValue.weekly_report.getInt() ? Colors.purple: Colors.black),
                   title: Text('Weekly Report',style: TextStyle(color: index==DrawerIndexValue.weekly_report.getInt() ? Colors.purple: Colors.black),),
@@ -1294,8 +1372,6 @@ Widget DrawerModel(BuildContext context,int index){
                       borderRadius: BorderRadius.circular(20)
                   ),
                 ),
-
-
 
 
 

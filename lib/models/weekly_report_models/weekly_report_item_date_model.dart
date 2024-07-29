@@ -51,28 +51,51 @@ class WeeklyReportItemList extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        _showMessageDetailsDialog(context,this);
+        _showMessageDetailsDialog(context, this);
       },
       child: Container(
+        width: MediaQuery.of(context).size.width*.8,
         padding: EdgeInsets.all(16),
         margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Start Time: ${formatDate(start_date)}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'End Time: ${formatDate(end_date)}',
-              style: TextStyle(fontSize: 18),
-            ),
+            Center(
+              child: Text(
+                DateFormat('EEEE').format(start_date),
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.blueGrey[700],
 
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: 4),
+            Center(
+              child: Text(
+                formatDate(start_date),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -121,11 +144,7 @@ class WeeklyReportItemList extends StatelessWidget {
                  height: MediaQuery.of(context).size.height * .6,
                  child: ListView(
                    children: [
-                     _buildDetailRow('Start Time', DateFormat('dd-MM-yyyy').format(itemDate.start_date)),
-                     SizedBox(height: 10,),
-                     Container(height: 1.2,width: MediaQuery.of(context).size.width,color: Colors.grey,),
-                     SizedBox(height: 20.0),
-                     _buildDetailRow('End Time', DateFormat('dd-MM-yyyy').format(itemDate.end_date)),
+                     _buildDetailRow('Date', DateFormat('dd-MM-yyyy').format(itemDate.end_date)),
                      SizedBox(height: 10,),
                      Container(height: 1.2,width: MediaQuery.of(context).size.width,color: Colors.grey,),
                      SizedBox(height: 20.0),

@@ -75,6 +75,50 @@ Future<List<Map<String, dynamic>>> getNewAppointments(int lastId) async {
   }
 }
 
+Future<List<Map<String, dynamic>>> getAppointmentsBySubject(String subject) async {
+  try {
+    final response = await Supabase.instance.client
+        .from('appointment')
+        .select()
+        .eq('subject', subject)
+        .execute();
+
+
+
+    // Extract the data from the response
+    final List<Map<String, dynamic>> data = (response.data as List).cast<Map<String, dynamic>>();
+
+    return data;
+  } catch (error) {
+    print('Error fetching appointments: $error');
+    return []; // Return empty list if an error occurs
+  }
+}
+
+Future<List<Map<String, dynamic>>> getAppointmentsBySubjectAndStartDate(String subject, DateTime startDate) async {
+  try {
+    // Format the startDate
+    String formattedStartDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(startDate);
+
+    final response = await Supabase.instance.client
+        .from('appointment')
+        .select()
+        .eq('subject', subject)
+        .eq('start_time', startDate)  // Assuming the start_date column is stored as a string in this format
+        .execute();
+
+
+
+    // Extract the data from the response
+    final List<Map<String, dynamic>> data = (response.data as List).cast<Map<String, dynamic>>();
+
+    return data;
+  } catch (error) {
+    print('Error fetching appointments: $error');
+    return []; // Return empty list if an error occurs
+  }
+}
+
 Future<List<Map<String, dynamic>>> getAppointments() async {
   try {
     final response = await supabase.from('appointment').select().execute();
@@ -132,6 +176,20 @@ Future<void> updateAppointment(Appointment appointment) async {
         .from('appointment')
         .update(AppointmenttoMap(appointment))
         .eq('id', appointment.id)
+        .execute();
+
+
+    print('Appointment removed successfully: ${appointment.id}');
+  } catch (error) {
+    print('Error processing appointment: $error');
+  }
+}
+Future<void> updateAppointmentBySubject(Appointment appointment) async {
+  try{
+    final response = await supabase
+        .from('appointment')
+        .update(AppointmenttoMap(appointment))
+        .eq('subject', appointment.subject)
         .execute();
 
 

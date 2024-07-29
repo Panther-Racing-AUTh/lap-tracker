@@ -2,8 +2,18 @@
     package="com.example.panther_app">
     <!-- https://docs.flutter.dev/development/data-and-backend/networking#android
     Android apps must declare their use of the internet in the Android manifest (AndroidManifest.xml) -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <application android:label="Panther TeamTactix" android:name="${applicationName}" android:icon="@mipmap/ic_launcher">
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"/>
+
+
+
+
+
+    <application android:label="TeamTactix" android:name="${applicationName}" android:icon="@mipmap/ic_launcher" >
         <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
         <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
@@ -48,5 +58,17 @@
         <meta-data
             android:name="com.google.android.gms.auth.api.credentials.CREDENTIAL_SAVER"
             android:value="@integer/google_play_services_version" />
+
+
+
+        <receiver android:exported="false" android:name="me.carda.awesome_notifications.notifications.receivers.ActionReceiver"/>
+        <receiver android:exported="false" android:name="me.carda.awesome_notifications.notifications.receivers.DismissedReceiver"/>
+        <receiver android:exported="false" android:name="me.carda.awesome_notifications.notifications.receivers.GeofenceBroadcastReceiver"/>
+        <receiver android:exported="false" android:name="me.carda.awesome_notifications.notifications.receivers.NotificationBroadcastReceiver"/>
+        <receiver android:exported="false" android:name="me.carda.awesome_notifications.notifications.receivers.ScheduledNotificationReceiver"/>
+
+
+
+        <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>
 </manifest>

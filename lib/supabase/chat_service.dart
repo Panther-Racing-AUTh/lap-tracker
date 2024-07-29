@@ -30,6 +30,27 @@ Future<List> getAllUsers() async {
   return users;
 }
 
+Future<Map<String, dynamic>> getUserById(int userId) async {
+  final user = await supabase
+      .from('users')
+      .select('id, uuid, full_name, role, department')
+      .eq('id', userId)
+      .single(); // Fetch a single user
+
+  if (user == null) {
+    return {}; // User not found
+  }
+
+  var image = supabase.storage.from('users').getPublicUrl(
+      (user['uuid'] == null) ? '' : user['uuid'] + '.jpeg');
+
+  user['profile_image'] = await validateImage(image)
+      ? image
+      : image.split('users/').first + 'users/default.webp';
+
+  return user;
+}
+
 Future<List> getAllChannelsForUser({required int id}) async {
   List<int> channelList = [];
   final allChannelIds = await supabase

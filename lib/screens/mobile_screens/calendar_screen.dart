@@ -27,13 +27,9 @@ enum RepeatOption {
 enum TeamRoles {
   all,
   rider,
-  mechanic,
-  chiefMechanic,
-  suspensionSpecialist,
-  engineSpecialist,
-  electronicsSpecialist,
-  logistics,
-  management,
+  mechanics,
+  coordinators,
+  electronics,
   sponsors,
   marketing,
   events,
@@ -59,20 +55,12 @@ extension TeamRolesExtension on TeamRoles{
         return 'All Team';
       case TeamRoles.rider:
         return 'Rider';
-      case TeamRoles.mechanic:
-        return 'Mechanic';
-      case TeamRoles.chiefMechanic:
-        return 'Chief Mechanic';
-      case TeamRoles.suspensionSpecialist:
-        return 'Suspension Specialist';
-      case TeamRoles.engineSpecialist:
-        return 'Engine Specialist';
-      case TeamRoles.electronicsSpecialist:
-        return 'Electronics Specialist';
-      case TeamRoles.logistics:
-        return 'Logistics';
-      case TeamRoles.management:
-        return 'Managment';
+      case TeamRoles.mechanics:
+        return 'Mechanics';
+      case TeamRoles.coordinators:
+        return 'Coordinators';
+      case TeamRoles.electronics:
+        return 'Electronics';
       case TeamRoles.sponsors:
         return 'Sponsors';
       case TeamRoles.marketing:
@@ -89,20 +77,12 @@ extension TeamRolesExtension on TeamRoles{
         return Colors.blue.value; // Convert Colors.blue to int value
       case TeamRoles.rider:
         return Colors.orange.value; // Convert Colors.orange to int value
-      case TeamRoles.mechanic:
+      case TeamRoles.mechanics:
         return Colors.brown.value; // Convert Colors.brown to int value
-      case TeamRoles.chiefMechanic:
+      case TeamRoles.coordinators:
         return Colors.grey.value; // Convert Colors.grey to int value
-      case TeamRoles.suspensionSpecialist:
-        return Colors.green.value; // Convert Colors.green to int value
-      case TeamRoles.engineSpecialist:
-        return Colors.purple.value; // Convert Colors.purple to int value
-      case TeamRoles.electronicsSpecialist:
+      case TeamRoles.electronics:
         return Colors.yellow.value; // Convert Colors.yellow to int value
-      case TeamRoles.logistics:
-        return Colors.lightBlueAccent.value; // Convert Colors.lightBlueAccent to int value
-      case TeamRoles.management:
-        return Colors.pink.value; // Convert Colors.pink to int value
       case TeamRoles.sponsors:
         return Colors.amber.value; // Convert Colors.amber to int value
       case TeamRoles.marketing:
@@ -192,7 +172,7 @@ class _CalendarScreenState extends State<CalendarScreen> with WidgetsBindingObse
   late CalendarController _calendarController;
   List<CalendarResource> resourceColl = <CalendarResource>[];
   late TeamRoles selectedTeamRole;
-  TeamRoles myTeamRole=TeamRoles.mechanic;
+  TeamRoles myTeamRole=TeamRoles.mechanics;
 
 
 
@@ -751,7 +731,8 @@ class _CalendarScreenState extends State<CalendarScreen> with WidgetsBindingObse
                                 try{
                                   if (calendarTapDetails.appointments!.isNotEmpty) {
                                     final Appointment meeting = calendarTapDetails.appointments!.first;
-                                    await Navigator.push(context,MaterialPageRoute(builder: (context) => ShowMeetingForm(appointment: meeting)));
+                                    meeting.subject == 'Toolkit' ? await Navigator.push(context,MaterialPageRoute(builder: (context) => ShowMeetingFormToolkit(appointment: meeting))): await Navigator.push(context,MaterialPageRoute(builder: (context) => ShowMeetingForm(appointment: meeting)));
+
                                     setState(() {
 
                                     });
@@ -767,7 +748,7 @@ class _CalendarScreenState extends State<CalendarScreen> with WidgetsBindingObse
                             },
                           ),
 
-                          myTeamRole.name==TeamRoles.mechanic.name
+                          myTeamRole.name==TeamRoles.mechanics.name
                               ? Positioned(
                             bottom: 16, // Adjust bottom padding as needed
                             right: 16, // Adjust right padding as needed
