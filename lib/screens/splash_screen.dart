@@ -80,7 +80,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void _playVideo() async {
     _controller.play();
     AppSetup a = Provider.of<AppSetup>(context, listen: false);
-    print('v2');
     DeviceManager device = Provider.of<DeviceManager>(context, listen: false);
     if (await session) {
       await Future.value(a.setValuesAuto());
