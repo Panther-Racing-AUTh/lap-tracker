@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+3
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=3.0.0 <3.4.0"
 
 dependencies:
   flutter:
@@ -29,9 +29,9 @@ dependencies:
   url_launcher: ^6.1.10
   supabase_flutter: ^1.0.0
   flutter_web_auth: ^0.5.0
-  pluto_grid: ^5.4.6
+  google_sign_in:
   faker: ^2.0.0
-  syncfusion_flutter_datagrid: ^21.1.37
+  syncfusion_flutter_datagrid: ^21.2.10
   video_player: ^2.4.10
   keymap: ^0.0.91
   flutter_device_type:
@@ -46,11 +46,17 @@ dependencies:
   syncfusion_flutter_core:
   charts_flutter: ^0.12.0
   timelines: ^0.1.0
+  graphql_flutter: ^5.1.2
+  table_calendar: ^3.0.8
+  syncfusion_flutter_calendar: ^21.2.3
+  platform_detector: ^0.2.0
+  universal_html: ^2.2.3
+
+  carousel_slider: ^4.2.1
 
 
-   
-  
-    
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -90,7 +96,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/
+    - assets/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

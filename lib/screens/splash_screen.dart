@@ -37,12 +37,11 @@ class _SplashScreenState extends State<SplashScreen> {
   void _playVideo() async {
     _controller.play();
     AppSetup a = Provider.of<AppSetup>(context, listen: false);
+    print('v2');
     DeviceManager device = Provider.of<DeviceManager>(context, listen: false);
-
     if (await session) {
       await Future.value(a.setValuesAuto());
     }
-
     await Future.delayed(const Duration(seconds: 1));
 
     Navigator.of(context)
@@ -53,13 +52,25 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Center(
-        child: _controller.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
-            : Container(),
+      body: Stack(
+        children: [
+          Center(
+            child: _controller.value.isInitialized
+                ? AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  )
+                : Container(),
+          ),
+          // Center(
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       signOut(context);
+          //     },
+          //     child: Text("Sign Out"),
+          //   ),
+          // ),
+        ],
       ),
     );
   }

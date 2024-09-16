@@ -7,8 +7,9 @@ VALUES
 ('admin', 'This is the admin role. An admin has access to all users and their roles and all features of the application.'),
 ('engineer','This is the engineer role. It is the standard role and unlocks all features of the application.'),
 ('data_analyst','This is the data analyst role. This role has only access to data from previous sessions.'),
-('default','This is the default role. This role has no rights in the application.');
-
+('default','This is the default role. This role has no rights in the application.'),
+('member', 'This is the member role, It is the standard role and unlocks all the basic features of the application.'),
+('coordinator', 'This is the coordinator role. This role has special access on some occasions.');
 -- set the default user as the default id at user creation at user_roles
 ALTER TABLE user_roles
 ALTER COLUMN role_id SET DEFAULT 4;

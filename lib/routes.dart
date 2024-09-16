@@ -1,5 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/screens/desktop_screens/admin_panel_screen_desktop.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/admin_panel_screen.dart';
+import 'package:flutter_complete_guide/screens/mobile_screens/pre_release_screen.dart';
 import './screens/splash_screen.dart';
 import 'screens/desktop_screens/main_screen_desktop.dart';
 import './screens/signin_screen.dart';
@@ -9,7 +11,7 @@ import 'screens/mobile_screens/data_screen.dart';
 import 'screens/mobile_screens/profile_screen.dart';
 import 'screens/mobile_screens/settings_screen.dart';
 import 'screens/mobile_screens/chart_screen.dart';
-import 'screens/mobile_screens/panther_screen.dart';
+import 'screens/mobile_screens/calendar_screen.dart';
 import 'screens/mobile_screens/edit_profile_screen.dart';
 import 'package:flutter_complete_guide/names.dart';
 
@@ -26,6 +28,10 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => SigninScreen(),
         );
+      case '/https://pwqrcfdxmgfavontopyn.supabase.co/auth/v1/callback':
+        return MaterialPageRoute(
+          builder: (_) => SigninScreen(),
+        );
       case '/main':
         return MaterialPageRoute(
           builder: (_) => MainScreenDesktop(),
@@ -39,6 +45,8 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => ProfileScreen(),
         );
+      case '/pre_release':
+        return MaterialPageRoute(builder: (_) => PreReleaseScreen());
       case '/settings':
         return MaterialPageRoute(
           builder: (_) => SettingsScreen(),
@@ -55,13 +63,17 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => ChartScreen(),
         );
-      case '/panther':
+      case '/calendar':
         return MaterialPageRoute(
-          builder: (_) => PantherScreen(),
+          builder: (_) => CalendarScreen(),
         );
       case '/profile/edit':
         return MaterialPageRoute(
           builder: (_) => EditProfileScreen(),
+        );
+      case '/admin-panel-mobile':
+        return MaterialPageRoute(
+          builder: (_) => AdminPanel(),
         );
       default:
         return MaterialPageRoute(

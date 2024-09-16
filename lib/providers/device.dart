@@ -8,19 +8,42 @@ class DeviceManager with ChangeNotifier {
   bool isPhone = false;
   bool isTablet = false;
   bool isDesktop = false;
+  bool isMobileWeb = false;
 
   DeviceManager() {
-    if (defaultTargetPlatform != TargetPlatform.android &&
-        defaultTargetPlatform != TargetPlatform.iOS) {
-      isDesktop = true;
+    print('kisWeb = ' + kIsWeb.toString());
+    print('targetPlatform = ' + defaultTargetPlatform.toString());
+    // if (defaultTargetPlatform != TargetPlatform.android &&
+    //     defaultTargetPlatform != TargetPlatform.iOS) {
+    //   isDesktop = true;
+    //   mode = 'desktop';
+    // }
+    // // else if (Device.get().isTablet) {
+    // //   isTablet = true;
+    // //   mode = 'mobile';
+    // // }
+    // else if (Device.get().isPhone) {
+    //   isPhone = true;
+    //   mode = 'mobile';
+    // }
+    // if (kIsWeb &&
+    //     (defaultTargetPlatform == TargetPlatform.android ||
+    //         defaultTargetPlatform == TargetPlatform.iOS)) {
+    //   isMobileWeb = true;
+    //   mode = 'mobile';
+    // }
+
+    if (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      isDesktop = false;
+      mode = 'mobile';
+    } else
       mode = 'desktop';
-    } else if (Device.get().isTablet) {
-      isTablet = true;
-      mode = 'mobile';
-    } else if (Device.get().isPhone) {
-      isPhone = true;
-      mode = 'mobile';
-    }
+
+    // if (isMobileWeb) {
+    //   isMobileWeb = true;
+    //   mode = 'mobile';
+    // }
   }
 
   void setToDesktopMode() {
@@ -36,7 +59,12 @@ class DeviceManager with ChangeNotifier {
   }
 
   String getRoute() {
+    // if (isMobileWeb) return '/main-mobile';
     if (mode == 'desktop') return '/main-desktop';
-    return '/main-mobile';
+    if (mode == 'mobile') return '/pre_release';
+
+    return '/main-desktop';
+    // print('returning mobile screen route');
+    // return '/main-mobile';
   }
 }

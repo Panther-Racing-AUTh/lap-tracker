@@ -380,6 +380,7 @@ class LoginState extends State<Login> {
           ),
           Column(
             //'powered by panther' text
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ConstrainedBox(
@@ -401,6 +402,7 @@ class LoginState extends State<Login> {
                   ],
                 ),
               ),
+              Text('v1.1.3')
             ],
           ),
         ],
