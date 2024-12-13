@@ -43,36 +43,39 @@ class ThemeChanger with ChangeNotifier {
 
 ThemeData darkTheme(MaterialColor c) => ThemeData(
       primarySwatch: c,
-      appBarTheme: AppBarTheme(
-        brightness: Brightness.dark,
-      ),
+
       brightness: Brightness.dark,
       textTheme: TextTheme(
-        headline6: TextStyle(
+        headlineMedium: TextStyle(
           color: Colors.white,
         ),
       ),
       canvasColor: Color.fromARGB(255, 41, 40, 40),
-      accentColor: c,
+
       //accentIconTheme: IconThemeData(color: Colors.white),
-      buttonColor: c,
+      buttonTheme:
+          ButtonThemeData(colorScheme: ColorScheme.fromSeed(seedColor: c)),
       cardColor: c,
       primaryColor: c,
       iconTheme: IconThemeData(color: Colors.white),
-      selectedRowColor: Colors.white,
-      backgroundColor: Colors.black,
+      secondaryHeaderColor: Colors.white,
+      colorScheme:  ColorScheme.dark(
+        background: Colors.black,
+      ),
     );
 
 ThemeData lightTheme(MaterialColor c) => ThemeData(
       primarySwatch: c,
       textTheme: TextTheme(
-        headline6: TextStyle(
+        headlineMedium: TextStyle(
           color: Colors.black,
         ),
       ),
       cardColor: c.shade200,
       iconTheme: IconThemeData(color: c),
       primaryIconTheme: IconThemeData(color: c),
-      selectedRowColor: Colors.black,
-      backgroundColor: Colors.grey.shade300,
+      secondaryHeaderColor: Colors.black,
+      colorScheme: ColorScheme.light(
+        background: Colors.grey.shade300,
+      ),
     );

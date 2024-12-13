@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Proposal {
   int? id;
   int? proposalId;
@@ -14,26 +12,28 @@ class Proposal {
   String? proposalPartValueFrom;
   String? proposalPartValueTo;
   int? poolId;
-  int partId;
-  String partName;
+  int? partId;
+  String? partName;
   int? partSubsystemId;
   int? partCurrentValueId;
-  String partMeasurementUnit;
+  String? partMeasurementUnit;
   int? partValuesId;
   int? partValuesPartId;
   int? partValuesValue;
   int userId;
   String? userFullName;
   String? userUuid;
-  String userRole;
-  String userDepartment;
+  String? userRole;
+  String? userDepartment;
   String title;
   String description;
   String reason;
   String partValueFrom;
   String partValueTo;
   ProposalState? state;
-  
+  bool isHealthCheck = false;
+  List<ProposalState>? states;
+
   Proposal.empty()
       : description = '',
         partId = 0,
@@ -80,60 +80,48 @@ class Proposal {
     required this.partValueFrom,
     this.state,
     required this.partValueTo,
+    this.isHealthCheck = false,
+    this.states,
   });
 
-  Proposal.fromJson(Map json, ProposalState this.state)
+  Proposal.fromJson(Map json, ProposalState this.state,
+      {bool isHealthCheck = false})
       : id = json['id'], // 201 -> 202
-        proposalId = json['proposal__id'], //65
-        proposalCreatedAt = json['proposal__created_at'], //65
-        poolId = json['proposal__proposal_pool_id'],
-        partId = json['proposal__part_id'],
-        userId = json['proposal__user_id'],
-        title = json['proposal__title'],
-        description = json['proposal__description'] == null
-            ? ''
-            : json['proposal__description'],
-        reason =
-            json['proposal__reason'] == null ? '' : json['proposal__reason'],
-        partValueFrom = json['proposal__part_value_from'],
-        partValueTo = json['proposal__part_value_to'],
-        userFullName = json['user__full_name'],
-        userRole = json['user__role'],
-        userDepartment = json['user__department'],
-        userUuid = json['user__uuid'],
-        partName = json['part__name'],
-        partSubsystemId = json['part__subsystem_id'],
-        partCurrentValueId = json['part__current_value_id'],
-        partMeasurementUnit = json['part__measurement_unit'],
-        partValuesId = json['part_values__id'],
-        partValuesPartId = json['part_values__part_id'],
-        partValuesValue = json['part_values__value'];
+        proposalId = json['id'], //65
+        proposalCreatedAt = json['created_at'] ?? null, //65
+        poolId = json['proposal_pool_id'] ?? null,
+        partId = json['part_id'] ?? null,
+        userId = json['user_id'] ?? 0,
+        title = json['title'] ?? '',
+        description = json['description'] ?? '',
+        reason = json['reason'] ?? '',
+        partValueFrom = json['part_value_from'] ?? '',
+        partValueTo = json['part_value_to'] ?? '',
+        isHealthCheck = isHealthCheck,
+        states = [];
+  //userFullName = json['user__full_name'],
+  //userRole = json['user__role'],
+  //userDepartment = json['user__department'],
+  //userUuid = json['user__uuid'],
+  //partName = json['part__name'],
+  //partSubsystemId = json['part__subsystem_id'],
+  //partCurrentValueId = json['part__current_value_id'],
+  //partMeasurementUnit = json['part__measurement_unit'],
+  //partValuesId = json['part_values__id'],
+  //partValuesPartId = json['part_values__part_id'],
+  //partValuesValue = json['part_values__value'];
 
   Map toJson() {
     return {
-      'id': id,
-      'proposalId': proposalId,
-      'proposalCreatedAt': proposalCreatedAt,
-      'poolId': poolId,
-      'partId': partId,
-      'userId': userId,
+      'proposal_pool_id': poolId,
+      'part_id': partId,
+      'user_id': userId,
       'title': title,
       'description': description,
       'reason': reason,
-      'partValueFrom': partValueFrom,
-      'partValueTo': partValueTo,
-      'userFullName': userFullName,
-      'userRole': userRole,
-      'userDepartment': userDepartment,
-      'userUuid': userUuid,
-      'partName': partName,
-      'partSubsystemId': partSubsystemId,
-      'partCurrentValueId': partCurrentValueId,
-      'partMeasurementUnit': partMeasurementUnit,
-      'partValuesId': partValuesId,
-      'partValuesPartId': partValuesPartId,
-      'partValuesValue': partValuesValue,
-      'state': state!.toJson(),
+      'part_value_from': partValueFrom,
+      'part_value_to': partValueTo,
+      //'json_data':
     };
   }
 }
@@ -143,12 +131,14 @@ class ProposalState {
   int? proposalId;
   int changedByUserId;
   String state;
+  DateTime? createdAt;
 
   ProposalState({
     this.id,
     required this.proposalId,
     required this.changedByUserId,
     required this.state,
+    this.createdAt,
   });
 
   ProposalState.empty()
@@ -157,10 +147,13 @@ class ProposalState {
         state = 'default state';
 
   ProposalState.fromJson(Map json)
-      : id = json['proposal_state__id'],
-        proposalId = json['proposal_state__proposal_id'],
-        changedByUserId = json['proposal_state__changed_by_user_id'],
-        state = json['proposal_state__state'];
+      : id = json['id'],
+        proposalId = json['proposal_id'],
+        changedByUserId = json['changed_by_user_id'] ?? 0,
+        state = json['state'],
+        createdAt = (json['created_at'] != null)
+            ? DateTime.parse(json['created_at'])
+            : null;
 
   Map toJson() {
     return {
@@ -176,6 +169,8 @@ class ProposalPool {
   int sessionId;
   int vehicleId;
   bool ended;
+  DateTime? createdAt;
+  List<Proposal> proposals = [];
 
   ProposalPool({
     required this.id,
@@ -185,8 +180,18 @@ class ProposalPool {
   });
 
   ProposalPool.fromJson(Map json)
-      : id = json['proposal_pool__id'],
-        sessionId = json['proposal_pool__session_id'],
-        vehicleId = json['proposal_pool__vehicle_id'],
-        ended = json['proposal_pool__ended'];
+      : id = json['id'],
+        sessionId = json['session_id'],
+        vehicleId = json['vehicle_id'],
+        ended = json['ended'],
+        createdAt = (json['created_at'] != null)
+            ? DateTime.parse(json['created_at'])
+            : null;
+
+  ProposalPool.empty()
+      : id = 0,
+        sessionId = 0,
+        vehicleId = 0,
+        ended = true,
+        proposals = [];
 }

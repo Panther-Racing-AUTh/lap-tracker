@@ -1,0 +1,44 @@
+diff --git a/lib/models/appointment_temp.dart b/lib/models/appointment_temp.dart
+deleted file mode 100644
+diff --git a/lib/screens/mobile_screens/calendar_files/models/carousel_model.dart b/lib/screens/mobile_screens/calendar_files/models/carousel_model.dart
+deleted file mode 100644
+diff --git a/lib/screens/mobile_screens/about_screen.dart b/lib/screens/mobile_screens/about_screen.dart
+deleted file mode 100644
+diff --git a/lib/screens/mobile_screens/expenses_screen.dart b/lib/screens/mobile_screens/expenses_screen.dart
+deleted file mode 100644
+diff --git a/lib/screens/mobile_screens/feedback_screen.dart b/lib/screens/mobile_screens/feedback_screen.dart
+deleted file mode 100644
+diff --git a/lib/widgets/news/appbar_logo_profile_widget.dart b/lib/widgets/news/appbar_logo_profile_widget.dart
+deleted file mode 100644
+diff --git a/lib/supabase/appointment_functions.dart b/lib/supabase/appointment_functions.dart
+deleted file mode 100644
+diff --git a/lib/providers/meeting.dart b/lib/providers/meeting.dart
+deleted file mode 100644
+diff --git a/assets/panther_logo_transparent-2.png b/assets/panther_logo_transparent-2.png
+deleted file mode 100644
+index e69de29bb2d1d6434b8b29ae775ad8c2e48c5391..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/assets/feedback.png b/assets/feedback.png
+deleted file mode 100644
+index e69de29bb2d1d6434b8b29ae775ad8c2e48c5391..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/assets/panther_logo_transparent.png b/assets/panther_logo_transparent.png
+deleted file mode 100644
+index e69de29bb2d1d6434b8b29ae775ad8c2e48c5391..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+Hc$@<O00001
+
+diff --git a/assets/panther_logo_transparent-1.png b/assets/panther_logo_transparent-1.png
+deleted file mode 100644
+index e69de29bb2d1d6434b8b29ae775ad8c2e48c5391..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+Hc$@<O00001
+

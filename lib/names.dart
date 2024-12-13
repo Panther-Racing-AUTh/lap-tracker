@@ -34,7 +34,12 @@ var panther = 'Panther';
 var profile = 'Profile';
 var chat = 'Chat';
 var data = 'Data';
+var calendar= 'Calendar';
+var expenses= 'Expenses';
+var feedback= 'Feedback';
 var settings = 'Settings';
+var admin = 'Admin';
+var future_releases= 'Future Releases';
 var edit_profile = "Edit Profile";
 var name = 'Name';
 var department = 'Department';
@@ -49,12 +54,17 @@ var saved_changes = 'Saved Changes';
 var dept_electronics = 'Engineering - Electronics Dept';
 var dept_aerodynamics = 'Engineering - Aerodynamics Dept';
 var dept_suspension = 'Engineering - Suspension Dept';
-var dept_intake_exhaust = 'Engineering - Intake & Exhaust Analysis Dept';
+var dept_drivetrain = 'Engineering - Intake & Exhaust Analysis Dept';
 var dept_frame_subframe = 'Engineering - Frame & Subframe Construction Dept';
 var dept_social_media = 'Marketing - Social Media Manager';
 var dept_public_relations = 'Marketing - Public Relations';
 var no_dept = 'No Department selected';
 var dashboard = 'Dashboard';
+
+//notification Texts
+
+
+
 
 //Elena's Texts
 var telemetry_columns_date = 'Date';

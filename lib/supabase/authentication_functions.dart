@@ -1,11 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_complete_guide/names.dart';
 import 'package:flutter_complete_guide/supabase/chat_service.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../providers/app_setup.dart';
 import '../providers/device.dart';
 import '../widgets/signIn_alert_dialog.dart';
-import 'package:provider/provider.dart' as p;
+  import 'package:provider/provider.dart' as p;
 
 final supabase = Supabase.instance.client;
 
@@ -25,10 +27,12 @@ Future<void> insertUser({
       .order('created_at');
 
   print(user);
+  print("Inserted User");
   await supabase.from('user_roles').insert({
     'user_id': user[0]['id'],
     'role_id': 4,
   });
+  print("Inserted User Role");
 }
 
 //login already existing user
@@ -39,14 +43,19 @@ Future<void> userLogin({
   required final BuildContext context,
   required final bool userExists,
 }) async {
+  print(1);
   AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
+  print(2);
   DeviceManager device = p.Provider.of<DeviceManager>(context, listen: false);
+  print(3);
+  final test = supabase.from('part').select('id');
+  print(test);
   try {
     final response = await supabase.auth.signInWithPassword(
       email: email,
       password: password,
     );
-    print(response);
+    print(4);
 
     await Future.value(a.setValuesAuto());
     Navigator.of(context).popUntil((route) => route.isFirst);
@@ -86,14 +95,138 @@ Future<void> userSignUp({
     );
     insertUser(email: email, provider: 'email', password: password);
     //User? user = response.user;
-
+    await Future.delayed(const Duration(seconds: 1));
+    showSignInAlertDialog(context: context, errorMessage: "Account created!");
   } on AuthException catch (error) {
     showSignInAlertDialog(context: context, errorMessage: error.message);
   }
 }
+Future<void> signInWithGoogle(BuildContext context, {required Provider provider}) async {
+  AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
+  DeviceManager device = p.Provider.of<DeviceManager>(context, listen: false);
 
-//sign in with OAuth
-Future<void> signInWithOAuth(BuildContext context,
+  GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  try {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final accessToken = googleAuth.accessToken;
+      final idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        throw 'No ID Token found.';
+      }
+
+      await supabase.auth.signInWithIdToken(
+        provider: provider,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+
+      // Handle successful sign-in
+      supabase.auth.onAuthStateChange.listen((event) async {
+        if (await checkSession(context)) {
+          a.setValuesAuto();
+
+          // Replace with your navigation logic
+          Navigator.of(context).pushReplacementNamed(device.getRoute());
+        }
+      });
+    } else {
+      throw 'Google Sign-in canceled.';
+    }
+  } catch (error) {
+    // Handle sign-in errors
+    print('Google Sign-in Error: $error');
+    showSignInAlertDialog(context: context, errorMessage: 'Failed to sign in with Google.');
+  }
+}
+
+Future<void> signInWithOAuth(BuildContext context, {required Provider provider}) async {
+  AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
+  DeviceManager device = p.Provider.of<DeviceManager>(context, listen: false);
+  bool userExists = false;
+  bool _isAuthorized = false;
+  User? user;
+  if (supabase.auth.currentSession != null) {
+    user = Supabase.instance.client.auth.currentSession!.user;
+    //userExists = await userExistsinDb(password: user.email.toString());
+  }
+  const List<String> scopes = <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ];
+
+  /// TODO: update the Web client ID with your own.
+  ///
+  /// Web Client ID that you registered with Google Cloud.
+  const webClientId = '629744579995-j0sk14he0a48pd94tb2nmdps4s7gdg16.apps.googleusercontent.com';
+  const webClientSecret = "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";
+
+  /// TODO: update the iOS client ID with your own.
+  ///
+  /// iOS Client ID that you registered with Google Cloud.
+  const iosClientId = '629744579995-68uojdkql66s9tf63u34tcmmj7e95fis.apps.googleusercontent.com';
+
+  // Google sign in on Android will work without providing the Android
+  // Client ID registered on Google Cloud.
+  GoogleSignIn _googleSignInWeb = GoogleSignIn(
+    // Optional clientId
+    // clientId: 'your-client_id.apps.googleusercontent.com',
+    scopes: scopes,
+  );
+
+  final GoogleSignIn googleSignIn = GoogleSignIn(
+    clientId: iosClientId,
+    serverClientId: webClientId,
+  );
+
+  _googleSignInWeb.onCurrentUserChanged.listen((GoogleSignInAccount? account) async {
+    bool isAuthorized = account != null;
+    if (kIsWeb) {
+      isAuthorized = await _googleSignInWeb.canAccessScopes(scopes);
+    }
+  });
+
+  final googleUser = await _googleSignInWeb.signInSilently();
+  if (googleUser == null) {
+    // Handle the case when the user is not signed in
+    return;
+  }
+
+  final googleAuth = await googleUser.authentication;
+  final accessToken = googleAuth.accessToken;
+  final idToken = googleAuth.idToken;
+
+  if (idToken == null) {
+    throw 'No ID Token found.';
+  }
+
+  await supabase.auth.signInWithIdToken(
+    provider: Provider.google,
+    idToken: idToken,
+    accessToken: accessToken,
+  );
+
+  supabase.auth.onAuthStateChange.listen((event) async {
+    if (await checkSession(context)) {
+      a.setValuesAuto();
+
+      if (!userExists) {
+        Navigator.of(context).pushReplacementNamed(device.getRoute());
+      }
+    }
+  });
+}
+
+
+
+
+
+
+Future<void> signInWithOAuthOriginal(BuildContext context,
     {required Provider provider}) async {
   AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
   DeviceManager device = p.Provider.of<DeviceManager>(context, listen: false);
@@ -118,15 +251,147 @@ Future<void> signInWithOAuth(BuildContext context,
   );
 }
 
+
+
+
+Future<void> signInWithOAuth1(BuildContext context,
+    {required Provider provider}) async {
+  AppSetup a = p.Provider.of<AppSetup>(context, listen: false);
+  DeviceManager device = p.Provider.of<DeviceManager>(context, listen: false);
+  bool userExists = false;
+  bool _isAuthorized = false;
+  User user;
+  if (supabase.auth.currentSession != null) {
+    user = Supabase.instance.client.auth.currentSession!.user;
+    //userExists = await userExistsinDb(password: user.email.toString());
+  }
+  const List<String> scopes = <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ];
+  // supabase.auth.signInWithOAuth(provider,
+  //     redirectTo: 'https://pwqrcfdxmgfavontopyn.supabase.co/auth/v1/callback');
+
+  /// TODO: update the Web client ID with your own.
+  ///
+  /// Web Client ID that you registered with Google Cloud.
+  const webClientId =
+      '629744579995-j0sk14he0a48pd94tb2nmdps4s7gdg16.apps.googleusercontent.com';
+  const webClientSecret = "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";
+
+  /// TODO: update the iOS client ID with your own.
+  ///
+  /// iOS Client ID that you registered with Google Cloud.
+  const iosClientId =
+        '629744579995-68uojdkql66s9tf63u34tcmmj7e95fis.apps.googleusercontent.com';
+
+  // Google sign in on Android will work without providing the Android
+  // Client ID registered on Google Cloud.
+  GoogleSignIn _googleSignInWeb = GoogleSignIn(
+    // Optional clientId
+    // clientId: 'your-client_id.apps.googleusercontent.com',
+    scopes: scopes,
+  );
+  final GoogleSignIn googleSignIn = GoogleSignIn(
+    clientId: iosClientId,
+    serverClientId: webClientId,
+  );
+
+  _googleSignInWeb.onCurrentUserChanged
+      .listen((GoogleSignInAccount? account) async {
+// #docregion CanAccessScopes
+    // In mobile, being authenticated means being authorized...
+    bool isAuthorized = account != null;
+    // However, on web...
+    if (kIsWeb) {
+      isAuthorized = await _googleSignInWeb.canAccessScopes(scopes);
+    }
+  });
+  // _googleSignInWeb.signInSilently();
+  print(0);
+  final googleUser = await googleSignIn.signIn();
+  print(1);
+  final googleAuth = await googleUser!.authentication;
+  print(2);
+
+  final accessToken = googleAuth.accessToken;
+  print(3);
+
+  var idToken = googleAuth.idToken;
+  print(4);
+
+  // if (accessToken == null) {
+  //   throw 'No Access Token found.';
+  // }
+  print(5);
+  await _googleSignInWeb.signIn().then((result) {
+    result?.authentication.then((googleKey) {
+      print("-------------------");
+      print(googleKey.accessToken);
+      print(googleKey.idToken);
+      print(_googleSignInWeb.currentUser?.displayName);
+    }).catchError((err) {
+      print('inner error');
+    });
+  }).catchError((err) {
+    print('error occured');
+  });
+  if (idToken == null) {
+    throw 'No ID Token found.';
+  }
+  print(6);
+
+  await supabase.auth.signInWithIdToken(
+    provider: Provider.google,
+    idToken: idToken,
+    accessToken: accessToken,
+
+  );
+  supabase.auth.onAuthStateChange.listen(
+    ((event) async {
+      if (await checkSession(context)) {
+        a.setValuesAuto();
+
+        if (!userExists)
+          Navigator.of(context).pushReplacementNamed(device.getRoute());
+      }
+    }),
+  );
+  print('done with signing in');
+}
+
 Future<String> getUserRole({required int id}) async {
   final users = await supabase
       .from('user_roles')
-      .select('''role: role_id (role)''')
-      .eq('user_id', id)
-      .single();
-
-  return users['role']['role'];
+      .select('''role: role_id (role)''').eq('user_id', id);
+  print('users: ');
+  print(users);
+  if (users.toList().isEmpty) {
+    await supabase.from('user_roles').insert({
+      'user_id': id,
+      'role_id': 4,
+    });
+    return 'default';
+  }
+  return users[0]['role']['role'];
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Future<String> getUserRoleAuto() async {
   final users = await supabase
@@ -153,6 +418,8 @@ Future<void> signOut(BuildContext context) async {
   Navigator.of(context).popUntil((route) => route.isFirst);
   Navigator.of(context).pushReplacementNamed('/signin');
   BuildContext? dcontext;
+  a.supabase_id = -1;
+  a.role = 'a';
   showDialog(
     barrierDismissible: false,
     builder: (ctx) {
@@ -174,11 +441,12 @@ Future<void> signOut(BuildContext context) async {
 }
 
 Future<Map> getCurrentUserIdInt() async {
+  print(
+      "Supabase Current User ID: " + supabase.auth.currentUser!.id.toString());
   final userData = await supabase
       .from('users')
-      .select('id, email, full_name, role, department')
+      .select('id, email, full_name, role  ,department')
       .eq('uuid', supabase.auth.currentUser!.id)
       .single();
-
   return userData;
 }

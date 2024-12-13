@@ -9,6 +9,12 @@ returns trigger as $$
 		insert into public.users (uuid, email, full_name)
 		values (new.id, new.email, new.raw_user_meta_data->>'full_name');
 		return new;
+		insert into public.user_roles (user_id, role_id)
+		select id, 4
+        from public.users
+		where id=(
+			SELECT id FROM public.users ORDER BY id DESC LIMIT 1
+		);
 	end;
 $$ language plpgsql security definer;
 

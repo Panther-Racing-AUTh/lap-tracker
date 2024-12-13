@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/event.dart';
 import 'package:flutter_complete_guide/models/race.dart';
 import 'package:flutter_complete_guide/supabase/authentication_functions.dart';
 import 'package:flutter_complete_guide/supabase/motorcycle_setup_functions.dart';
@@ -15,6 +16,7 @@ class AppSetup extends ChangeNotifier {
   //TODO: store settings and preferences locally on the device
 
   int raceSelectorIndex = 0;
+  int vehicleSelectorIndex = 0;
   List chartList = [
     DateTime.now(),
     1,
@@ -28,13 +30,18 @@ class AppSetup extends ChangeNotifier {
   bool isOverview = true;
   late List allUsers;
   late List<RaceTrack> races2023;
+  late List<Vehicle> vehicles;
   String username = '';
   String userEmail = '';
   String userDepartment = '';
+  Session session = Session.empty();
+  Event eventDate = Event.empty();
+  int currentProposalPoolId = 0;
 
-  String proposalTitle = '';
-  String proposalDescription = '';
-  String proposalReason = '';
+
+  // String proposalTitle = '';
+  // String proposalDescription = '';
+  // String proposalReason = '';
 
   List timeConstraints = [null, null];
 
@@ -105,14 +112,20 @@ class AppSetup extends ChangeNotifier {
 
   Future<bool> setValuesAuto() async {
     Map l = await getCurrentUserIdInt();
-    proposalVehicle = await getVehicle(11);
+    print(1);
     supabase_id = l['id'];
+    print(2);
     role = await getUserRole(id: supabase_id);
+    print(3);
     races2023 = await getRaceTracks();
+    print(4);
+    vehicles = await getVehicles();
+    print(5);
     print(role + 'from setValuesAuto');
     username = l['full_name'];
     userEmail = l['email'];
     userDepartment = l['department'];
+    notifyListeners();
     return true;
   }
 
@@ -129,4 +142,7 @@ class AppSetup extends ChangeNotifier {
   void setTrack(int value) {
     chartList[1] = value;
   }
+
+
 }
+

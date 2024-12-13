@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/providers/app_setup.dart';
 import 'package:flutter_complete_guide/supabase/data_functions.dart';
 import 'package:flutter_complete_guide/widgets/chart_widget.dart';
-import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_complete_guide/widgets/race_track_selector.dart';
 import 'package:provider/provider.dart';
 
 class NewDataScreen extends StatefulWidget {

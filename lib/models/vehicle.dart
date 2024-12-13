@@ -12,6 +12,12 @@ class Part {
     required this.measurementUnit,
     required this.value,
   });
+
+  Part.fromJson(Map json)
+      : id = json['id'] ?? 0,
+        name = json['name'],
+        measurementUnit = json['measurement_unit'],
+        value = json['part_values'][0]['value'];
 }
 
 class System {
@@ -26,6 +32,12 @@ class System {
     required this.description,
     required this.subsystems,
   });
+
+  System.fromJson(Map json, List<Subsystem> subsystemss)
+      : id = json['id'] ?? 0,
+        name = json['name'],
+        description = json['description'],
+        subsystems = subsystemss;
 }
 
 class Subsystem {
@@ -40,14 +52,20 @@ class Subsystem {
     required this.description,
     required this.parts,
   });
+
+  Subsystem.fromJson(Map json, List<Part> partss)
+      : id = json['id'] ?? 0,
+        name = json['name'],
+        description = json['description'],
+        parts = partss;
 }
 
 class Vehicle {
   int? id;
-  String name;
-  String year;
-  String description;
-  List<System> systems;
+  String name = 'name';
+  String year = 'year';
+  String description = 'description';
+  List<System> systems = [];
 
   Vehicle({
     this.id,
@@ -56,6 +74,71 @@ class Vehicle {
     required this.description,
     required this.systems,
   });
+
+  Vehicle.fromJsonHasura(Map json) {
+    name = json['name'] ?? 'adsfasdf';
+    id = json['id'] ?? 0;
+    year = json['year'] ?? 'name';
+    description = json['description'] ?? 'name';
+    print('\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\');
+    print(json['name']);
+    print(json['id']);
+    print(json['year']);
+    print(json['description']);
+
+    List<System> s = [];
+
+    print(json);
+
+    for (int i = 0; i < json['systems'].length; i++) {
+      s.add(
+        System(
+          subsystems: [],
+          name: json['systems'][i]['name'],
+          description: json['systems'][i]['description'],
+          id: json['systems'][i]['id'] ?? 0,
+        ),
+      );
+
+      for (int j = 0; j < json['systems'][i]['subsystems'].length; j++) {
+        s[i].subsystems.add(
+              Subsystem(
+                name: json['systems'][i]['subsystems'][j]['name'],
+                description: json['systems'][i]['subsystems'][j]['description'],
+                parts: [],
+              ),
+            );
+
+        for (int k = 0;
+            k < json['systems'][i]['subsystems'][j]['parts'].length;
+            k++) {
+          s[i].subsystems[j].parts.add(
+                Part(
+                  id: json['systems'][i]['subsystems'][j]['parts'][k]['id'],
+                  name: json['systems'][i]['subsystems'][j]['parts'][k]['name'],
+                  measurementUnit: json['systems'][i]['subsystems'][j]['parts']
+                      [k]['measurement_unit'],
+                  value: 0,
+                ),
+              );
+
+          for (int l = 0;
+              l <
+                  json['systems'][i]['subsystems'][j]['parts'][k]['part_values']
+                      .length;
+              l++) {
+            s[i].subsystems[j].parts[k].value = json['systems'][i]['subsystems']
+                [j]['parts'][k]['part_values'][l]['value'];
+          }
+          ;
+        }
+        ;
+      }
+      ;
+    }
+    systems = s;
+  }
+
   Vehicle.empty()
       : name = 'name',
         description = 'description',
@@ -85,6 +168,8 @@ class Vehicle {
           print(
               'System ${i + 1} Subsystem ${j + 1} Part ${k + 1} value:  ${systems[i].subsystems[j].parts[k].value}');
           print(
+              'System ${i + 1} Subsystem ${j + 1} Part ${k + 1} id:  ${systems[i].subsystems[j].parts[k].id}');
+          print(
               '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
         }
       }
@@ -106,5 +191,4 @@ class Vehicle {
   //    {required Map<Vehicle, Map<System, List<Part>>> vehicle}) {
   //  return;
   //}
-
 }

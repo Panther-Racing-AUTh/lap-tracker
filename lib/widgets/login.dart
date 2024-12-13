@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/screens/google_drive/googleDrive.dart';
 import 'package:flutter_complete_guide/widgets/dark_theme_icons.dart';
 import 'package:flutter_complete_guide/widgets/signIn_alert_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../names.dart';
 import '../providers/app_setup.dart';
@@ -19,6 +24,10 @@ var minimumWidth = 280.0;
 var minimumButtonHeight = 40.0;
 
 class LoginState extends State<Login> {
+
+
+
+
   bool signedUp =
       true; //checks if user is trying to sign up or sign in and controls what is shown on screen
   bool userExists = false; //shows if a user is already signed up to supabase
@@ -282,6 +291,7 @@ class LoginState extends State<Login> {
             isLoading: isLoading,
             auth: 'Google',
           ),
+
           SizedBox(
             height: height * 0.01,
           ),
@@ -292,94 +302,95 @@ class LoginState extends State<Login> {
             auth: 'Facebook',
           ),
           SizedBox(height: 20),
-          Container(
-            height: 70,
-            child: ListView(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      child: Text('Admin',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                      onPressed: () {
-                        userLogin(
-                            email: 'pantheradm1n1@gmail.com',
-                            password: 'pantheradmin123',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'engineer@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Engineer',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'data_analyst@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Data Analyst',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'default@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Default',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'hands_on_engineer@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Hands On Engineer',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        userLogin(
-                            email: 'chief_engineer@mailinator.com',
-                            password: '123456',
-                            signedUp: true,
-                            context: context,
-                            userExists: true);
-                      },
-                      child: Text('Chief Engineer',
-                          style: TextStyle(fontSize: 28, color: Colors.orange)),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          // Container(
+          //   height: 70,
+          //   child: ListView(
+          //     shrinkWrap: true,
+          //     scrollDirection: Axis.horizontal,
+          //     children: [
+          //       Row(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: [
+          //           TextButton(
+          //             child: Text('Admin',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'pantheradm1n1@gmail.com',
+          //                   password: 'pantheradmin123',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'engineer@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Engineer',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'data_analyst@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Data Analyst',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'default@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Default',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'hands_on_engineer@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Hands On Engineer',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               userLogin(
+          //                   email: 'chief_engineer@mailinator.com',
+          //                   password: '123456',
+          //                   signedUp: true,
+          //                   context: context,
+          //                   userExists: true);
+          //             },
+          //             child: Text('Chief Engineer',
+          //                 style: TextStyle(fontSize: 28, color: Colors.orange)),
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ),
           Column(
             //'powered by panther' text
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ConstrainedBox(
@@ -401,6 +412,7 @@ class LoginState extends State<Login> {
                   ],
                 ),
               ),
+              Text('v1.3.0')
             ],
           ),
         ],
@@ -409,7 +421,13 @@ class LoginState extends State<Login> {
   }
 }
 
-class ThirdPartySignInButton extends StatelessWidget {
+
+class ThirdPartySignInButton extends StatefulWidget {
+  final double height;
+  final double width;
+  final bool isLoading;
+  final String auth;
+
   const ThirdPartySignInButton({
     Key? key,
     required this.height,
@@ -418,20 +436,66 @@ class ThirdPartySignInButton extends StatelessWidget {
     required this.auth,
   }) : super(key: key);
 
-  final double height;
-  final double width;
-  final bool isLoading;
-  final String auth;
+  @override
+  State<ThirdPartySignInButton> createState() => _ThirdPartySignInButtonState();
+}
+
+class _ThirdPartySignInButtonState extends State<ThirdPartySignInButton> {
+  final GoogleSignIn googleSignIn = GoogleSignIn(
+    scopes: [
+      //'https://www.googleapis.com/auth/drive.file',
+      'email'
+    ],
+  );
+  GoogleSignInAccount? _currentUser;
+  final GoogleDrive _googleDrive = GoogleDrive();
+
+  @override
+  void initState() {
+    super.initState();
+    googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+      setState(() {
+        _currentUser = account;
+      });
+    });
+    googleSignIn.signInSilently();
+  }
+
+  Future<void> _handleSignIn() async {
+    try {
+      await googleSignIn.signIn();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> _handleSignOut() async {
+    // await googleSignIn.disconnect();
+    await googleSignIn.signOut();
+    await _googleDrive.storage.clear();
+  }
+
+  Future<void> _pickAndUploadFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null && result.files.single.path != null) {
+      File file = File(result.files.single.path!);
+      await _googleDrive.upload(file);
+    } else {
+      // User canceled the picker
+    }
+  }
+
 
   Icon i() {
-    if (auth == 'Facebook') return Icon(FontAwesomeIcons.facebook);
-    if (auth == 'Google') return Icon(FontAwesomeIcons.google);
+    if (widget.auth == 'Facebook') return Icon(FontAwesomeIcons.facebook);
+    if (widget.auth == 'Google') return Icon(FontAwesomeIcons.google);
     return Icon(FontAwesomeIcons.a);
   }
 
   String s() {
-    if (auth == 'Facebook') return sign_in_facebook;
-    if (auth == 'Google') return sign_in_google;
+    if (widget.auth == 'Facebook') return sign_in_facebook;
+    if (widget.auth == 'Google') return sign_in_google;
     return '';
   }
 
@@ -443,11 +507,11 @@ class ThirdPartySignInButton extends StatelessWidget {
         minHeight: minimumButtonHeight,
         minWidth: minimumWidth,
       ),
-      height: height * 0.052,
-      width: width * 0.95,
-      padding: EdgeInsets.fromLTRB(width * 0.025, 0, width * 0.025, 0),
+      height: widget.height * 0.052,
+      width: widget.width * 0.95,
+      padding: EdgeInsets.fromLTRB(widget.width * 0.025, 0, widget.width * 0.025, 0),
       child: IgnorePointer(
-        ignoring: isLoading,
+        ignoring: widget.isLoading,
         child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               elevation: 5,
@@ -456,10 +520,11 @@ class ThirdPartySignInButton extends StatelessWidget {
             icon: i(),
             label: Text(s()),
             onPressed: () {
-              if (auth == 'Facebook')
+              if (widget.auth == 'Facebook')
                 signInWithOAuth(context, provider: Provider.facebook);
-              if (auth == 'Google')
-                signInWithOAuth(context, provider: Provider.google);
+              if (widget.auth == 'Google')
+                // signInWithGoogle(context,provider: Provider.google);
+                signInWithOAuthOriginal(context, provider: Provider.google);
             }),
       ),
     );

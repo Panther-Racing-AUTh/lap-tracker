@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/names.dart';
+import 'package:flutter_complete_guide/models/drawer_model.dart';
 import 'package:flutter_complete_guide/widgets/chart_widget.dart';
 import '../../widgets/main_appbar.dart';
 
@@ -12,6 +13,8 @@ class ChartScreen extends StatelessWidget {
         text: chart_widget_motor_charts,
         context: context,
       ),
+      drawer: DrawerModel(context,DrawerIndexValue.chart.getInt()),
+
       body: Center(
         child: EchartsPage(),
       ),

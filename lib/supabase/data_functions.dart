@@ -1,7 +1,8 @@
 import 'package:flutter_complete_guide/models/race.dart';
 import 'package:flutter_complete_guide/models/telemetry.dart';
+import 'package:flutter_complete_guide/models/vehicle.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:math';
+
 
 final supabase = Supabase.instance.client;
 
@@ -125,6 +126,20 @@ Future<List<RaceTrack>> getRaceTracks() async {
           country: element['country'],
           countryCode: element['country_code'],
         ),
+      );
+    },
+  );
+
+  return list;
+}
+
+Future<List<Vehicle>> getVehicles() async {
+  List<Vehicle> list = [];
+  final List data = await supabase.from('vehicle').select();
+  data.forEach(
+    (element) {
+      list.add(
+        Vehicle.fromJson(element),
       );
     },
   );

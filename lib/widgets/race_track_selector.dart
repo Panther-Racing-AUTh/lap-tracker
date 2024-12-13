@@ -34,6 +34,7 @@ class _RaceTrackSelectorState extends State<RaceTrackSelector> {
     }
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         getIcon(setup.raceSelectorIndex),
         SizedBox(width: 10),
